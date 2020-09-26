@@ -31,6 +31,7 @@ public:
 	int    getArmies();
 	Player getOwner();
 	int    getContinent();
+	vector<Territory*> getAdjacent();
 	string getTerritoryName();
 	//This method is used to add a link to a specific territory
 	bool addBorder(Territory*);
@@ -63,6 +64,8 @@ public:
 #pragma region methods
 	bool setBonusArmies(int);
 	int  getBonusArmies();
+	int  getBonusArmies();
+	int  territoriesSize();
 	bool addTerritory(Territory*);
 #pragma endregion
 }; 
@@ -85,6 +88,13 @@ public:
 #pragma region methods
 	bool addContinent(Continent*);
 	bool addTerritory(Territory*);
+	
+	bool validate();
+	bool isConnected();
+	bool checkTerritories();
+	void territoryDFS(Territory* start, map<Territory*, bool> visited);
+	void continentDFS(Continent* start, vector<bool> visited);
+
 	//TODO: add methods to get a copy of both lists
 	//TODO: add method to get a territory or continent by the name
 #pragma endregion

@@ -1,10 +1,84 @@
 #include "Map.h"
+#include <map>
+#include <list>
 
 Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents) {}
 
 Map::Map(int numberOfContinents, vector<Continent*> continents):_numberOfContinents(numberOfContinents),_continents(continents)
 {
 }
+
+bool Map::validate() 
+{
+
+	// Check if undirected graph is connected by doing DFS
+	// wont mean anything if graph is not undirected
+	if (!isConnected()) {
+		return false;
+	}
+
+	return true;
+}
+
+bool Map::checkTerritories() {
+
+	// TODO
+	// check if each continent has a territory
+
+	for (Continent* continent : _continents)
+		if (continent->territoriesSize() == 0) {
+			return 0;
+		}
+
+	// TODO
+	// 1. put all territories in continents into a collection
+	// 2. take unique elements
+	// 3. if territories size != unique elements, there is an issue
+
+	list<string> uniqueNames;
+
+	uniqueNames.sort();
+	uniqueNames.unique();
+
+	if (uniqueNames.size() !=  _territories.size())
+		return 0;
+}
+
+bool Map::isConnected()
+{
+	map<Territory*, bool> visited1;
+	map<Continent*, bool> visited2;
+
+	for (auto territory : _territories)
+		visited1.insert(pair<Territory*, bool>(territory, false));
+
+	for (auto p : visited1) {
+		if (p.second)
+			return false; 
+	}
+
+	return true;
+}
+
+void Map::territoryDFS(Territory* startNode, map<Territory*, bool> visited)
+{
+	visited[startNode] = true;
+
+	for (auto adjNode : startNode->getAdjacent()) {
+		if (!visited[adjNode]) {
+			territoryDFS(adjNode, visited);
+		}
+	}
+}
+
+// void Map::continentDFS(Continent* startNode, map<Continent*, bool> visited)
+// {
+
+	
+
+// }
+
+
 
 bool Map::addContinent(Continent* continent)
 {
@@ -121,3 +195,4 @@ bool Continent::addTerritory(Territory* territory)
 	}
 	return false;
 }
+
