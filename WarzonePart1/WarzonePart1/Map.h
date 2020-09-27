@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <map>
 #include "Player.h"
 using namespace std;
 
@@ -38,14 +39,7 @@ public:
 	friend ostream& operator<< (ostream&, const Territory&);
 #pragma endregion
 };
-ostream& operator<< (ostream& stream, const Territory& territory) {
-	if (territory._owner != NULL) {
-		return stream << territory._territoryName << " currently has " << territory._armies << "owned by " << territory._owner << endl;
-	}
-	else {
-		return stream << territory._territoryName << " belongs to no one "<< endl;
-	}
-}
+ostream& operator<< (ostream& stream, const Territory& territory);
 //------------------------------------------------------------------------------------CLASS CONTINENT-------------------------------------------------------------------------------------------------------
 class Continent {
 	//Name of the continent
@@ -54,24 +48,27 @@ class Continent {
 	int _bonusArmies=0;
 	//List of all territories belonging to the same Continent
 	vector<Territory*> _territories;
+	vector<Continent*> _adjacentContinents;
 public:
 #pragma region constructos
 	Continent();
 	Continent(int);
 	Continent(int, vector<Territory*>);
+	Continent(string);
+	Continent(string, int);
+	Continent(string, int, vector<Territory*>);
 	friend ostream& operator<<(ostream&, const Continent&);
 #pragma endregion
 #pragma region methods
 	bool setBonusArmies(int);
 	int  getBonusArmies();
-	int  getBonusArmies();
 	int  territoriesSize();
+	vector<Continent*> getAdjacent();
 	bool addTerritory(Territory*);
+	bool addBorder(Continent*);
 #pragma endregion
 }; 
-ostream& operator<<(ostream& stream, const Continent& continent) {
-	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
-}
+ostream& operator<<(ostream& stream, const Continent& continent);
 //---------------------------------------------------------------------------------------------CLASS MAP-------------------------------------------------------------------------------------------------------
 class Map {
 	//the number of continents in the map
@@ -82,6 +79,7 @@ class Map {
 	vector<Territory*> _territories;
 public:
 #pragma region constructors
+	Map();
 	Map(int);
 	Map(int, vector<Continent*>);
 #pragma endregion
@@ -93,7 +91,7 @@ public:
 	bool isConnected();
 	bool checkTerritories();
 	void territoryDFS(Territory* start, map<Territory*, bool> visited);
-	void continentDFS(Continent* start, vector<bool> visited);
+	void continentDFS(Continent* start, map<Continent*, bool> visited);
 
 	//TODO: add methods to get a copy of both lists
 	//TODO: add method to get a territory or continent by the name
