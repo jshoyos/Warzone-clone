@@ -2,6 +2,21 @@
 #include <map>
 #include <list>
 
+Map::Map():_numberOfContinents(0)
+{
+}
+
+Map::Map(const Map& map)
+{
+	this->_numberOfContinents = map._numberOfContinents;
+	for (auto continent : map._continents) {
+		this->_continents.push_back(new Continent(*continent));
+	}
+	for (auto territory : map._territories) {
+		this->_territories.push_back(new Territory(*territory));
+	}
+}
+
 Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents) {}
 
 Map::Map(int numberOfContinents, vector<Continent*> continents):_numberOfContinents(numberOfContinents),_continents(continents)
@@ -80,6 +95,11 @@ Map::Map(int numberOfContinents, vector<Continent*> continents):_numberOfContine
 
 
 
+Map& Map::operator=(const Map& map)
+{
+	return *(new Map(map));
+}
+
 bool Map::addContinent(Continent* continent)
 {
 	if (continent != NULL) {
@@ -104,7 +124,7 @@ vector<Territory> Map::getTerritories()
 {
 	vector<Territory> territories;
 	for (int i = 0; _territories.size(); i++) {
-		territories.push_back(*_territories[i]);
+		territories.push_back(*(new Territory(*_territories[i])));
 	}
 	return territories;
 }
@@ -113,7 +133,7 @@ vector<Continent> Map::getContinents()
 {
 	vector<Continent> continents;
 	for (int i = 0; i < _continents.size(); i++) {
-		continents.push_back(*_continents[i]);
+		continents.push_back(*(new Continent(*_continents[i])));
 	}
 	return continents;
 }
@@ -122,12 +142,28 @@ Territory::Territory():_territoryName(),_continent()
 {
 }
 
+Territory::Territory(const Territory& territory)
+{
+	this->_continent = territory._continent;
+	this->_territoryName = territory._territoryName;
+	this->_armies = territory._armies;
+	this->_owner = new Player(*(territory._owner));
+	for (auto adjNode : territory._adjacentTerritories) {
+		this->_adjacentTerritories.push_back(new Territory(*adjNode));
+	}
+}
+
 Territory::Territory(string territoryName, int continent):_territoryName(territoryName),_continent(continent)
 {
 }
 
 Territory::Territory(string territoryName, int continent, vector<Territory*> adjacentTerritories):_territoryName(territoryName),_continent(continent),_adjacentTerritories(adjacentTerritories)
 {
+}
+
+Territory& Territory::operator=(const Territory& territory)
+{
+	return *(new Territory(territory));
 }
 
 bool Territory::setOwner(Player* owner)
@@ -196,12 +232,29 @@ Continent::Continent():_continentName(),_bonusArmies()
 {
 }
 
+Continent::Continent(const Continent& continent)
+{
+	this->_continentName = continent._continentName;
+	this->_bonusArmies = continent._bonusArmies;
+	for (auto adjNode : continent._territories) {
+		this->_territories.push_back(new Territory(*adjNode));
+	}
+	for (auto adjNode : continent._adjacentContinents) {
+		this->_adjacentContinents.push_back(new Continent(*adjNode));
+	}
+}
+
 Continent::Continent(string continentName,int bonusArmies):_continentName(continentName),_bonusArmies(bonusArmies)
 {
 }
 
 Continent::Continent(string continentName,int bonusArmies, vector<Territory*> territories): _continentName(continentName), _bonusArmies(bonusArmies),_territories(territories)
 {
+}
+
+Continent& Continent::operator=(const Continent& continent)
+{
+	return *(new Continent(continent));
 }
 
 bool Continent::setBonusArmies(int bonus)
@@ -216,6 +269,11 @@ bool Continent::setBonusArmies(int bonus)
 int Continent::getBonusArmies()
 {
 	return _bonusArmies;
+}
+
+int Continent::territoriesSize()
+{
+	return _territories.size();
 }
 
 bool Continent::addTerritory(Territory* territory)

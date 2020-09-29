@@ -12,7 +12,7 @@ class Territory {
 	//Name of the territory
 	string _territoryName="";
 	//id of the continent it belongs to. This id is the index in the list of continents created in the Map object
-	const int _continent;
+	int _continent;
 	//pointer to the owner of the current territory
 	Player* _owner=NULL;
 	//this number represent the number of armies currently in the territory
@@ -23,16 +23,17 @@ public:
 #pragma region constructos
 	//armies,adjacentterritories,continent can be set after the object is created
 	Territory();
+	Territory(const Territory&);
 	Territory(string, int);
 	Territory(string, int, vector<Territory*>);
 #pragma endregion
 #pragma region methods
+	Territory& operator=(const Territory&);
 	bool   setOwner(Player*);
 	bool   setArmies(int);
 	int    getArmies();
 	Player getOwner();
 	int    getContinent();
-	vector<Territory*> getAdjacent();
 	string getTerritoryName();
 	//This method is used to add a link to a specific territory
 	bool addBorder(Territory*);
@@ -52,20 +53,21 @@ class Continent {
 public:
 #pragma region constructos
 	Continent();
-	Continent(int);
-	Continent(int, vector<Territory*>);
+	Continent(const Continent&);
+	/*Continent(int);
+	Continent(int, vector<Territory*>);*/
 	Continent(string);
 	Continent(string, int);
 	Continent(string, int, vector<Territory*>);
 	friend ostream& operator<<(ostream&, const Continent&);
 #pragma endregion
 #pragma region methods
+	Continent& operator=(const Continent&);
 	bool setBonusArmies(int);
 	int  getBonusArmies();
 	int  territoriesSize();
-	vector<Continent*> getAdjacent();
 	bool addTerritory(Territory*);
-	bool addBorder(Continent*);
+	//bool addBorder(Continent*);
 	vector<Territory> getTerritories();
 #pragma endregion
 }; 
@@ -73,7 +75,7 @@ ostream& operator<<(ostream& stream, const Continent& continent);
 //---------------------------------------------------------------------------------------------CLASS MAP-------------------------------------------------------------------------------------------------------
 class Map {
 	//the number of continents in the map
-	const int _numberOfContinents;
+	int _numberOfContinents;
 	//List containing all the continents in the map.From this list it is possible to access the territories as well.
 	vector<Continent*> _continents;
 	//List containing all the territories in the map.
@@ -81,10 +83,12 @@ class Map {
 public:
 #pragma region constructors
 	Map();
+	Map(const Map&);
 	Map(int);
 	Map(int, vector<Continent*>);
 #pragma endregion
 #pragma region methods
+	Map& operator=(const Map&);
 	bool addContinent(Continent*);
 	bool addTerritory(Territory*);
 	bool validate();
@@ -94,7 +98,6 @@ public:
 	void continentDFS(Continent* start, map<Continent*, bool> visited);
 	vector<Territory> getTerritories();
 	vector<Continent> getContinents();
-	//TODO: add methods to get a copy of both lists
 	//TODO: add method to get a territory or continent by the name
 #pragma endregion
 };
