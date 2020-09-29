@@ -66,6 +66,7 @@ public:
 	vector<Continent*> getAdjacent();
 	bool addTerritory(Territory*);
 	bool addBorder(Continent*);
+	vector<Territory> getTerritories();
 #pragma endregion
 }; 
 ostream& operator<<(ostream& stream, const Continent& continent);
@@ -86,13 +87,13 @@ public:
 #pragma region methods
 	bool addContinent(Continent*);
 	bool addTerritory(Territory*);
-	
 	bool validate();
 	bool isConnected();
 	bool checkTerritories();
 	void territoryDFS(Territory* start, map<Territory*, bool> visited);
 	void continentDFS(Continent* start, map<Continent*, bool> visited);
-
+	vector<Territory> getTerritories();
+	vector<Continent> getContinents();
 	//TODO: add methods to get a copy of both lists
 	//TODO: add method to get a territory or continent by the name
 #pragma endregion

@@ -94,10 +94,28 @@ bool Map::addTerritory(Territory* territory)
 	if (territory != NULL && territory->getTerritoryName() != "" && territory->getContinent() != 0)
 	{
 		_territories.push_back(territory);
-		_continents[territory->getContinent()]->addTerritory(territory);
+		_continents[territory->getContinent()-1]->addTerritory(territory);
 		return true;
 	}
 	return false;
+}
+
+vector<Territory> Map::getTerritories()
+{
+	vector<Territory> territories;
+	for (int i = 0; _territories.size(); i++) {
+		territories.push_back(*_territories[i]);
+	}
+	return territories;
+}
+
+vector<Continent> Map::getContinents()
+{
+	vector<Continent> continents;
+	for (int i = 0; i < _continents.size(); i++) {
+		continents.push_back(*_continents[i]);
+	}
+	return continents;
 }
 
 Territory::Territory():_territoryName(),_continent()
@@ -178,11 +196,11 @@ Continent::Continent():_continentName(),_bonusArmies()
 {
 }
 
-Continent::Continent(int bonusArmies):_bonusArmies(bonusArmies)
+Continent::Continent(string continentName,int bonusArmies):_continentName(continentName),_bonusArmies(bonusArmies)
 {
 }
 
-Continent::Continent(int bonusArmies, vector<Territory*> territories):_bonusArmies(bonusArmies),_territories(territories)
+Continent::Continent(string continentName,int bonusArmies, vector<Territory*> territories): _continentName(continentName), _bonusArmies(bonusArmies),_territories(territories)
 {
 }
 
@@ -208,7 +226,14 @@ bool Continent::addTerritory(Territory* territory)
 	}
 	return false;
 }
-
-ostream& operator<<(ostream& stream, const Continent& continent) {
+ostream & operator<<(ostream & stream, const Continent & continent) {
 	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
+}
+vector<Territory> Continent::getTerritories()
+{
+	vector<Territory> territories;
+	for (int i = 0; i<_territories.size(); i++) {
+		territories.push_back(*_territories[i]);
+	}
+	return territories;
 }
