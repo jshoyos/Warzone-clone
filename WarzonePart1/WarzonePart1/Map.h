@@ -9,6 +9,8 @@ using namespace std;
 //-----------------------------------------------------------------------------------CLASS TERRITORY-------------------------------------------------------------------------------------------------------
 //Represents the territory node
 class Territory {
+	// id of territory, this is used to refer to territories 0 to n
+	int _id;
 	//Name of the territory
 	string _territoryName="";
 	//id of the continent it belongs to. This id is the index in the list of continents created in the Map object
@@ -25,6 +27,7 @@ public:
 	Territory();
 	Territory(const Territory&);
 	Territory(string, int);
+	Territory(int id, string territoryName, int continent);
 	Territory(string, int, vector<Territory*>);
 #pragma endregion
 #pragma region methods
@@ -32,8 +35,10 @@ public:
 	bool   setOwner(Player*);
 	bool   setArmies(int);
 	int    getArmies();
-	Player getOwner();
 	int    getContinent();
+	int    getId();
+	Player getOwner();
+	vector<Territory*> getAdjacent();
 	string getTerritoryName();
 	//This method is used to add a link to a specific territory
 	bool addBorder(Territory*);
@@ -43,6 +48,8 @@ public:
 ostream& operator<< (ostream& stream, const Territory& territory);
 //------------------------------------------------------------------------------------CLASS CONTINENT-------------------------------------------------------------------------------------------------------
 class Continent {
+	// id of territory, this is used to refer to continents 0 to n
+	int _id;
 	//Name of the continent
 	string _continentName="";
 	//The number of bonus armies the player receives for conquering this continent
@@ -54,9 +61,10 @@ public:
 #pragma region constructos
 	Continent();
 	Continent(const Continent&);
-	/*Continent(int);
-	Continent(int, vector<Territory*>);*/
+	Continent(int);
+	Continent(int, vector<Territory*>);
 	Continent(string);
+	Continent(int id, string continentName);
 	Continent(string, int);
 	Continent(string, int, vector<Territory*>);
 	friend ostream& operator<<(ostream&, const Continent&);
@@ -66,8 +74,9 @@ public:
 	bool setBonusArmies(int);
 	int  getBonusArmies();
 	int  territoriesSize();
+	int  getId();
 	bool addTerritory(Territory*);
-	//bool addBorder(Continent*);
+	bool addBorder(Continent*);
 	vector<Territory> getTerritories();
 #pragma endregion
 }; 
@@ -94,10 +103,13 @@ public:
 	bool validate();
 	bool isConnected();
 	bool checkTerritories();
-	void territoryDFS(Territory* start, map<Territory*, bool> visited);
-	void continentDFS(Continent* start, map<Continent*, bool> visited);
 	vector<Territory> getTerritories();
 	vector<Continent> getContinents();
-	//TODO: add method to get a territory or continent by the name
+	Territory* getTerritoryById(int);
+	Continent* getContinentById(int);
+	int getTerritoriesSize();
+	int getContinentsSize();
+	void territoryDFS(Territory* start, vector<bool>& visited);
+	void continentDFS(Continent* start, map<Continent*, bool> visited);
 #pragma endregion
 };
