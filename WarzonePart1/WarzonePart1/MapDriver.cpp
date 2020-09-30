@@ -2,10 +2,49 @@
 //
 
 #include <iostream>
+#include "Map.h"
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	cout << "creating the map" << endl;
+	Continent* Argentina = new Continent("Argentina", 4);
+	Continent* Uruguay = new Continent("Uruguay", 1);
+	cout << *Argentina << endl;
+	cout << *Uruguay << endl;
+	Territory* Malvinas = new Territory("Islas Malvinas", 1);
+	Territory* Tierra_del_Fuego = new Territory("Tierra_del_Fuego", 1);
+	Territory* Santa_Cruz = new Territory("Santa_Cruz", 1);
+	Territory* Río_Negro = new Territory("Río_Negro", 1);
+	Territory* Neuquén = new Territory("Neuquén", 1);
+
+	Territory* Paysandú = new Territory("Paysandú", 2);
+	Territory* Maldonado = new Territory("Maldonado", 2);
+	Territory* Montevideo = new Territory("Montevideo", 2);
+
+	Map* map = new Map(2);
+	map->addContinent(Argentina);
+	map->addContinent(Uruguay);
+
+	map->addTerritory(Malvinas);
+	map->addTerritory(Tierra_del_Fuego);
+	map->addTerritory(Santa_Cruz);
+	map->addTerritory(Río_Negro);
+	map->addTerritory(Neuquén);
+	map->addTerritory(Paysandú);
+	map->addTerritory(Maldonado);
+	map->addTerritory(Montevideo);
+	cout << "Countries in Continents" << endl;
+	vector<Continent> temp = map->getContinents();
+	for (int i = 0; i < temp.size(); i++) {
+		cout << temp[i] << endl;
+		vector<Territory> territories= temp[i].getTerritories();
+		for (int j = 0; j < territories.size(); j++) {
+			cout << territories[j];
+		}
+		cout << endl;
+	}
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
