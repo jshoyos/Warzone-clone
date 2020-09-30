@@ -6,7 +6,7 @@ Map *MapLoader::createMap()
 {
 
     // random size for now
-    Map *map = new Map(5);
+    Map *map = new Map(40);
 
     fstream stream(_fileName);
 
@@ -31,6 +31,14 @@ Map *MapLoader::createMap()
     istringstream iss;
     string word;
     string line;
+
+    Territory* current;
+    
+    string name;
+    int territory_id;
+    int continent_id;
+
+    int continent_count = 0;
 
     while (getline(stream, line))
     {
@@ -71,16 +79,28 @@ Map *MapLoader::createMap()
         {
 
         case continent:
-            // first arg is its name
-            continents.push_back(new Continent(tokens[0]));
+
+            continent_id = continent_count++;
+            name = tokens[0];
+
+            continents.push_back(new Continent(continent_id, name));
             cout << *continents.back() << endl;
             break;
 
         case territory:
 
-            // first argument to constructor is its name, third is its Continent Id (which is an index)
+            
 
-            territories.push_back(new Territory(tokens[1], stoi(tokens[2]) - 1));
+            territory_id = stoi(tokens[0]) - 1;
+            continent_id = stoi(tokens[2]) - 1;
+
+            name = tokens[1];
+
+            
+
+            territories.push_back(new Territory(territory_id, name, continent_id));
+            current = territories.back();
+            cout << current->getId() << endl;
             cout << *territories.back() << endl;
             break;
 
@@ -103,6 +123,14 @@ Map *MapLoader::createMap()
             }
             break;
         };
+    }
+
+    for (auto c : continents) {
+        map->addContinent(c);
+    }
+
+    for (auto t : territories) {
+        map->addTerritory(t);
     }
 
     // Release memory if it fails?
