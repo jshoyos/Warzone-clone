@@ -1,6 +1,7 @@
 #include "Map.h"
 #include <map>
 #include <list>
+
 Map::Map():_numberOfContinents(0)
 {
 }
@@ -23,7 +24,6 @@ Map::Map(int numberOfContinents, vector<Continent *> continents) : _numberOfCont
 
 bool Map::validate()
 {
-
 	// Check if undirected graph is connected by doing DFS
 	// wont mean anything if graph is not undirected
 	//
@@ -138,39 +138,9 @@ bool Map::addTerritory(Territory *territory)
 	return false;
 }
 
-vector<Territory> Map::getTerritories()
-{
-	vector<Territory> territories;
-	for (int i = 0; _territories.size(); i++) {
-		territories.push_back(*(new Territory(*_territories[i])));
-	}
-	return territories;
-}
-
-vector<Continent> Map::getContinents()
-{
-	vector<Continent> continents;
-	for (int i = 0; i < _continents.size(); i++) {
-		continents.push_back(*(new Continent(*_continents[i])));
-	}
-	return continents;
-}
-
-Territory::Territory():_territoryName(),_continent()
+Territory::Territory() : _territoryName(), _continent()
 {
 }
-
-Territory::Territory(const Territory& territory)
-{
-	this->_continent = territory._continent;
-	this->_territoryName = territory._territoryName;
-	this->_armies = territory._armies;
-	this->_owner = new Player(*(territory._owner));
-	for (auto adjNode : territory._adjacentTerritories) {
-		this->_adjacentTerritories.push_back(new Territory(*adjNode));
-	}
-}
-
 
 Territory& Territory::operator=(const Territory& territory)
 {
@@ -271,42 +241,36 @@ bool Territory::addBorder(Territory *territory)
 	return false;
 }
 
-ostream& operator<< (ostream& stream, const Territory& territory) {
-	if (territory._owner != NULL) {
+ostream &operator<<(ostream &stream, const Territory &territory)
+{
+	if (territory._owner != NULL)
+	{
 		return stream << territory._territoryName << " currently has " << territory._armies << "owned by " << territory._owner << endl;
 	}
-	else {
-		return stream << territory._territoryName << " belongs to no one "<< endl;
+	else
+	{
+		return stream << territory._territoryName << " belongs to no one " << endl;
 	}
 }
 
-Continent::Continent():_continentName(),_bonusArmies()
+Continent::Continent(string name) : _continentName(name)
 {
 }
 
-Continent::Continent(const Continent& continent)
-{
-	this->_continentName = continent._continentName;
-	this->_bonusArmies = continent._bonusArmies;
-	for (auto adjNode : continent._territories) {
-		this->_territories.push_back(new Territory(*adjNode));
-	}
-	for (auto adjNode : continent._adjacentContinents) {
-		this->_adjacentContinents.push_back(new Continent(*adjNode));
-	}
-}
-
-Continent::Continent(string continentName,int bonusArmies):_continentName(continentName),_bonusArmies(bonusArmies)
+Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
 {
 }
 
-Continent::Continent(string continentName,int bonusArmies, vector<Territory*> territories): _continentName(continentName), _bonusArmies(bonusArmies),_territories(territories)
+Continent::Continent() : _continentName(), _bonusArmies()
 {
 }
 
-Continent& Continent::operator=(const Continent& continent)
+Continent::Continent(int bonusArmies) : _bonusArmies(bonusArmies)
 {
-	return *(new Continent(continent));
+}
+
+Continent::Continent(int bonusArmies, vector<Territory *> territories) : _bonusArmies(bonusArmies), _territories(territories)
+{
 }
 
 Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
@@ -336,9 +300,9 @@ int Continent::getBonusArmies()
 	return _bonusArmies;
 }
 
-int Continent::territoriesSize()
+int Continent::getId()
 {
-	return _territories.size();
+	return _id;
 }
 int Continent::getId()
 {
@@ -355,14 +319,8 @@ bool Continent::addTerritory(Territory *territory)
 	}
 	return false;
 }
-ostream & operator<<(ostream & stream, const Continent & continent) {
-	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
-}
-vector<Territory> Continent::getTerritories()
+
+ostream &operator<<(ostream &stream, const Continent &continent)
 {
-	vector<Territory> territories;
-	for (int i = 0; i<_territories.size(); i++) {
-		territories.push_back(*_territories[i]);
-	}
-	return territories;
+	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
 }
