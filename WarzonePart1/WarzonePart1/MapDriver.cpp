@@ -8,19 +8,19 @@ using namespace std;
 int main()
 {
 	cout << "creating the map" << endl;
-	Continent* Argentina = new Continent("Argentina", 4);
-	Continent* Uruguay = new Continent("Uruguay", 1);
+	Continent* Argentina = new Continent(0,"Argentina", 4);
+	Continent* Uruguay = new Continent(1,"Uruguay", 1);
 	cout << *Argentina << endl;
 	cout << *Uruguay << endl;
-	Territory* Malvinas = new Territory("Islas Malvinas", 1);
-	Territory* Tierra_del_Fuego = new Territory("Tierra_del_Fuego", 1);
-	Territory* Santa_Cruz = new Territory("Santa_Cruz", 1);
-	Territory* Río_Negro = new Territory("Río_Negro", 1);
-	Territory* Neuquén = new Territory("Neuquén", 1);
+	Territory* Malvinas = new Territory(0,"Islas Malvinas", 1);
+	Territory* Tierra_del_Fuego = new Territory(1,"Tierra_del_Fuego", 1);
+	Territory* Santa_Cruz = new Territory(2,"Santa_Cruz", 1);
+	Territory* Río_Negro = new Territory(3,"Río_Negro", 1);
+	Territory* Neuquén = new Territory(4,"Neuquén", 1);
 
-	Territory* Paysandú = new Territory("Paysandú", 2);
-	Territory* Maldonado = new Territory("Maldonado", 2);
-	Territory* Montevideo = new Territory("Montevideo", 2);
+	Territory* Paysandú = new Territory(5,"Paysandú", 2);
+	Territory* Maldonado = new Territory(6,"Maldonado", 2);
+	Territory* Montevideo = new Territory(7,"Montevideo", 2);
 
 	Map* map = new Map(2);
 	map->addContinent(Argentina);
