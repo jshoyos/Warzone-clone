@@ -1,8 +1,7 @@
 #include "Map.h"
 #include <map>
 #include <list>
-
-Map::Map():_numberOfContinents(0)
+Map::Map() :_numberOfContinents(0)
 {
 }
 
@@ -18,12 +17,13 @@ Map::Map(const Map& map)
 }
 Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents) {}
 
-Map::Map(int numberOfContinents, vector<Continent *> continents) : _numberOfContinents(numberOfContinents), _continents(continents)
+Map::Map(int numberOfContinents, vector<Continent*> continents) : _numberOfContinents(numberOfContinents), _continents(continents)
 {
 }
 
 bool Map::validate()
 {
+
 	// Check if undirected graph is connected by doing DFS
 	// wont mean anything if graph is not undirected
 	//
@@ -80,7 +80,7 @@ bool Map::isConnected()
 	for (int i = 0; i < territories_size; ++i)
 	{
 
-		Territory *root_node = getTerritoryById(i);
+		Territory* root_node = getTerritoryById(i);
 		vector<bool> visited_territories(territories_size, false);
 
 		territoryDFS(root_node, visited_territories);
@@ -100,12 +100,12 @@ bool Map::isConnected()
 }
 
 // version using unique id
-void Map::territoryDFS(Territory *startNode, vector<bool> &visited)
+void Map::territoryDFS(Territory* startNode, vector<bool>& visited)
 {
 	int node_id = startNode->getId();
 	visited[node_id] = true;
 
-	for (Territory *adj_node : startNode->getAdjacent())
+	for (Territory* adj_node : startNode->getAdjacent())
 	{
 		int adj_id = adj_node->getId();
 		if (!visited[adj_id])
@@ -115,7 +115,7 @@ void Map::territoryDFS(Territory *startNode, vector<bool> &visited)
 	}
 }
 
-bool Map::addContinent(Continent *continent)
+bool Map::addContinent(Continent* continent)
 {
 	if (continent != NULL)
 	{
@@ -125,11 +125,11 @@ bool Map::addContinent(Continent *continent)
 	return false;
 }
 
-bool Map::addTerritory(Territory *territory)
+bool Map::addTerritory(Territory* territory)
 {
 	if (territory != NULL && territory->getTerritoryName() != "")
-	// i commented this out because i think the ids can be 0
-	//territory->getContinent() != 0
+		// i commented this out because i think the ids can be 0
+		//territory->getContinent() != 0
 	{
 		_territories.push_back(territory);
 		_continents[territory->getContinent()]->addTerritory(territory);
@@ -138,9 +138,39 @@ bool Map::addTerritory(Territory *territory)
 	return false;
 }
 
-Territory::Territory() : _territoryName(), _continent()
+vector<Territory> Map::getTerritories()
+{
+	vector<Territory> territories;
+	for (int i = 0; _territories.size(); i++) {
+		territories.push_back(*(new Territory(*_territories[i])));
+	}
+	return territories;
+}
+
+vector<Continent> Map::getContinents()
+{
+	vector<Continent> continents;
+	for (int i = 0; i < _continents.size(); i++) {
+		continents.push_back(*(new Continent(*_continents[i])));
+	}
+	return continents;
+}
+
+Territory::Territory() :_territoryName(), _continent()
 {
 }
+
+Territory::Territory(const Territory& territory)
+{
+	this->_continent = territory._continent;
+	this->_territoryName = territory._territoryName;
+	this->_armies = territory._armies;
+	this->_owner = new Player(*(territory._owner));
+	for (auto adjNode : territory._adjacentTerritories) {
+		this->_adjacentTerritories.push_back(new Territory(*adjNode));
+	}
+}
+
 
 Territory& Territory::operator=(const Territory& territory)
 {
@@ -155,11 +185,11 @@ Territory::Territory(string territoryName, int continent) : _territoryName(terri
 {
 }
 
-Territory::Territory(string territoryName, int continent, vector<Territory *> adjacentTerritories) : _territoryName(territoryName), _continent(continent), _adjacentTerritories(adjacentTerritories)
+Territory::Territory(string territoryName, int continent, vector<Territory*> adjacentTerritories) : _territoryName(territoryName), _continent(continent), _adjacentTerritories(adjacentTerritories)
 {
 }
 
-bool Territory::setOwner(Player *owner)
+bool Territory::setOwner(Player* owner)
 {
 	if (owner != NULL)
 	{
@@ -184,12 +214,12 @@ int Territory::getArmies()
 	return _armies;
 }
 
-Territory *Map::getTerritoryById(int id)
+Territory* Map::getTerritoryById(int id)
 {
 	return _territories[id];
 }
 
-Continent *Map::getContinentById(int id)
+Continent* Map::getContinentById(int id)
 {
 	return _continents[id];
 }
@@ -216,7 +246,7 @@ int Territory::getContinent()
 	return _continent;
 }
 
-vector<Territory *> Territory::getAdjacent()
+vector<Territory*> Territory::getAdjacent()
 {
 	return _adjacentTerritories;
 }
@@ -231,7 +261,7 @@ string Territory::getTerritoryName()
 	return string(_territoryName);
 }
 
-bool Territory::addBorder(Territory *territory)
+bool Territory::addBorder(Territory* territory)
 {
 	if (territory != NULL && territory->_territoryName != "")
 	{
@@ -241,27 +271,45 @@ bool Territory::addBorder(Territory *territory)
 	return false;
 }
 
-ostream &operator<<(ostream &stream, const Territory &territory)
-{
-	if (territory._owner != NULL)
-	{
+ostream& operator<< (ostream& stream, const Territory& territory) {
+	if (territory._owner != NULL) {
 		return stream << territory._territoryName << " currently has " << territory._armies << "owned by " << territory._owner << endl;
 	}
-	else
-	{
+	else {
 		return stream << territory._territoryName << " belongs to no one " << endl;
 	}
 }
 
-Continent::Continent(string name) : _continentName(name)
+Continent::Continent() :_continentName(), _bonusArmies()
 {
+}
+
+Continent::Continent(const Continent& continent)
+{
+	this->_continentName = continent._continentName;
+	this->_bonusArmies = continent._bonusArmies;
+	for (auto adjNode : continent._territories) {
+		this->_territories.push_back(new Territory(*adjNode));
+	}
+	for (auto adjNode : continent._adjacentContinents) {
+		this->_adjacentContinents.push_back(new Continent(*adjNode));
+	}
+}
+
+Continent::Continent(string continentName, int bonusArmies) :_continentName(continentName), _bonusArmies(bonusArmies)
+{
+}
+
+Continent::Continent(string continentName, int bonusArmies, vector<Territory*> territories) : _continentName(continentName), _bonusArmies(bonusArmies), _territories(territories)
+{
+}
+
+Continent& Continent::operator=(const Continent& continent)
+{
+	return *(new Continent(continent));
 }
 
 Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
-{
-}
-
-Continent::Continent() : _continentName(), _bonusArmies()
 {
 }
 
@@ -269,19 +317,7 @@ Continent::Continent(int bonusArmies) : _bonusArmies(bonusArmies)
 {
 }
 
-Continent::Continent(int bonusArmies, vector<Territory *> territories) : _bonusArmies(bonusArmies), _territories(territories)
-{
-}
-
-Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
-{
-}
-
-Continent::Continent(int bonusArmies) : _bonusArmies(bonusArmies)
-{
-}
-
-Continent::Continent(int bonusArmies, vector<Territory *> territories) : _bonusArmies(bonusArmies), _territories(territories)
+Continent::Continent(int bonusArmies, vector<Territory*> territories) : _bonusArmies(bonusArmies), _territories(territories)
 {
 }
 
@@ -300,16 +336,16 @@ int Continent::getBonusArmies()
 	return _bonusArmies;
 }
 
-int Continent::getId()
+int Continent::territoriesSize()
 {
-	return _id;
+	return _territories.size();
 }
 int Continent::getId()
 {
 	return _id;
 }
 
-bool Continent::addTerritory(Territory *territory)
+bool Continent::addTerritory(Territory* territory)
 {
 	if (territory != NULL && territory->getTerritoryName() != "")
 	{
@@ -319,8 +355,14 @@ bool Continent::addTerritory(Territory *territory)
 	}
 	return false;
 }
-
-ostream &operator<<(ostream &stream, const Continent &continent)
-{
+ostream& operator<<(ostream& stream, const Continent& continent) {
 	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
+}
+vector<Territory> Continent::getTerritories()
+{
+	vector<Territory> territories;
+	for (int i = 0; i < _territories.size(); i++) {
+		territories.push_back(*_territories[i]);
+	}
+	return territories;
 }
