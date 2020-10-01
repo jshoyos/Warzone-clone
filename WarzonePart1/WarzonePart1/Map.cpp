@@ -2,6 +2,20 @@
 #include <map>
 #include <list>
 
+Map::Map():_numberOfContinents(0)
+{
+}
+
+Map::Map(const Map& map)
+{
+	this->_numberOfContinents = map._numberOfContinents;
+	for (auto continent : map._continents) {
+		this->_continents.push_back(new Continent(*continent));
+	}
+	for (auto territory : map._territories) {
+		this->_territories.push_back(new Territory(*territory));
+	}
+}
 Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents) {}
 
 Map::Map(int numberOfContinents, vector<Continent *> continents) : _numberOfContinents(numberOfContinents), _continents(continents)
@@ -10,7 +24,6 @@ Map::Map(int numberOfContinents, vector<Continent *> continents) : _numberOfCont
 
 bool Map::validate()
 {
-
 	// Check if undirected graph is connected by doing DFS
 	// wont mean anything if graph is not undirected
 	//
@@ -22,8 +35,10 @@ bool Map::validate()
 	return true;
 }
 
-// 	return true;
-// }
+Map& Map::operator=(const Map& map)
+{
+	return *(new Map(map));
+}
 
 bool Map::checkTerritories()
 {
@@ -125,6 +140,11 @@ bool Map::addTerritory(Territory *territory)
 
 Territory::Territory() : _territoryName(), _continent()
 {
+}
+
+Territory& Territory::operator=(const Territory& territory)
+{
+	return *(new Territory(territory));
 }
 
 Territory::Territory(int id, string territoryName, int continent) : _id(id), _territoryName(territoryName), _continent(continent)
@@ -253,6 +273,18 @@ Continent::Continent(int bonusArmies, vector<Territory *> territories) : _bonusA
 {
 }
 
+Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
+{
+}
+
+Continent::Continent(int bonusArmies) : _bonusArmies(bonusArmies)
+{
+}
+
+Continent::Continent(int bonusArmies, vector<Territory *> territories) : _bonusArmies(bonusArmies), _territories(territories)
+{
+}
+
 bool Continent::setBonusArmies(int bonus)
 {
 	if (bonus >= 0)
@@ -268,6 +300,10 @@ int Continent::getBonusArmies()
 	return _bonusArmies;
 }
 
+int Continent::getId()
+{
+	return _id;
+}
 int Continent::getId()
 {
 	return _id;

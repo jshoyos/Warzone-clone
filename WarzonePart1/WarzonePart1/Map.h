@@ -57,6 +57,7 @@ class Continent {
 public:
 #pragma region constructos
 	Continent();
+	Continent(const Continent&);
 	Continent(int);
 	Continent(int, vector<Territory*>);
 	Continent(string);
@@ -70,9 +71,9 @@ public:
 	int  getBonusArmies();
 	int  territoriesSize();
 	int  getId();
-	vector<Territory*> getTerritories();
 	bool addTerritory(Territory*);
 	bool addBorder(Continent*);
+	vector<Territory> getTerritories();
 #pragma endregion
 }; 
 ostream& operator<<(ostream& stream, const Continent& continent);
@@ -99,13 +100,13 @@ public:
 	bool validate();
 	bool isConnected();
 	bool checkTerritories();
-
+	vector<Territory> getTerritories();
+	vector<Continent> getContinents();
+	Territory* getTerritoryById(int);
+	Continent* getContinentById(int);
 	int getTerritoriesSize();
 	int getContinentsSize();
 	void territoryDFS(Territory* start, vector<bool>& visited);
 	void continentDFS(Continent* start, map<Continent*, bool> visited);
-
-	//TODO: add methods to get a copy of both lists
-	//TODO: add method to get a territory or continent by the name
 #pragma endregion
 };
