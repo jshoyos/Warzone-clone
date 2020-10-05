@@ -169,12 +169,12 @@ Continent* Map::getContinentById(int id)
 
 int Map::getContinentsSize()
 {
-	return _continents.size();
+	return static_cast<int>(_continents.size());
 }
 
 int Map::getTerritoriesSize()
 {
-	return _territories.size();
+	return static_cast<int>(_territories.size());
 }
 //---------------------------------------------------------------------------------------------------------TERRITORY--------------------------------------------------------------------------------------------------------------------
 Territory::Territory() :_id(),_territoryName(), _continent()
@@ -336,7 +336,7 @@ int Continent::getBonusArmies()
 
 int Continent::territoriesSize()
 {
-	return _territories.size();
+	return static_cast<int>(_territories.size());
 }
 int Continent::getId()
 {
