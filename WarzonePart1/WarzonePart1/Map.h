@@ -1,11 +1,14 @@
+#pragma once
 #include <string>
 #include <iostream>
 #include <vector>
 #include <map>
 #include "Player.h"
+
 using namespace std;
 
-#pragma once
+
+class Player;
 //-----------------------------------------------------------------------------------TERRITORY-------------------------------------------------------------------------------------------------------
 //Represents the territory node
 class Territory {
