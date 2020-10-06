@@ -7,7 +7,6 @@ using namespace std;
 
 int main()
 {
-	cout << "creating the map" << endl;
 	Continent* Argentina = new Continent(0,"Argentina", 4-1);
 	Continent* Uruguay = new Continent(1,"Uruguay", 1-1);
 	cout << *Argentina << endl;
@@ -38,7 +37,7 @@ int main()
 	vector<Continent> temp = map->getContinents();
 	for (int i = 0; i < temp.size(); i++) {
 		cout << temp[i] << endl;
-		vector<Territory> territories= temp[i].getTerritories();
+		vector<Territory> territories= *temp[i].getTerritories();
 		for (int j = 0; j < territories.size(); j++) {
 			cout << territories[j];
 		}

@@ -26,9 +26,8 @@ public:
 	//armies,adjacentterritories,continent can be set after the object is created
 	Territory();
 	Territory(const Territory&);
-	Territory(string, int);
 	Territory(int id, string territoryName, int continent);
-	Territory(int,string, int, vector<Territory*>);
+	Territory(int,string, int, vector<Territory*>*);
 #pragma endregion
 #pragma region methods
 	Territory& operator=(const Territory&);
@@ -38,7 +37,7 @@ public:
 	int    getContinent();
 	int    getId();
 	Player getOwner();
-	vector<Territory*> getAdjacent();
+	vector<Territory*>* getAdjacent();
 	string getTerritoryName();
 	//This method is used to add a link to a specific territory
 	bool addBorder(Territory*);
@@ -62,10 +61,10 @@ public:
 	Continent();
 	Continent(const Continent&);
 	Continent(int,int);
-	Continent(int,int, vector<Territory*>);
+	Continent(int,int, vector<Territory*>*);
 	Continent(int,string);
 	Continent(int,string, int);
-	Continent(int,string, int, vector<Territory*>);
+	Continent(int,string, int, vector<Territory*>*);
 	friend ostream& operator<<(ostream&, const Continent&);
 #pragma endregion
 #pragma region methods
@@ -77,7 +76,7 @@ public:
 	bool addTerritory(Territory*);
 	//I don't think the continents are supposed to be connected uncomment if they are suppose to
 	//bool addBorder(Continent*);
-	vector<Territory> getTerritories();
+	vector<Territory>* getTerritories();
 #pragma endregion
 };
 ostream& operator<<(ostream& stream, const Continent& continent);
@@ -94,7 +93,7 @@ public:
 	Map();
 	Map(const Map&);
 	Map(int);
-	Map(int, vector<Continent*>);
+	Map(int, vector<Continent*>*);
 #pragma endregion
 #pragma region methods
 	Map& operator=(const Map&);

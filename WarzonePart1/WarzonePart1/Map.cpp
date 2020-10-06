@@ -4,10 +4,12 @@
 //--------------------------------------------------------------------------------------------------------------------MAP---------------------------------------------------------------------------------------------
 Map::Map() :_numberOfContinents(0)
 {
+	cout << "Creating default Map..." << endl;
 }
 
 Map::Map(const Map& map)
 {
+	cout << "Creating a map copy..." << endl;
 	this->_numberOfContinents = map._numberOfContinents;
 	for (auto continent : map._continents) {
 		this->_continents.push_back(new Continent(*continent));
@@ -16,10 +18,16 @@ Map::Map(const Map& map)
 		this->_territories.push_back(new Territory(*territory));
 	}
 }
-Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents) {}
-
-Map::Map(int numberOfContinents, vector<Continent*> continents) : _numberOfContinents(numberOfContinents), _continents(continents)
+Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents)
 {
+	cout << "Creating a Map..." << endl;
+	cout << "number of continents-->" << numberOfContinents<<endl;
+}
+
+Map::Map(int numberOfContinents, vector<Continent*>* continents) : _numberOfContinents(numberOfContinents), _continents(*continents)
+{
+	cout << "Creating a Map..." << endl;
+	cout << "number of continents-->" << numberOfContinents<<endl;
 }
 
 bool Map::validate()
@@ -106,7 +114,7 @@ void Map::territoryDFS(Territory* startNode, vector<bool>& visited)
 	int node_id = startNode->getId();
 	visited[node_id] = true;
 
-	for (Territory* adj_node : startNode->getAdjacent())
+	for (Territory* adj_node : *(startNode->getAdjacent()))
 	{
 		int adj_id = adj_node->getId();
 		if (!visited[adj_id])
@@ -179,6 +187,7 @@ int Map::getTerritoriesSize()
 //---------------------------------------------------------------------------------------------------------TERRITORY--------------------------------------------------------------------------------------------------------------------
 Territory::Territory() :_id(),_territoryName(), _continent()
 {
+	cout << "Creating default territory..." << endl;
 }
 
 Territory::Territory(const Territory& territory)
@@ -195,15 +204,20 @@ Territory::Territory(const Territory& territory)
 
 Territory& Territory::operator=(const Territory& territory)
 {
+	cout << "Creating a territory copy..." << endl;
 	return *(new Territory(territory));
 }
 
 Territory::Territory(int id, string territoryName, int continent) : _id(id), _territoryName(territoryName), _continent(continent)
 {
+	cout << "Creating a Territory..." << endl;
+	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent << endl;
 }
 
-Territory::Territory(int id,string territoryName, int continent, vector<Territory*> adjacentTerritories) :_id(id), _territoryName(territoryName), _continent(continent), _adjacentTerritories(adjacentTerritories)
+Territory::Territory(int id,string territoryName, int continent, vector<Territory*>* adjacentTerritories) :_id(id), _territoryName(territoryName), _continent(continent), _adjacentTerritories(*adjacentTerritories)
 {
+	cout << "Creating a Territory..." << endl;
+	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent <<"shares border with "<<adjacentTerritories->size()<< endl;
 }
 
 bool Territory::setOwner(Player* owner)
@@ -244,9 +258,9 @@ int Territory::getContinent()
 	return _continent;
 }
 
-vector<Territory*> Territory::getAdjacent()
+vector<Territory*>* Territory::getAdjacent()
 {
-	return _adjacentTerritories;
+	return &_adjacentTerritories;
 }
 
 int Territory::getId()
@@ -280,10 +294,12 @@ ostream& operator<< (ostream& stream, const Territory& territory) {
 //------------------------------------------------------------------------------------------------CONTINENT-----------------------------------------------------------------------------------------------------------------------------------------
 Continent::Continent() :_continentName(), _bonusArmies()
 {
+	cout << "Creating default continent..." << endl;
 }
 
 Continent::Continent(const Continent& continent)
 {
+	cout << "Creating a continent copy..." << endl;
 	this->_continentName = continent._continentName;
 	this->_bonusArmies = continent._bonusArmies;
 	for (auto adjNode : continent._territories) {
@@ -296,27 +312,38 @@ Continent::Continent(const Continent& continent)
 
 Continent::Continent(int id,string continentName, int bonusArmies) :_id(id),_continentName(continentName), _bonusArmies(bonusArmies)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies << endl;
 }
 
-Continent::Continent(int id,string continentName, int bonusArmies, vector<Territory*> territories) :_id(id), _continentName(continentName), _bonusArmies(bonusArmies), _territories(territories)
+Continent::Continent(int id,string continentName, int bonusArmies, vector<Territory*>* territories) :_id(id), _continentName(continentName), _bonusArmies(bonusArmies), _territories(*territories)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies <<"\tcontains "<<territories->size()<<" territories"<< endl;
 }
 
 Continent& Continent::operator=(const Continent& continent)
 {
+	cout << "Creating a continent copy..." << endl;
 	return *(new Continent(continent));
 }
 
 Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tcontinentName-->" << continentName << endl;
 }
 
 Continent::Continent(int id,int bonusArmies) : _id(id), _bonusArmies(bonusArmies)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tbonus Armies-->" << bonusArmies << endl;
 }
 
-Continent::Continent(int id,int bonusArmies, vector<Territory*> territories) : _id(id),_bonusArmies(bonusArmies), _territories(territories)
+Continent::Continent(int id,int bonusArmies, vector<Territory*>* territories) : _id(id),_bonusArmies(bonusArmies), _territories(*territories)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tbonus Armies-->" << bonusArmies <<"\tcontains "<<territories->size()<<" territories"<< endl;
 }
 
 bool Continent::setBonusArmies(int bonus)
@@ -356,11 +383,11 @@ bool Continent::addTerritory(Territory* territory)
 ostream& operator<<(ostream& stream, const Continent& continent) {
 	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
 }
-vector<Territory> Continent::getTerritories()
+vector<Territory>* Continent::getTerritories()
 {
 	vector<Territory> territories;
 	for (int i = 0; i < _territories.size(); i++) {
 		territories.push_back(*_territories[i]);
 	}
-	return territories;
+	return &territories;
 }
