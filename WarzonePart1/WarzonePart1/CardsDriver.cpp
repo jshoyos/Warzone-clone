@@ -11,15 +11,15 @@
 using namespace std;
 
 
-Deck myDeck;
-Card card_drawn;
-Hand myHand;
-string user_string;
-int user_int;
-
-
 int main(int argc, char* argv[]) {
-	srand(time(0));
+
+	Deck myDeck;
+	Card card_drawn;
+	Hand myHand;
+	string user_string;
+	int user_int;
+
+	srand((int)time(0));
 
 	cout << "Let's create a deck. \nEnter a finite # of cards for the deck: ";
 	cin >> user_int;
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 	cout << "Enter a maximum # of cards per hand: ";
 	cin >> user_int;
 	while (user_int < 1 || user_int > myDeck.getDeckSize()) {
-		cout << "Try again with a number > 0 & < " << myDeck.getDeckSize() << ": ";
+		cout << "Try again with a number from 1 to " << myDeck.getDeckSize() << ": ";
 		cin >> user_int;
 	}
 	myHand = Hand(user_int);
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
 	while (user_int < 1 || user_int > myHand.getMaxCards()) {
 		if (user_int < 1) {
-			cout << "Try again with a number greater than 1: ";
+			cout << "Try again with a number greater or equal to 1: ";
 			cin >> user_int;
 		}
 		else {
@@ -90,6 +90,13 @@ int main(int argc, char* argv[]) {
 	cout << "\nLet's play() the cards. You now have " << myHand.getHandSize() << " cards." << endl;
 	cout << "Which card would you like to play() first? Enter slot # (0-" << myHand.getHandSize() - 1 << "): ";
 	cin >> user_int;
+
+
+	while (user_int<0 || user_int>(myHand.getHandSize() - 1)) {
+		cout << "Try again. Enter slot # between 0 and " << myHand.getHandSize() - 1 << ": ";
+		cin >> user_int;
+	};
+
 	Card c;
 	c = myHand.handOfCards.at(user_int).play();
 	myDeck.insertCard(c);
@@ -111,9 +118,6 @@ int main(int argc, char* argv[]) {
 	//	cout << order_list.at(i); 
 	//}
 	//order_list.clear(); 
-
-
-
 
 	cout << "\nAnd let's check the deck again.\n";
 	cout << "Deck is of size: " << myDeck.getDeckSize() << endl;
