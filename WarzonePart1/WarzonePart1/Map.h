@@ -69,14 +69,14 @@ public:
 #pragma endregion
 #pragma region methods
 	Continent& operator=(const Continent&);
-	bool setBonusArmies(int);
-	int  getBonusArmies();
-	int  territoriesSize();
-	int  getId();
-	bool addTerritory(Territory*);
+	bool setBonusArmies(int);//This method sets the value of the bonus armies, ensures the bonus is not negative
+	int  getBonusArmies();//This method returns the value of the bonus armies
+	int  continentSize();//This method returns the number of territories sharing the same continent
+	int  getId();//Returns the id of the continent
+	bool addTerritory(Territory*);//This method adds a terriotry to this continent making sure the territory is not null and it has a name
 	//I don't think the continents are supposed to be connected uncomment if they are suppose to
 	//bool addBorder(Continent*);
-	vector<Territory>* getTerritories();
+	vector<Territory>* getTerritories();//returns a lits of all the territories in the continent. Careful it contains pointers to the territories changes to territories will be applied to the territroy
 #pragma endregion
 };
 ostream& operator<<(ostream& stream, const Continent& continent);
@@ -92,23 +92,23 @@ public:
 #pragma region constructors
 	Map();
 	Map(const Map&);
-	Map(int);
-	Map(int, vector<Continent*>*);
+	Map(int);//initializes the size of the map by passing the number of continents in the map
+	Map(int, vector<Continent*>*);//initializes the size of the map by passing the number of continents in the map. Initializes the vector of continents
 	~Map();
 #pragma endregion
 #pragma region methods
 	Map& operator=(const Map&);
-	bool addContinent(Continent*);
-	bool addTerritory(Territory*);
+	bool addContinent(Continent*);//add a continent to the list containing all the continents in the map. Makes sure its an acceptable continent
+	bool addTerritory(Territory*);//add a territory to the list containing all the territories in the map. Makes sure its an acceptable territory
 	bool validate();
 	bool isConnected();
 	bool checkTerritories();
-	vector<Territory> getTerritories();
-	vector<Continent> getContinents();
-	Territory* getTerritoryById(int);
-	Continent* getContinentById(int);
-	int getTerritoriesSize();
-	int getContinentsSize();
+	vector<Territory> getTerritories();// returns a list containing a copy of all the territories in the Map
+	vector<Continent> getContinents();// returns a list containing a copy of all the continents in the Map
+	Territory* getTerritoryById(int);//gets a territory by its id from the list of all territories. Be careful its a pointer
+	Continent* getContinentById(int);//gets a continent by its id from the list of all continents. Be careful its a pointer
+	int getMapSizeTerritory();//gets the size of the map by the number of territories in the map
+	int getMapSizeContinent();//gets the size of the map by the number of continents in the map
 	void territoryDFS(Territory* start, vector<bool>& visited);
 	//For now I don't think this is necessary as I don't think the continents are connected
 	//void continentDFS(Continent* start, map<Continent*, bool> visited);

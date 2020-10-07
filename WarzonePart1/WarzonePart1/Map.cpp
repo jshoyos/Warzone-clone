@@ -86,8 +86,8 @@ bool Map::checkTerritories()
 bool Map::isConnected()
 {
 
-	int continents_size = getContinentsSize();
-	int territories_size = getTerritoriesSize();
+	int continents_size = getMapSizeContinent();
+	int territories_size = getMapSizeTerritory();
 
 	// IS IT NOT UNDIRECTED? WHO CARES. JUST TRY EVERY NODE
 	// AND FIND OUT.
@@ -180,12 +180,12 @@ Continent* Map::getContinentById(int id)
 	return _continents[id];
 }
 
-int Map::getContinentsSize()
+int Map::getMapSizeContinent()
 {
 	return static_cast<int>(_continents.size());
 }
 
-int Map::getTerritoriesSize()
+int Map::getMapSizeTerritory()
 {
 	return static_cast<int>(_territories.size());
 }
@@ -317,9 +317,10 @@ Continent::Continent(const Continent& continent)
 	for (auto adjNode : continent._territories) {
 		this->_territories.push_back(new Territory(*adjNode));
 	}
-	for (auto adjNode : continent._adjacentContinents) {
+	//For now there will not be any link between continents
+	/*for (auto adjNode : continent._adjacentContinents) {
 		this->_adjacentContinents.push_back(new Continent(*adjNode));
-	}
+	}*/
 }
 
 Continent::Continent(int id,string continentName, int bonusArmies) :_id(id),_continentName(continentName), _bonusArmies(bonusArmies)
@@ -356,18 +357,6 @@ Continent::Continent(int id, string continentName) : _id(id), _continentName(con
 	cout << "id-->" << id << "\tcontinentName-->" << continentName << endl;
 }
 
-Continent::Continent(int id,int bonusArmies) : _id(id), _bonusArmies(bonusArmies)
-{
-	cout << "Creating a continent..." << endl;
-	cout << "id-->" << id << "\tbonus Armies-->" << bonusArmies << endl;
-}
-
-Continent::Continent(int id,int bonusArmies, vector<Territory*>* territories) : _id(id),_bonusArmies(bonusArmies), _territories(*territories)
-{
-	cout << "Creating a continent..." << endl;
-	cout << "id-->" << id << "\tbonus Armies-->" << bonusArmies <<"\tcontains "<<territories->size()<<" territories"<< endl;
-}
-
 bool Continent::setBonusArmies(int bonus)
 {
 	if (bonus >= 0)
@@ -383,7 +372,7 @@ int Continent::getBonusArmies()
 	return _bonusArmies;
 }
 
-int Continent::territoriesSize()
+int Continent::continentSize()
 {
 	return static_cast<int>(_territories.size());
 }
