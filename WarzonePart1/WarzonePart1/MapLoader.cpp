@@ -16,6 +16,7 @@ Map *MapLoader::createMap()
     string tag_continents = "[continents]";
     string tag_countries = "[countries]";
     string tag_borders = "[borders]";
+    string tag_other = "[other]";
 
     enum Mode
     {
@@ -75,6 +76,8 @@ Map *MapLoader::createMap()
             mode = other;
         }
 
+        // this should be done ONLY if tag was not read
+
         switch (mode)
         {
 
@@ -88,8 +91,6 @@ Map *MapLoader::createMap()
             break;
 
         case territory:
-
-            
 
             territory_id = stoi(tokens[0]) - 1;
             continent_id = stoi(tokens[2]) - 1;
@@ -125,6 +126,8 @@ Map *MapLoader::createMap()
         };
     }
 
+    
+
     for (auto c : continents) {
         map->addContinent(c);
     }
@@ -138,6 +141,8 @@ Map *MapLoader::createMap()
     stream.close();
     return map;
 }
+
+// Add readline method that will leave if tag is read
 
 MapLoader::MapLoader(string fileName):_fileName(fileName)
 {

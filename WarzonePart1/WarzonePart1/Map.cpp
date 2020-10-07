@@ -75,8 +75,6 @@ bool Map::isConnected()
 	int continents_size = getContinentsSize();
 	int territories_size = getTerritoriesSize();
 
-	// IS IT NOT UNDIRECTED? WHO CARES. JUST TRY EVERY NODE
-	// AND FIND OUT.
 	for (int i = 0; i < territories_size; ++i)
 	{
 
