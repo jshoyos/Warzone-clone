@@ -176,14 +176,14 @@ Deck::Deck(int numCards) {
 
 // Overloaded stream insertion operator
 ostream& operator<<(ostream& os, const Deck& d) {
-	os << "\n*** Cards left in the deck: ***" << endl;
-	os << "# Bomb cards: " << d.numBomb << endl;
-	os << "# Reinforcement: " << d.numReinforcement << endl;
-	os << "# Blockade cards: " << d.numBlockade << endl;
-	os << "# Airlift cards: " << d.numAirlift << endl;
-	os << "# Diplomacy cards:" << d.numDiplomacy << endl;
+	os << "\n*** Cards left in the deck: ***" << endl
+	   << "# Bomb cards: " << d.numBomb << endl
+	   << "# Reinforcement: " << d.numReinforcement << endl
+	   << "# Blockade cards: " << d.numBlockade << endl
+	   << "# Airlift cards: " << d.numAirlift << endl
+	   << "# Diplomacy cards:" << d.numDiplomacy << endl;
 	return os;
-};
+}; 
 
 Card Deck::draw() {
 	if (!deck.empty()) {									  // deck being a vector<Cards>
