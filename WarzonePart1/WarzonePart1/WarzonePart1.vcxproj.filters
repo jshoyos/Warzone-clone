@@ -33,6 +33,9 @@
     <ClCompile Include="Cards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CardsDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">

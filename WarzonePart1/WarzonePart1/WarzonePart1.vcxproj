@@ -145,6 +145,7 @@
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Orders.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="CardsDriver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cards.h" />
