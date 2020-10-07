@@ -30,6 +30,11 @@ Map::Map(int numberOfContinents, vector<Continent*>* continents) : _numberOfCont
 	cout << "number of continents-->" << numberOfContinents<<endl;
 }
 
+Map::~Map()
+{
+	cout << "DESTROYING THE MAP ITS THE END OF THE WORLD!!!!!!!" << endl;
+}
+
 bool Map::validate()
 {
 
@@ -220,6 +225,13 @@ Territory::Territory(int id,string territoryName, int continent, vector<Territor
 	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent <<"shares border with "<<adjacentTerritories->size()<< endl;
 }
 
+Territory::~Territory()
+{
+	cout << "Destroying Territory: " << _territoryName << endl;
+	delete _owner;
+	_owner = NULL;
+}
+
 bool Territory::setOwner(Player* owner)
 {
 	if (owner != NULL)
@@ -320,6 +332,16 @@ Continent::Continent(int id,string continentName, int bonusArmies, vector<Territ
 {
 	cout << "Creating a continent..." << endl;
 	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies <<"\tcontains "<<territories->size()<<" territories"<< endl;
+}
+
+Continent::~Continent()
+{
+	cout << "Destroying the continent: " << _continentName << endl;
+	//I don't think it should destroy the territories as each territory will call its own destructor
+	/*for (auto territory : _territories) {
+		delete territory;
+		territory = NULL;
+	}*/
 }
 
 Continent& Continent::operator=(const Continent& continent)

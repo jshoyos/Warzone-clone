@@ -28,6 +28,7 @@ public:
 	Territory(const Territory&);
 	Territory(int id, string territoryName, int continent);
 	Territory(int,string, int, vector<Territory*>*);
+	~Territory();
 #pragma endregion
 #pragma region methods
 	Territory& operator=(const Territory&);
@@ -55,16 +56,15 @@ class Continent {
 	int _bonusArmies = 0;
 	//List of all territories belonging to the same Continent
 	vector<Territory*> _territories;
-	vector<Continent*> _adjacentContinents;
+	//For now the continents are not connected to eachother
+	/*vector<Continent*> _adjacentContinents;*/
 public:
 #pragma region constructos
-	Continent();
-	Continent(const Continent&);
-	Continent(int,int);
-	Continent(int,int, vector<Territory*>*);
-	Continent(int,string);
-	Continent(int,string, int);
-	Continent(int,string, int, vector<Territory*>*);
+	Continent();//Default constructor, should not be used but here to avoid errors
+	Continent(int id,string continentName);//Initializes the id and name of the continent
+	Continent(int id,string continentName, int bonusArmies);//Initializes the id, name of the continent, and the bonusArmies
+	Continent(int id,string continentName, int bonusArmies, vector<Territory*>* adjacentTerritories);//Initializes the id, name of the continent, the bonusArmies, and the vector of adjacent territories
+	~Continent();
 	friend ostream& operator<<(ostream&, const Continent&);
 #pragma endregion
 #pragma region methods
@@ -94,6 +94,7 @@ public:
 	Map(const Map&);
 	Map(int);
 	Map(int, vector<Continent*>*);
+	~Map();
 #pragma endregion
 #pragma region methods
 	Map& operator=(const Map&);
