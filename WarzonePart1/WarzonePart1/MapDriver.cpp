@@ -8,8 +8,8 @@ using namespace std;
 int main()
 {
 	cout << "creating the map" << endl;
-	Continent* Argentina = new Continent("Argentina", 4);
-	Continent* Uruguay = new Continent("Uruguay", 1);
+	Continent* Argentina = new Continent(0,"Argentina", 4-1);
+	Continent* Uruguay = new Continent(1,"Uruguay", 1-1);
 	cout << *Argentina << endl;
 	cout << *Uruguay << endl;
 	Territory* Malvinas = new Territory("Islas Malvinas", 1);

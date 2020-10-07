@@ -1,6 +1,7 @@
 #include "Map.h"
 #include <map>
 #include <list>
+//--------------------------------------------------------------------------------------------------------------------MAP---------------------------------------------------------------------------------------------
 Map::Map() :_numberOfContinents(0)
 {
 }
@@ -139,7 +140,7 @@ bool Map::addTerritory(Territory* territory)
 vector<Territory> Map::getTerritories()
 {
 	vector<Territory> territories;
-	for (int i = 0; _territories.size(); i++) {
+	for (int i = 0; i<_territories.size(); i++) {
 		territories.push_back(*(new Territory(*_territories[i])));
 	}
 	return territories;
@@ -154,7 +155,27 @@ vector<Continent> Map::getContinents()
 	return continents;
 }
 
-Territory::Territory() :_territoryName(), _continent()
+Territory* Map::getTerritoryById(int id)
+{
+	return _territories[id];
+}
+
+Continent* Map::getContinentById(int id)
+{
+	return _continents[id];
+}
+
+int Map::getContinentsSize()
+{
+	return static_cast<int>(_continents.size());
+}
+
+int Map::getTerritoriesSize()
+{
+	return static_cast<int>(_territories.size());
+}
+//---------------------------------------------------------------------------------------------------------TERRITORY--------------------------------------------------------------------------------------------------------------------
+Territory::Territory() :_id(),_territoryName(), _continent()
 {
 }
 
@@ -179,11 +200,7 @@ Territory::Territory(int id, string territoryName, int continent) : _id(id), _te
 {
 }
 
-Territory::Territory(string territoryName, int continent) : _territoryName(territoryName), _continent(continent)
-{
-}
-
-Territory::Territory(string territoryName, int continent, vector<Territory*> adjacentTerritories) : _territoryName(territoryName), _continent(continent), _adjacentTerritories(adjacentTerritories)
+Territory::Territory(int id,string territoryName, int continent, vector<Territory*> adjacentTerritories) :_id(id), _territoryName(territoryName), _continent(continent), _adjacentTerritories(adjacentTerritories)
 {
 }
 
@@ -212,25 +229,6 @@ int Territory::getArmies()
 	return _armies;
 }
 
-Territory* Map::getTerritoryById(int id)
-{
-	return _territories[id];
-}
-
-Continent* Map::getContinentById(int id)
-{
-	return _continents[id];
-}
-
-int Map::getContinentsSize()
-{
-	return _continents.size();
-}
-
-int Map::getTerritoriesSize()
-{
-	return _territories.size();
-}
 
 Player Territory::getOwner()
 {
@@ -271,13 +269,13 @@ bool Territory::addBorder(Territory* territory)
 
 ostream& operator<< (ostream& stream, const Territory& territory) {
 	if (territory._owner != NULL) {
-		return stream << territory._territoryName << " currently has " << territory._armies << "owned by " << territory._owner << endl;
+		return stream << territory._territoryName << " currently has " << territory._armies << "armies owned by " << territory._owner << endl;
 	}
 	else {
 		return stream << territory._territoryName << " belongs to no one " << endl;
 	}
 }
-
+//------------------------------------------------------------------------------------------------CONTINENT-----------------------------------------------------------------------------------------------------------------------------------------
 Continent::Continent() :_continentName(), _bonusArmies()
 {
 }
@@ -294,11 +292,11 @@ Continent::Continent(const Continent& continent)
 	}
 }
 
-Continent::Continent(string continentName, int bonusArmies) :_continentName(continentName), _bonusArmies(bonusArmies)
+Continent::Continent(int id,string continentName, int bonusArmies) :_id(id),_continentName(continentName), _bonusArmies(bonusArmies)
 {
 }
 
-Continent::Continent(string continentName, int bonusArmies, vector<Territory*> territories) : _continentName(continentName), _bonusArmies(bonusArmies), _territories(territories)
+Continent::Continent(int id,string continentName, int bonusArmies, vector<Territory*> territories) :_id(id), _continentName(continentName), _bonusArmies(bonusArmies), _territories(territories)
 {
 }
 
@@ -311,11 +309,11 @@ Continent::Continent(int id, string continentName) : _id(id), _continentName(con
 {
 }
 
-Continent::Continent(int bonusArmies) : _bonusArmies(bonusArmies)
+Continent::Continent(int id,int bonusArmies) : _id(id), _bonusArmies(bonusArmies)
 {
 }
 
-Continent::Continent(int bonusArmies, vector<Territory*> territories) : _bonusArmies(bonusArmies), _territories(territories)
+Continent::Continent(int id,int bonusArmies, vector<Territory*> territories) : _id(id),_bonusArmies(bonusArmies), _territories(territories)
 {
 }
 
@@ -336,7 +334,7 @@ int Continent::getBonusArmies()
 
 int Continent::territoriesSize()
 {
-	return _territories.size();
+	return static_cast<int>(_territories.size());
 }
 int Continent::getId()
 {
