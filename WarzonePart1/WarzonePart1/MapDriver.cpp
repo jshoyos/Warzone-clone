@@ -43,7 +43,9 @@ int main()
 		}
 		cout << endl;
 	}
-
+	cout << "Validating Map" << endl;
+	bool isvalid=map->validate();
+	cout << "map is valid: " << isvalid << endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
