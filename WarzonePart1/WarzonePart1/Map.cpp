@@ -132,6 +132,7 @@ bool Map::addContinent(Continent* continent)
 	if (continent != NULL)
 	{
 		_continents.push_back(continent);
+		cout << continent->getContinentName() << " has been added" << endl;
 		return true;
 	}
 	return false;
@@ -150,22 +151,14 @@ bool Map::addTerritory(Territory* territory)
 	return false;
 }
 
-vector<Territory> Map::getTerritories()
+vector<Territory*>* Map::getTerritories()
 {
-	vector<Territory> territories;
-	for (int i = 0; i<_territories.size(); i++) {
-		territories.push_back(*(new Territory(*_territories[i])));
-	}
-	return territories;
+	return &_territories;
 }
 
-vector<Continent> Map::getContinents()
+vector<Continent*>* Map::getContinents()
 {
-	vector<Continent> continents;
-	for (int i = 0; i < _continents.size(); i++) {
-		continents.push_back(*(new Continent(*_continents[i])));
-	}
-	return continents;
+	return &_continents;
 }
 
 Territory* Map::getTerritoryById(int id)
@@ -288,6 +281,7 @@ bool Territory::addBorder(Territory* territory)
 	if (territory != NULL && territory->_territoryName != "")
 	{
 		_adjacentTerritories.push_back(territory);
+		cout << "A link from " << this->getTerritoryName() << " and " << territory->getTerritoryName() << "has been added" << endl;
 		return true;
 	}
 	return false;
@@ -385,18 +379,19 @@ bool Continent::addTerritory(Territory* territory)
 	{
 		// territory->getContinent() != 0
 		_territories.push_back(territory);
+		cout << territory->getTerritoryName() << " has been added" << endl;
 		return true;
 	}
 	return false;
 }
+string Continent::getContinentName()
+{
+	return _continentName;
+}
 ostream& operator<<(ostream& stream, const Continent& continent) {
 	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
 }
-vector<Territory>* Continent::getTerritories()
+vector<Territory*>* Continent::getTerritories()
 {
-	vector<Territory> territories;
-	for (int i = 0; i < _territories.size(); i++) {
-		territories.push_back(*_territories[i]);
-	}
-	return &territories;
+	return &_territories;
 }
