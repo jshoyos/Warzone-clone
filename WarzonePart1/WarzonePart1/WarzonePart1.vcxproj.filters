@@ -33,10 +33,7 @@
     <ClCompile Include="Cards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CardsDriver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapLoaderDriver.cpp">
+    <ClCompile Include="PlayerDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

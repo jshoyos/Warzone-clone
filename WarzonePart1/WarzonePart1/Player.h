@@ -9,6 +9,7 @@
 using namespace std;
 
 class Territory;
+class Cards;
 
 class Player
 {
@@ -25,30 +26,29 @@ class Player
 
 public:
 	//constructors
-	Player();
-	~Player();
-	Player(const Player&);
-	Player(string);
-	Player(string, vector<Orders*>, vector<Cards*>, vector<Territory*>);
+	Player();						//default constructor 
+	~Player();						//destructor
+	Player(const Player&);			//copy constructor
+	Player(string);					//parameterized constructor accepting a string (name)
+	Player(string, vector<Orders*>*, vector<Cards*>*, vector<Territory*>*); //parameterized connstructor 
 
 	//methods
-	Player& operator= (const Player&);
-	vector<Territory*> toDefend();
-	vector<Territory*> toAttack();
-	friend ostream& operator<< (ostream&, const Player&);
-	void issueOrder();
+	Player& operator= (const Player&);	//Overwritting assign operator
+	friend ostream& operator<< (ostream&, const Player&);	//Overloading of string operator
+	vector<Territory*>* toDefend();		//toDefend() method for a player
+	vector<Territory*>* toAttack();		//toAttack() method for a player
+	void issueOrder();					//issueOrder() method for a player
 
 	//getters
 	string getName();
-	vector<Orders*> getOrderList();
-	vector<Cards*> getHand();
-	vector<Territory*> getTerritoryList();
+	vector<Orders*>* getOrderList();
+	vector<Cards*>* getHand();
+	vector<Territory*>* getTerritoryList();
 
 	//setters
 	bool setName(string);
 	bool addOrder(Orders*);
 	bool addCard(Cards*);
 	bool conquerTerritory(Territory*);
-
 };
 

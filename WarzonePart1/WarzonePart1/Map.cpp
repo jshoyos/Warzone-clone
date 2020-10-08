@@ -271,7 +271,7 @@ bool Territory::addBorder(Territory* territory)
 
 ostream& operator<< (ostream& stream, const Territory& territory) {
 	if (territory._owner != NULL) {
-		return stream << territory._territoryName << " currently has " << territory._armies << "armies owned by " << territory._owner << endl;
+		return stream << territory._territoryName << " currently has " << territory._armies << "armies owned by " << *territory._owner << endl;
 	}
 	else {
 		return stream << territory._territoryName << " belongs to no one " << endl;
