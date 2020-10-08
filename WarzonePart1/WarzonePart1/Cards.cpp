@@ -9,7 +9,33 @@ using namespace std;
 
 Card::Card() {}
 
-Card::Card(cardType c) { this->type = c; }
+Card::~Card() {}  // Deck has no pointer attribute 
+
+Card::Card(const Card& c) {
+	this->type = c.type;
+}
+
+Card::Card(cardType c) {
+	this->type = c;
+}
+
+Card& Card::operator=(const Card& c) {
+	this->type = c.type;
+	return *this;
+}
+
+//  Overloaded stream insertion operator <<
+ostream& operator<<(ostream& os, const Card& c) {
+	string ctype_str{};
+	Card::cardType card_type = c.type;
+	if (card_type == Card::Bomb) "Bomb";
+	else if (card_type == Card::Reinforcement) "Reinforcement";
+	else if (card_type == Card::Blockade) "Blockade";
+	else if (card_type == Card::Airlift) "Airlift";
+	else if (card_type == Card::Diplomacy) "Diplomacy";
+	os << "Card type: " << ctype_str << endl;
+	return os;
+};
 
 Card::cardType Card::getCardType() { return this->type; }
 
@@ -62,7 +88,7 @@ Card::cardType Card::play() {
 		// return card to the Deck...
 	}
 	cout << "\n*** Updated list of orders: ***" << endl;
-	for (int i = 0; i < order_list.size(); i++) {
+	for (int i = 0; i < (int)order_list.size(); i++) {
 		cout << order_list.at(i);
 	}
 
@@ -82,6 +108,29 @@ Card::cardType Card::play() {
 // DECK.CPP
 
 Deck::Deck() {}
+
+Deck::~Deck() {} // Deck has no pointer attribute 
+
+Deck::Deck(const Deck& d) {
+	this->deck = d.deck;
+	this->deck_size = d.deck_size;
+	this->numBomb = d.numBomb;
+	this->numReinforcement = d.numReinforcement;
+	this->numBlockade = d.numBlockade;
+	this->numAirlift = d.numAirlift;
+	this->numDiplomacy = d.numDiplomacy;
+}
+
+Deck& Deck::operator=(const Deck& d) {
+	this->deck = d.deck;
+	this->deck_size = d.deck_size;
+	this->numBomb = d.numBomb;
+	this->numReinforcement = d.numReinforcement;
+	this->numBlockade = d.numBlockade;
+	this->numAirlift = d.numAirlift;
+	this->numDiplomacy = d.numDiplomacy;
+	return *this;
+}
 
 Deck::Deck(int numCards) {
 
@@ -119,23 +168,33 @@ Deck::Deck(int numCards) {
 			max5--;
 		}
 		else {
-			i--;  // redo the iteration
+			i--;							 // redo the iteration
 		}
 	}
 	cout << "Great, the deck was created!" << endl;
 }
 
+// Overloaded stream insertion operator
+ostream& operator<<(ostream& os, const Deck& d) {
+	os << "\n*** Cards left in the deck: ***" << endl
+	   << "# Bomb cards: " << d.numBomb << endl
+	   << "# Reinforcement: " << d.numReinforcement << endl
+	   << "# Blockade cards: " << d.numBlockade << endl
+	   << "# Airlift cards: " << d.numAirlift << endl
+	   << "# Diplomacy cards:" << d.numDiplomacy << endl;
+	return os;
+}; 
 
 Card Deck::draw() {
-	if (!deck.empty()) {             // deck being a vector<Cards>
+	if (!deck.empty()) {									  // deck being a vector<Cards>
 		int randomIndex = 0;
 		randomIndex = rand() % this->getDeckSize();
 
-		Card card_drawn = deck.at(randomIndex);     // pick a card at index: randomIndex, and assign it to: card_drawn
-		deck.erase(deck.begin() + randomIndex);    // erase that card at index: randomIndex from the deck
+		Card card_drawn = deck.at(randomIndex);				  // pick a card at index: randomIndex, and assign it to: card_drawn
+		deck.erase(deck.begin() + randomIndex);			      // erase that card at index: randomIndex from the deck
 		Card::cardType card_type = card_drawn.getCardType();  // get card_type
 
-		if (card_type == Card::Bomb) numBomb--;                         // update info about the remaining cards in the deck
+		if (card_type == Card::Bomb) numBomb--;               // update info about the remaining cards in the deck
 		else if (card_type == Card::Reinforcement) numReinforcement--;
 		else if (card_type == Card::Blockade) numBlockade--;
 		else if (card_type == Card::Airlift) numAirlift--;
@@ -144,7 +203,7 @@ Card Deck::draw() {
 		return card_drawn;
 	}
 
-	else cout << "The deck is empty\n";		// in case there was no more card to draw from the deck
+	else cout << "The deck is empty\n";						  // in case there was no more card to draw from the deck
 
 	exit(EXIT_FAILURE);
 
@@ -153,17 +212,14 @@ Card Deck::draw() {
 void Deck::insertCard(Card c) {
 	deck.push_back(c);
 	Card::cardType card_type = c.getCardType();
-	if (card_type == Card::Bomb) numBomb++;                         // update info about the remaining cards in the deck
+	if (card_type == Card::Bomb) numBomb++;                  // update info about the remaining cards in the deck
 	else if (card_type == Card::Reinforcement) numReinforcement++;
 	else if (card_type == Card::Blockade) numBlockade++;
 	else if (card_type == Card::Airlift) numAirlift++;
 	else if (card_type == Card::Diplomacy) numDiplomacy++;
-
-
 }
 
 void Deck::deckStats() {
-
 
 	cout << "\n*** Cards left in the deck: ***" << endl;
 	cout << "# Bomb cards: " << numBomb << endl;
@@ -175,7 +231,7 @@ void Deck::deckStats() {
 
 
 int Deck::getDeckSize() {
-	return deck.size();
+	return (int)deck.size();
 }
 
 void Deck::printDeck() {
@@ -183,7 +239,7 @@ void Deck::printDeck() {
 		cout << "Deck is empty" << endl;
 
 	else {
-		for (int i = 0; i < deck.size(); i++) {
+		for (int i = 0; i < (int)deck.size(); i++) {
 			Card::cardType t;
 			t = deck.at(i).getCardType();
 			string type;
@@ -207,13 +263,31 @@ Hand::Hand() {
 	numCards = 0;
 }
 
+Hand::~Hand() {}					 //Hand has no pointer attribute 
+
+Hand::Hand(const Hand& h) {
+	this->maxCards = h.maxCards;
+	this->numCards = h.numCards;
+}
+
 Hand::Hand(int max) {
 	maxCards = max;
 	numCards = 0;
 }
 
+Hand& Hand::operator=(const Hand& h) {
+	this->maxCards = h.maxCards;
+	this->numCards = h.numCards;
+	return*this;
+}
+
+ostream& operator<<(ostream& os, const Hand& h) {   // Overloaded stream insertion operator
+	os << "maxCards: " << h.maxCards << "\nnumCards in hand: " << h.numCards << endl;
+	return os;
+};
+
 void Hand::insertCard(Card c) {      // whatever card is passed (ie: card_drawn from the Deck) is added to the Hand. 
-	handOfCards.push_back(c);		 //add new card to the hand
+	handOfCards.push_back(c);		 // add new card to the hand
 	numCards++;
 }
 
@@ -221,7 +295,7 @@ void Hand::showHand() {
 	cout << "\n*** Current Hand: ***" << endl;
 	for (int i = 0; i < numCards; i++) {
 
-		if (!handOfCards.empty() && i < handOfCards.size()) {
+		if (!handOfCards.empty() && i < (int)handOfCards.size()) {
 
 			Card::cardType t;
 			t = handOfCards.at(i).getCardType();
@@ -241,7 +315,7 @@ void Hand::showHand() {
 
 
 int Hand::getHandSize() {
-	return handOfCards.size();
+	return (int)handOfCards.size();
 }
 
 int Hand::getMaxCards() {
