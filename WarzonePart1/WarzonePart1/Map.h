@@ -62,6 +62,7 @@ public:
 #pragma region constructos
 	Continent();//Default constructor, should not be used but here to avoid errors
 	Continent(int id,string continentName);//Initializes the id and name of the continent
+	Continent(const Continent& continent);
 	Continent(int id,string continentName, int bonusArmies);//Initializes the id, name of the continent, and the bonusArmies
 	Continent(int id,string continentName, int bonusArmies, vector<Territory*>* adjacentTerritories);//Initializes the id, name of the continent, the bonusArmies, and the vector of adjacent territories
 	~Continent();
@@ -74,9 +75,10 @@ public:
 	int  continentSize();//This method returns the number of territories sharing the same continent
 	int  getId();//Returns the id of the continent
 	bool addTerritory(Territory*);//This method adds a terriotry to this continent making sure the territory is not null and it has a name
+	string getContinentName();
 	//I don't think the continents are supposed to be connected uncomment if they are suppose to
 	//bool addBorder(Continent*);
-	vector<Territory>* getTerritories();//returns a lits of all the territories in the continent. Careful it contains pointers to the territories changes to territories will be applied to the territroy
+	vector<Territory*>* getTerritories();//returns a lits of all the territories in the continent. Careful it contains pointers to the territories changes to territories will be applied to the territroy
 #pragma endregion
 };
 ostream& operator<<(ostream& stream, const Continent& continent);
@@ -103,8 +105,8 @@ public:
 	bool validate();
 	bool isConnected();
 	bool checkTerritories();
-	vector<Territory> getTerritories();// returns a list containing a copy of all the territories in the Map
-	vector<Continent> getContinents();// returns a list containing a copy of all the continents in the Map
+	vector<Territory*>* getTerritories();// returns a list containing a copy of all the territories in the Map
+	vector<Continent*>* getContinents();// returns a list containing a copy of all the continents in the Map
 	Territory* getTerritoryById(int);//gets a territory by its id from the list of all territories. Be careful its a pointer
 	Continent* getContinentById(int);//gets a continent by its id from the list of all continents. Be careful its a pointer
 	int getMapSizeTerritory();//gets the size of the map by the number of territories in the map
