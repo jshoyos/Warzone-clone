@@ -12,26 +12,26 @@ int main()
 	Continent* Uruguay = new Continent(1,"Uruguay", 1-1);
 	cout << *Argentina << endl;
 	cout << *Uruguay << endl;
-	Territory* Malvinas = new Territory("Islas Malvinas", 1);
-	Territory* Tierra_del_Fuego = new Territory("Tierra_del_Fuego", 1);
-	Territory* Santa_Cruz = new Territory("Santa_Cruz", 1);
-	Territory* R�o_Negro = new Territory("R�o_Negro", 1);
-	Territory* Neuqu�n = new Territory("Neuqu�n", 1);
+	Territory* Malvinas = new Territory(0,"Islas Malvinas", 1-1);
+	Territory* Tierra_del_Fuego = new Territory(1,"Tierra_del_Fuego", 1-1);
+	Territory* Santa_Cruz = new Territory(2,"Santa_Cruz", 1-1);
+	Territory* Río_Negro = new Territory(3,"Río_Negro", 1-1);
+	Territory* Neuquén = new Territory(4,"Neuquén", 1-1);
 
-	Territory* Paysand� = new Territory("Paysand�", 2);
-	Territory* Maldonado = new Territory("Maldonado", 2);
-	Territory* Montevideo = new Territory("Montevideo", 2);
+	Territory* Paysandú = new Territory(5,"Paysandú", 2-1);
+	Territory* Maldonado = new Territory(6,"Maldonado", 2-1);
+	Territory* Montevideo = new Territory(7,"Montevideo", 2-1);
 
-	Map* map = new Map(40);
+	Map* map = new Map(2);
 	map->addContinent(Argentina);
 	map->addContinent(Uruguay);
 
 	map->addTerritory(Malvinas);
 	map->addTerritory(Tierra_del_Fuego);
 	map->addTerritory(Santa_Cruz);
-	map->addTerritory(R�o_Negro);
-	map->addTerritory(Neuqu�n);
-	map->addTerritory(Paysand�);
+	map->addTerritory(Río_Negro);
+	map->addTerritory(Neuquén);
+	map->addTerritory(Paysandú);
 	map->addTerritory(Maldonado);
 	map->addTerritory(Montevideo);
 	cout << "Countries in Continents" << endl;
