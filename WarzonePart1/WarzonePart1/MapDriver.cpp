@@ -50,35 +50,14 @@ int main()
 	map->validate();
 
 	cout << "THANOS HAS SNAPPED HIS FINGERS!!!!!!" << endl;
-	delete Malvinas;			
-	delete Tierra_del_Fuego;
-	delete Santa_Cruz;
-	delete Rio_Negro;
-	delete Neuquen;
-	delete Paysandu;
-	delete Maldonado;
-	delete Montevideo;
-	delete Argentina;
-	delete Uruguay;
-	delete map;
-	Malvinas=NULL;
-	Tierra_del_Fuego=NULL;
-	Santa_Cruz=NULL;
-	Rio_Negro=NULL;
-	Neuquen=NULL;
-	Paysandu=NULL;
-	Maldonado=NULL;
-	Montevideo=NULL;
-	Argentina=NULL;
-	Uruguay=NULL;
-	map=NULL;
+	delete map ;map = NULL;
 
 	//----------------------------------------------------------------SECOND TEST----------------------------------------------------------------------------------------
 	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SECOND TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 	MapLoader loader = MapLoader("solar.map");
 	map = loader.createMap();
 	map->validate();
-	delete map;
+	delete map; map = NULL;
 
 }
 
