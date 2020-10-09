@@ -33,6 +33,12 @@ Map::Map(int numberOfContinents, vector<Continent*>* continents) : _numberOfCont
 Map::~Map()
 {
 	cout << "DESTROYING THE MAP ITS THE END OF THE WORLD!!!!!!!" << endl;
+	for (auto territory : _territories) {
+		delete territory;
+	}
+	for (auto continent : _continents) {
+		delete continent;
+	}
 }
 
 bool Map::validate()
@@ -219,6 +225,7 @@ Territory::Territory(int id,string territoryName, int continent, vector<Territor
 Territory::~Territory()
 {
 	cout << "Destroying Territory: " << _territoryName << endl;
+	_adjacentTerritories.erase(_adjacentTerritories.begin(),_adjacentTerritories.end());
 }
 
 bool Territory::setOwner(Player* owner)
@@ -279,7 +286,7 @@ bool Territory::addBorder(Territory* territory)
 	if (territory != NULL && territory->_territoryName != "")
 	{
 		_adjacentTerritories.push_back(territory);
-		cout << "A link from " << this->getTerritoryName() << " and " << territory->getTerritoryName() << "has been added" << endl;
+		cout << "A link from " << this->getTerritoryName() << " and " << territory->getTerritoryName() << " has been added" << endl;
 		return true;
 	}
 	return false;
@@ -328,6 +335,7 @@ Continent::Continent(int id,string continentName, int bonusArmies, vector<Territ
 Continent::~Continent()
 {
 	cout << "Destroying the continent: " << _continentName << endl;
+	_territories.erase(_territories.begin(), _territories.end());
 	//I don't think it should destroy the territories as each territory will call its own destructor
 	/*for (auto territory : _territories) {
 		delete territory;

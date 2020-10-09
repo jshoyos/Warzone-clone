@@ -31,7 +31,7 @@ public:
 	Territory(const Territory&);
 	Territory(int id, string territoryName, int continent);
 	Territory(int,string, int, vector<Territory*>*);
-	~Territory();
+	~Territory();//clears the adjacent territories vector
 #pragma endregion
 #pragma region methods
 	Territory& operator=(const Territory&);
@@ -68,7 +68,7 @@ public:
 	Continent(const Continent& continent);
 	Continent(int id,string continentName, int bonusArmies);//Initializes the id, name of the continent, and the bonusArmies
 	Continent(int id,string continentName, int bonusArmies, vector<Territory*>* adjacentTerritories);//Initializes the id, name of the continent, the bonusArmies, and the vector of adjacent territories
-	~Continent();
+	~Continent();//clears the territories vector
 	friend ostream& operator<<(ostream&, const Continent&);
 #pragma endregion
 #pragma region methods
@@ -99,7 +99,7 @@ public:
 	Map(const Map&);
 	Map(int);//initializes the size of the map by passing the number of continents in the map
 	Map(int, vector<Continent*>*);//initializes the size of the map by passing the number of continents in the map. Initializes the vector of continents
-	~Map();
+	~Map();//clears the continents and territories vecors and destroyes everything in the map(i.e territories and continents) ONLY THIS DESTRUCTOR HAS TO BE CALLED
 #pragma endregion
 #pragma region methods
 	Map& operator=(const Map&);
