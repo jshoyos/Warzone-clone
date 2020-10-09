@@ -137,8 +137,40 @@ Map *MapLoader::createMap()
     return map;
 }
 
+<<<<<<< HEAD
 // Add readline method that will leave if tag is read
 
 MapLoader::MapLoader(string fileName) : _fileName(fileName)
+=======
+MapLoader& MapLoader::operator=(const MapLoader& maploader)
+>>>>>>> origin/master
 {
+    return *(new MapLoader(maploader));
+}
+
+// Add readline method that will leave if tag is read
+
+MapLoader::MapLoader():_fileName()
+{
+}
+
+MapLoader::MapLoader(string fileName) : _fileName(fileName)
+{
+}
+
+MapLoader::MapLoader(const MapLoader& mapLoader)
+{
+    cout << "Copy constructor... This should never be called since its a service not an object" << endl;
+    //only for correction purposes
+    //this->_fileName = mapLoader._fileName;
+}
+
+MapLoader::~MapLoader()
+{
+    cout << "Destructor for MapLoader" << endl;
+}
+
+ostream& operator<<(ostream& os, const MapLoader& mapLoader)
+{
+    return os << "Loading map file: " << mapLoader._fileName << endl;
 }

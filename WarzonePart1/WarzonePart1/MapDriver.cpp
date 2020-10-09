@@ -3,11 +3,11 @@
 
 #include <iostream>
 #include "Map.h"
+#include "MapLoader.h"
 using namespace std;
 
 int main()
 {
-	cout << "creating the map" << endl;
 	Continent* Argentina = new Continent(0,"Argentina", 4-1);
 	Continent* Uruguay = new Continent(1,"Uruguay", 1-1);
 	cout << *Argentina << endl;
@@ -15,10 +15,17 @@ int main()
 	Territory* Malvinas = new Territory(0,"Islas Malvinas", 1-1);
 	Territory* Tierra_del_Fuego = new Territory(1,"Tierra_del_Fuego", 1-1);
 	Territory* Santa_Cruz = new Territory(2,"Santa_Cruz", 1-1);
+<<<<<<< HEAD
 	Territory* Río_Negro = new Territory(3,"Río_Negro", 1-1);
 	Territory* Neuquén = new Territory(4,"Neuquén", 1-1);
 
 	Territory* Paysandú = new Territory(5,"Paysandú", 2-1);
+=======
+	Territory* Rio_Negro = new Territory(3,"Río_Negro", 1-1);
+	Territory* Neuquen = new Territory(4,"Neuquén", 1-1);
+
+	Territory* Paysandu = new Territory(5,"Paysandú", 2-1);
+>>>>>>> origin/master
 	Territory* Maldonado = new Territory(6,"Maldonado", 2-1);
 	Territory* Montevideo = new Territory(7,"Montevideo", 2-1);
 
@@ -29,21 +36,51 @@ int main()
 	map->addTerritory(Malvinas);
 	map->addTerritory(Tierra_del_Fuego);
 	map->addTerritory(Santa_Cruz);
+<<<<<<< HEAD
 	map->addTerritory(Río_Negro);
 	map->addTerritory(Neuquén);
 	map->addTerritory(Paysandú);
+=======
+	map->addTerritory(Rio_Negro);
+	map->addTerritory(Neuquen);
+	map->addTerritory(Paysandu);
+>>>>>>> origin/master
 	map->addTerritory(Maldonado);
 	map->addTerritory(Montevideo);
-	cout << "Countries in Continents" << endl;
-	vector<Continent> temp = map->getContinents();
-	for (int i = 0; i < temp.size(); i++) {
-		cout << temp[i] << endl;
-		vector<Territory> territories= temp[i].getTerritories();
+
+	cout <<endl<< "Countries in Continents (this will make a copy of each continent)" << endl;
+	vector<Continent*> continent = *(map->getContinents());
+	for (int i = 0; i < continent.size(); i++) {
+		cout << *continent[i]<<endl;
+		vector<Territory*> territories = *(continent[i]->getTerritories());
+		cout << "Printing all territories in " << continent[i]->getContinentName() << endl;
 		for (int j = 0; j < territories.size(); j++) {
-			cout << territories[j];
+			cout << *territories[j];
 		}
 		cout << endl;
 	}
+	cout <<endl<< "Validating Map" << endl;
+	map->validate();
+
+	cout << "THANOS HAS SNAPPED HIS FINGERS!!!!!!" << endl;
+	delete map ;map = NULL;
+	Malvinas=NULL;
+	Tierra_del_Fuego=NULL;
+	Santa_Cruz=NULL;
+	Rio_Negro=NULL;
+	Neuquen=NULL;
+	Paysandu=NULL;
+	Maldonado=NULL;
+	Montevideo=NULL;
+	Argentina=NULL;
+	Uruguay=NULL;
+
+	//----------------------------------------------------------------SECOND TEST----------------------------------------------------------------------------------------
+	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SECOND TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+	MapLoader loader = MapLoader("solar.map");
+	map = loader.createMap();
+	map->validate();
+	delete map; map = NULL;
 
 }
 
@@ -56,4 +93,4 @@ int main()
 //   3. Use the Output window to see build output and other messages
 //   4. Use the Error List window to view errors
 //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file 
