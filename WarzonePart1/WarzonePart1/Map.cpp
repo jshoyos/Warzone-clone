@@ -219,8 +219,6 @@ Territory::Territory(int id,string territoryName, int continent, vector<Territor
 Territory::~Territory()
 {
 	cout << "Destroying Territory: " << _territoryName << endl;
-	delete _owner;
-	_owner = NULL;
 }
 
 bool Territory::setOwner(Player* owner)
@@ -289,7 +287,7 @@ bool Territory::addBorder(Territory* territory)
 
 ostream& operator<< (ostream& stream, const Territory& territory) {
 	if (territory._owner != NULL) {
-		return stream << territory._territoryName << " currently has " << territory._armies << "armies owned by " << territory._owner << endl;
+		return stream << territory._territoryName << " currently has " << territory._armies << " armies owned by " << territory._owner->getName() << endl;
 	}
 	else {
 		return stream << territory._territoryName << " belongs to no one " << endl;

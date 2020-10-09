@@ -11,9 +11,9 @@ int main()
 	cin >> name; 
 	cout << endl;
 
-	cout << "Hi "<< name << ", welcome to warzone!"<< endl;
+	cout << "Hi "<< name << ", welcome to warzone!"<< endl<< endl<< endl;
 	Player* player1 = new Player(name);			//declaring new pointer to player
-	
+	cout << "---------------------------------------------------------------------" << endl;
 	//creating territory list for player1
 	Territory* Malvinas = new Territory(0, "Islas Malvinas", 0);
 	Territory* Tierra_del_Fuego = new Territory(1, "Tierra_del_Fuego", 0);
@@ -26,6 +26,7 @@ int main()
 	player1->conquerTerritory(Santa_Cruz);
 	player1->conquerTerritory(Río_Negro);
 	player1->conquerTerritory(Neuquén);
+	cout << "---------------------------------------------------------------------" << endl;
 
 	cout << endl << *player1 << endl;
 	//List of territories for player to defend
@@ -39,7 +40,7 @@ int main()
 		cout << " -" << *defendTerr[i];
 		cout << endl;
 	}
-
+	cout << "---------------------------------------------------------------------" << endl;
 	//List of territories for player to attack
 	vector<Territory*> attackTerr = *(player1->toAttack());
 
@@ -62,14 +63,13 @@ int main()
 
 	//Deletion of pointers to clear the memory.
 
-	delete player1; player1 = NULL;
-	//delete defendTerr; defendTerr = NULL;
-	//delete attackTerr; attackTerr = NULL;
+
 	delete Malvinas; Malvinas = NULL;
 	delete Tierra_del_Fuego; Tierra_del_Fuego = NULL;
 	delete Santa_Cruz; Santa_Cruz = NULL;
 	delete Río_Negro; Río_Negro = NULL;
 	delete Neuquén; Neuquén = NULL; 
+	delete player1; player1 = NULL;
 	
 	return 0;
 }
