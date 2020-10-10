@@ -10,7 +10,7 @@ using namespace std;
 //Represents the territory node
 class Territory {
 	// id of territory, this is used to refer to territories 0 to n
-	int _id=0;
+	int _id=0; 
 	//Name of the territory
 	string _territoryName = "";
 	//id of the continent it belongs to. This id is the index in the list of continents created in the Map object
@@ -30,7 +30,7 @@ public:
 	Territory(int id, string territoryName, int continent);
 	Territory(int,string, int, vector<Territory*>);
 #pragma endregion
-#pragma region methods
+#pragma region methods 
 	Territory& operator=(const Territory&);
 	bool   setOwner(Player*);
 	bool   setArmies(int);
