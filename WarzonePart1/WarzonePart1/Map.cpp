@@ -48,7 +48,7 @@ bool Map::validate()
 	// wont mean anything if graph is not undirected
 	//
 	// I think you might have to do it for every node in the graph to ensure undirected
-	if (!isConnected())
+	if (!isConnected() && !checkTerritories())
 	{
 		return false;
 	}
@@ -67,11 +67,12 @@ bool Map::checkTerritories()
 
 	// check for empty continents
 
-	// for (Continent *continent : _continents)
-	// 	if (continent->territoriesSize() == 0)
-	// 	{
-	// 		return 0;
-	// 	}
+	for (Continent* continent : _continents) {
+		if (continent->continentSize() == 0)
+		{
+			return false;
+		}
+	 }
 
 	// 1. put all territories in continents into a collection
 	// 2. take unique elements
@@ -80,13 +81,21 @@ bool Map::checkTerritories()
 	list<int> ids;
 
 	for (auto continent : _continents) {
+		vector<Territory*>* temp = continent->getTerritories();
+		for (auto territory : *temp) {
+			ids.push_back(territory->getId());
+		}
 	}
-
+	int initialListSize = ids.size();
 	ids.sort();
 	ids.unique();
 
-	if (ids.size() != _territories.size())
-		return 0;
+
+	if (ids.size() != initialListSize) {
+		cout << "OH OH THERE SEEMS TO BE A SHAPESHIFTER" << endl;
+		return false;
+	}
+	return true;
 }
 
 bool Map::isConnected()

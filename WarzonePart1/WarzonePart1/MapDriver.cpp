@@ -12,15 +12,16 @@ int main()
 	Continent* Uruguay = new Continent(1,"Uruguay", 1-1);
 	cout << *Argentina << endl;
 	cout << *Uruguay << endl;
-	Territory* Malvinas = new Territory(0,"Islas Malvinas", 1-1);
-	Territory* Tierra_del_Fuego = new Territory(1,"Tierra_del_Fuego", 1-1);
-	Territory* Santa_Cruz = new Territory(2,"Santa_Cruz", 1-1);
-	Territory* Rio_Negro = new Territory(3,"Río_Negro", 1-1);
-	Territory* Neuquen = new Territory(4,"Neuquén", 1-1);
+	Territory* Malvinas = new Territory(0,"Islas Malvinas", 0);
+	Territory* Tierra_del_Fuego = new Territory(1,"Tierra_del_Fuego", 0);
+	Territory* Santa_Cruz = new Territory(2,"Santa_Cruz", 0);
+	Territory* Rio_Negro = new Territory(3,"Río_Negro", 0);
+	Territory* Neuquen = new Territory(4,"Neuquén", 0);
 
-	Territory* Paysandu = new Territory(5,"Paysandú", 2-1);
-	Territory* Maldonado = new Territory(6,"Maldonado", 2-1);
-	Territory* Montevideo = new Territory(7,"Montevideo", 2-1);
+	Territory* Paysandu = new Territory(5,"Paysandú", 1);
+	Territory* Maldonado = new Territory(6,"Maldonado", 1);
+	Territory* Montevideo = new Territory(7,"Montevideo", 1);
+	Territory* Shapeshifter = new Territory(0, "Islas Malvinas", 1);
 
 	Map* map = new Map(2);
 	map->addContinent(Argentina);
@@ -34,6 +35,7 @@ int main()
 	map->addTerritory(Paysandu);
 	map->addTerritory(Maldonado);
 	map->addTerritory(Montevideo);
+	map->addTerritory(Shapeshifter);
 
 	cout <<endl<< "Countries in Continents (this will make a copy of each continent)" << endl;
 	vector<Continent*> continent = *(map->getContinents());
