@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 
+// This will create a map
+// If any issues occur, returns a null pointer
 Map *MapLoader::createMap()
 {
 
@@ -10,9 +12,17 @@ Map *MapLoader::createMap()
 
     fstream stream(_fileName);
 
-    if (!stream)
+    // Test if the extension is right
+    if (_fileName.find(".map") == string::npos)
     {
-        cout << "File didnt work";
+        cout << "Extension is wrong" << endl;
+        return NULL;
+    }
+
+    // Test if stream is open, if not map cannot be created
+    if (!stream.is_open())
+    {
+        cout << "File cant be accessed" << endl;
 
         stream.close();
         return NULL;
@@ -23,12 +33,14 @@ Map *MapLoader::createMap()
         vector<Continent *> continents;
         vector<Territory *> territories;
 
+        // Tags will set the read mode, so it knows
+        // where to get info in lines
         string tag_continents = "[continents]";
         string tag_countries = "[countries]";
         string tag_borders = "[borders]";
         string tag_files = "[files]";
 
-        enum Mode
+        enum class Mode
         {
             other,
             territory,
@@ -39,54 +51,58 @@ Map *MapLoader::createMap()
 
         vector<bool> tags_read(4, false);
 
-        Mode mode = other;
+        Mode mode = Mode::other;
 
+        // For handling each token of every line
         vector<string> tokens;
         istringstream iss;
         string word;
         string line;
 
+        // Not really needed, just to print a value
         Territory *current;
+
+        // For assigning borders
         Territory *newTerritory;
         int current_id;
 
-
+        // Values that will be used for object fields
         string name;
         int territory_id;
         int continent_id;
-
         int continent_count = 0;
         int territory_count = 0;
 
+
+        // All of the functionality is in a single loop
         while (getline(stream, line))
         {
 
-            // check if line has a tag and then skip it
+            // Set mode to handle different tags and start creating
+            // members of map
             if (line == tag_continents)
             {
                 getline(stream, line);
-                mode = continent;
+                mode = Mode::continent;
             }
 
             else if (line == tag_countries)
             {
                 getline(stream, line);
-                mode = territory;
+                mode = Mode::territory;
             }
 
             else if (line == tag_borders)
             {
                 getline(stream, line);
-                mode = border;
+                mode = Mode::border;
             }
 
             else if (line == tag_files)
             {
                 getline(stream, line);
-                mode = files;
+                mode = Mode::files;
             }
-
-            // this should be done ONLY if tag was not read
 
             tokens = vector<string>();
             iss = istringstream(line);
@@ -99,33 +115,49 @@ Map *MapLoader::createMap()
                 && line != tag_countries && line != tag_countries)
             {
 
-                // Map loader will not be happy if it gets a bad line in a tag
-                // it will crash
                 switch (mode)
                 {
+                
+                // Change mode to handle continents
+                // Give each territory a continent id
+                // Test if there are at least 1 tokens in each line
+                case Mode::continent:
 
-                case continent:
+                    // test if line has enough tokens
+                    if (!(tokens.size() > 0))
+                    {
+                        cout << "There is an issue with a continent in the file" << endl;
+                        delete map;
+                        return NULL;
+                    }
 
                     tags_read[0] = true;
 
                     continent_id = continent_count++;
-                    name = tokens[0];
 
-                    // If tokens[0] is not good, fail
+                    name = tokens[0];
 
                     continents.push_back(new Continent(continent_id, name));
                     cout << *continents.back() << endl;
                     break;
 
-                case territory:
+                // Change mode to handle territories
+                // Give each territory a continent id
+                // Test if there are at least 3 tokens in each line
+                case Mode::territory:
+
+                    if (!(tokens.size() > 3))
+                    {
+                        cout << "There is an issue with a territory in the file" << endl;
+                        delete map;
+                        return NULL;
+                    }
 
                     tags_read[1] = true;
 
-                    // If tokens[0 & 2] is not good, fail
-
                     territory_id = territory_count++;
-                    continent_id = stoi(tokens[2]) - 1;
 
+                    continent_id = stoi(tokens[2]) - 1;
                     name = tokens[1];
 
                     territories.push_back(new Territory(territory_id, name, continent_id));
@@ -134,13 +166,24 @@ Map *MapLoader::createMap()
                     cout << *territories.back() << endl;
                     break;
 
-                case border:
+                // Change mode to handle borders
+                // Give each territory a continent id
+                // Test if there are at least 3 tokens in each line
+                case Mode::border:
+
+                    if (!(tokens.size() > 0))
+                    {
+                        cout << "There is an issue with a border in the file" << endl;
+                        delete map;
+                        return NULL;
+                    }
 
                     tags_read[2] = true;
 
                     // first number is the territory to add borders to
                     // 3 2 3 11 ---> 3 is current_id, [2, 3, 11] are borders
                     current_id = stoi(tokens[0]) - 1;
+
                     newTerritory = territories[current_id];
 
                     // the rest are borders
@@ -158,7 +201,9 @@ Map *MapLoader::createMap()
                     }
                     break;
                 
-                case files:
+                // Check for a files tag (it must be present)
+                // Doesnt really matter, here for completeness
+                case Mode::files:
                     tags_read[3] = true;
                     break;
                 };
@@ -181,6 +226,8 @@ Map *MapLoader::createMap()
             }
         }
 
+
+        // Add collected data to the map
         for (auto c : continents)
         {
             map->addContinent(c);
@@ -201,16 +248,17 @@ MapLoader &MapLoader::operator=(const MapLoader &maploader)
     return *(new MapLoader(maploader));
 }
 
-// Add readline method that will leave if tag is read
-
-MapLoader::MapLoader() : _fileName()
+// Default (empty string name)
+MapLoader::MapLoader() : _fileName("")
 {
 }
 
+// Parametrized constructor
 MapLoader::MapLoader(string fileName) : _fileName(fileName)
 {
 }
 
+// Set name for file
 void MapLoader::setFileName(string fileName)
 {
     _fileName = fileName;

@@ -147,12 +147,14 @@ bool Map::addContinent(Continent* continent)
 
 bool Map::addTerritory(Territory* territory)
 {
+	//cout << "TESTEST" << endl;
+	cout << territory->getTerritoryName() << endl;
 	if (territory != NULL && territory->getTerritoryName() != "")
-		// i commented this out because i think the ids can be 0
-		//territory->getContinent() != 0
 	{
+		
 		_territories.push_back(territory);
 		_continents[territory->getContinent()]->addTerritory(territory);
+		cout << "TESTEST" << endl;
 		return true;
 	}
 	return false;
