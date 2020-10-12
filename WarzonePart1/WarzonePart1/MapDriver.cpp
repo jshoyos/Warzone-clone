@@ -53,7 +53,7 @@ int main()
 
 	cout << "THANOS HAS SNAPPED HIS FINGERS!!!!!!" << endl;
 	delete map ;map = NULL;
-	Malvinas=NULL;
+	/*Malvinas=NULL;
 	Tierra_del_Fuego=NULL;
 	Santa_Cruz=NULL;
 	Rio_Negro=NULL;
@@ -62,7 +62,7 @@ int main()
 	Maldonado=NULL;
 	Montevideo=NULL;
 	Argentina=NULL;
-	Uruguay=NULL;
+	Uruguay=NULL;*/
 
 	//----------------------------------------------------------------SECOND TEST----------------------------------------------------------------------------------------
 	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SECOND TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;

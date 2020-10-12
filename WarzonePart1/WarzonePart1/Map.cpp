@@ -35,9 +35,11 @@ Map::~Map()
 	cout << "DESTROYING THE MAP ITS THE END OF THE WORLD!!!!!!!" << endl;
 	for (auto territory : _territories) {
 		delete territory;
+		territory = NULL;
 	}
 	for (auto continent : _continents) {
 		delete continent;
+		continent = NULL;
 	}
 }
 
