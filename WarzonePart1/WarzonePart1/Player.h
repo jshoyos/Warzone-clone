@@ -18,7 +18,7 @@ class Player
 	//Player's name
 	string _name = "";
 	//The list of orders made by a player
-	vector<Orders*> _orderList;
+	vector<Order*> _orderList;
 	//The list of cards given to a player
 	vector<Cards*> _hand;
 	//List of the Player's Territories
@@ -30,7 +30,7 @@ public:
 	~Player();						//destructor
 	Player(const Player&);			//copy constructor
 	Player(string);					//parameterized constructor accepting a string (name)
-	Player(string, vector<Orders*>*, vector<Cards*>*, vector<Territory*>*); //parameterized connstructor 
+	Player(string, vector<Order*>*, vector<Cards*>*, vector<Territory*>*); //parameterized connstructor 
 
 	//methods
 	Player& operator= (const Player&);	//Overwritting assign operator
@@ -41,13 +41,13 @@ public:
 
 	//getters
 	string getName();
-	vector<Orders*>* getOrderList();
+	vector<Order*>* getOrderList();
 	vector<Cards*>* getHand();
 	vector<Territory*>* getTerritoryList();
 
 	//setters
 	bool setName(string);
-	bool addOrder(Orders*);
+	bool addOrder(Order*);
 	bool addCard(Cards*);
 	bool conquerTerritory(Territory*);
 };

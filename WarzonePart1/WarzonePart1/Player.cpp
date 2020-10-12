@@ -40,7 +40,7 @@ Player::Player(string name) :_name(name)
 }
 
 //Parameterized constructor accpeting a list of orders, a list of cards and a list of territories.
-Player::Player(string name, vector<Orders*>* orders, vector<Cards*>* cards, vector<Territory*>* territories) : _name(name), _orderList(*orders), _hand(*cards), _territoryList(*territories)
+Player::Player(string name, vector<Order*>* orders, vector<Cards*>* cards, vector<Territory*>* territories) : _name(name), _orderList(*orders), _hand(*cards), _territoryList(*territories)
 {
 	_id++; //increments static int (id)
 }
@@ -54,7 +54,7 @@ string Player::getName()
 }
 
 //get method that returns a players list of orders
-vector<Orders*>* Player::getOrderList()
+vector<Order*>* Player::getOrderList()
 {
 	return &_orderList;
 }
@@ -82,7 +82,7 @@ bool Player::setName(string name)
 	return false;
 }
 //add order to players order's list
-bool Player::addOrder(Orders* order)
+bool Player::addOrder(Order* order)
 {
 	if (order != NULL)
 	{
@@ -149,7 +149,7 @@ vector<Territory*>* Player::toAttack()
 void Player::issueOrder()
 {
 	//maybe recieve order as parameter
-	Orders* newOrder = new Orders();
+	Order* newOrder = new Order();
 	addOrder(newOrder);
 }
 
