@@ -5,14 +5,21 @@ using namespace std;
 int main()
 {
 	//--------------------WElCOME TO THE PLAYER DRIVER-----------------------------------\\
-
+	//creating deck for the game
+	cout << "Lets first create a deck of cards for the game." << endl;
+	Deck myDeck = Deck(20);
+	Card card_drawn;
 	string name;
-	cout << "Enter Player name" << endl;
+	cout << endl <<"Enter Player name" << endl;
 	cin >> name; 
 	cout << endl;
 
-	cout << "Hi "<< name << ", welcome to warzone!"<< endl<< endl<< endl;
+	cout << "Hi "<< name << ", welcome to warzone!"<< endl;
 	Player* player1 = new Player(name);			//declaring new pointer to player
+	cout << endl << *player1 << endl;
+	cout << player1->getName() << " receives initial territories, draws 5 cards. and issues 4 orders" << endl;
+
+
 	cout << "---------------------------------------------------------------------" << endl;
 	//creating territory list for player1
 	Territory* Malvinas = new Territory(0, "Islas Malvinas", 0);
@@ -27,6 +34,26 @@ int main()
 	player1->conquerTerritory(Río_Negro);
 	player1->conquerTerritory(Neuquén);
 	cout << "---------------------------------------------------------------------" << endl;
+
+
+	//creating orders for player 1
+	Order* order1 = dynamic_cast<Order*>(new Deploy("deploy"));
+	Bomb* order2 = new Bomb("bomb");
+	Airlift* order3 = new Airlift("airlift");
+	Negotiate* order4 = new Negotiate("negotiate");
+
+	player1->addOrder(order1);
+	player1->addOrder(order2);
+	player1->addOrder(order3);
+	player1->addOrder(order4);
+
+	//creating hand of cards for a player
+	
+	for (int i = 0; i < 5; i++) {
+		card_drawn = myDeck.draw();
+		player1->addCard(card_drawn);
+	}
+
 
 	cout << endl << *player1 << endl;
 	//List of territories for player to defend
@@ -54,22 +81,29 @@ int main()
 	}
 
 	cout << "---------------------------------------------------------------------" << endl;
-	cout << name << " issues an order!"<<endl;
+	cout << endl << name << " issues a new order: \"create a blockade!\""<<endl;
 	cout << endl;
 	
 	//player 1 issues new order based on order class
-	player1->issueOrder();
+	player1->issueOrder("blockade");
+	//displays player's list of orders
+	cout << "List of orders issued by " << player1->getName()<< ": ";
+	cout << endl << *player1->getOrderList() << endl;
+	cout << "---------------------------------------------------------------------";
+	cout << endl << *player1 << endl;
+	cout << endl << "Thank you "<<player1->getName()<< " for playing Warzone! " << endl;
+	cout << "---------------------------------------------------------------------" << endl;
+	
 	
 
 	//Deletion of pointers to clear the memory.
-
-
 	delete Malvinas; Malvinas = NULL;
 	delete Tierra_del_Fuego; Tierra_del_Fuego = NULL;
 	delete Santa_Cruz; Santa_Cruz = NULL;
 	delete Río_Negro; Río_Negro = NULL;
 	delete Neuquén; Neuquén = NULL; 
-	delete player1; player1 = NULL;
 	
+	delete player1; player1 = NULL;
+
 	return 0;
 }
