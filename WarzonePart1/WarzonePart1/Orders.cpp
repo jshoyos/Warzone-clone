@@ -227,13 +227,16 @@ OrdersList::~OrdersList()
 //remove method for OrdersList class
 vector<Order*>* OrdersList::remove(vector<Order*>* list, int index)
 {
-	list->erase(list->begin() + (index - 1));
+	index = index - 1;
+	list->erase(list->begin() + (index));
 	return list;
 }
 //move method for OrdersList class
 vector<Order*>* OrdersList::move(vector<Order*>* list, int a, int b)
 {
-	iter_swap(list->begin() + (a-1), list->begin() + (b-1));
+	a = (a - 1);
+	b = (b - 1);
+	iter_swap(list->begin() + (a), list->begin() + (b));
 	return list;
 }
 //method used to put an order into the list of orders

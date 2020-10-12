@@ -4,10 +4,12 @@
 //--------------------------------------------------------------------------------------------------------------------MAP---------------------------------------------------------------------------------------------
 Map::Map() :_numberOfContinents(0)
 {
+	cout << "Creating default Map..." << endl;
 }
 
 Map::Map(const Map& map)
 {
+	cout << "Creating a map copy..." << endl;
 	this->_numberOfContinents = map._numberOfContinents;
 	for (auto continent : map._continents) {
 		this->_continents.push_back(new Continent(*continent));
@@ -16,10 +18,27 @@ Map::Map(const Map& map)
 		this->_territories.push_back(new Territory(*territory));
 	}
 }
-Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents) {}
-
-Map::Map(int numberOfContinents, vector<Continent*> continents) : _numberOfContinents(numberOfContinents), _continents(continents)
+Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents)
 {
+	cout << "Creating a Map..." << endl;
+	cout << "number of continents-->" << numberOfContinents<<endl;
+}
+
+Map::Map(int numberOfContinents, vector<Continent*>* continents) : _numberOfContinents(numberOfContinents), _continents(*continents)
+{
+	cout << "Creating a Map..." << endl;
+	cout << "number of continents-->" << numberOfContinents<<endl;
+}
+
+Map::~Map()
+{
+	cout << "DESTROYING THE MAP ITS THE END OF THE WORLD!!!!!!!" << endl;
+	for (auto territory : _territories) {
+		delete territory;
+	}
+	for (auto continent : _continents) {
+		delete continent;
+	}
 }
 
 bool Map::validate()
@@ -73,11 +92,9 @@ bool Map::checkTerritories()
 bool Map::isConnected()
 {
 
-	int continents_size = getContinentsSize();
-	int territories_size = getTerritoriesSize();
+	int continents_size = getMapSizeContinent();
+	int territories_size = getMapSizeTerritory();
 
-	// IS IT NOT UNDIRECTED? WHO CARES. JUST TRY EVERY NODE
-	// AND FIND OUT.
 	for (int i = 0; i < territories_size; ++i)
 	{
 
@@ -106,7 +123,7 @@ void Map::territoryDFS(Territory* startNode, vector<bool>& visited)
 	int node_id = startNode->getId();
 	visited[node_id] = true;
 
-	for (Territory* adj_node : startNode->getAdjacent())
+	for (Territory* adj_node : *(startNode->getAdjacent()))
 	{
 		int adj_id = adj_node->getId();
 		if (!visited[adj_id])
@@ -121,6 +138,7 @@ bool Map::addContinent(Continent* continent)
 	if (continent != NULL)
 	{
 		_continents.push_back(continent);
+		cout << continent->getContinentName() << " has been added" << endl;
 		return true;
 	}
 	return false;
@@ -139,22 +157,14 @@ bool Map::addTerritory(Territory* territory)
 	return false;
 }
 
-vector<Territory> Map::getTerritories()
+vector<Territory*>* Map::getTerritories()
 {
-	vector<Territory> territories;
-	for (int i = 0; i<_territories.size(); i++) {
-		territories.push_back(*(new Territory(*_territories[i])));
-	}
-	return territories;
+	return &_territories;
 }
 
-vector<Continent> Map::getContinents()
+vector<Continent*>* Map::getContinents()
 {
-	vector<Continent> continents;
-	for (int i = 0; i < _continents.size(); i++) {
-		continents.push_back(*(new Continent(*_continents[i])));
-	}
-	return continents;
+	return &_continents;
 }
 
 Territory* Map::getTerritoryById(int id)
@@ -167,18 +177,19 @@ Continent* Map::getContinentById(int id)
 	return _continents[id];
 }
 
-int Map::getContinentsSize()
+int Map::getMapSizeContinent()
 {
-	return _continents.size();
+	return static_cast<int>(_continents.size());
 }
 
-int Map::getTerritoriesSize()
+int Map::getMapSizeTerritory()
 {
-	return _territories.size();
+	return static_cast<int>(_territories.size());
 }
 //---------------------------------------------------------------------------------------------------------TERRITORY--------------------------------------------------------------------------------------------------------------------
 Territory::Territory() :_id(),_territoryName(), _continent()
 {
+	cout << "Creating default territory..." << endl;
 }
 
 Territory::Territory(const Territory& territory)
@@ -195,15 +206,26 @@ Territory::Territory(const Territory& territory)
 
 Territory& Territory::operator=(const Territory& territory)
 {
+	cout << "Creating a territory copy..." << endl;
 	return *(new Territory(territory));
 }
 
 Territory::Territory(int id, string territoryName, int continent) : _id(id), _territoryName(territoryName), _continent(continent)
 {
+	cout << "Creating a Territory..." << endl;
+	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent << endl;
 }
 
-Territory::Territory(int id,string territoryName, int continent, vector<Territory*> adjacentTerritories) :_id(id), _territoryName(territoryName), _continent(continent), _adjacentTerritories(adjacentTerritories)
+Territory::Territory(int id,string territoryName, int continent, vector<Territory*>* adjacentTerritories) :_id(id), _territoryName(territoryName), _continent(continent), _adjacentTerritories(*adjacentTerritories)
 {
+	cout << "Creating a Territory..." << endl;
+	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent <<"shares border with "<<adjacentTerritories->size()<< endl;
+}
+
+Territory::~Territory()
+{
+	cout << "Destroying Territory: " << _territoryName << endl;
+	_adjacentTerritories.erase(_adjacentTerritories.begin(),_adjacentTerritories.end());
 }
 
 bool Territory::setOwner(Player* owner)
@@ -244,9 +266,9 @@ int Territory::getContinent()
 	return _continent;
 }
 
-vector<Territory*> Territory::getAdjacent()
+vector<Territory*>* Territory::getAdjacent()
 {
-	return _adjacentTerritories;
+	return &_adjacentTerritories;
 }
 
 int Territory::getId()
@@ -264,6 +286,7 @@ bool Territory::addBorder(Territory* territory)
 	if (territory != NULL && territory->_territoryName != "")
 	{
 		_adjacentTerritories.push_back(territory);
+		cout << "A link from " << this->getTerritoryName() << " and " << territory->getTerritoryName() << " has been added" << endl;
 		return true;
 	}
 	return false;
@@ -271,7 +294,7 @@ bool Territory::addBorder(Territory* territory)
 
 ostream& operator<< (ostream& stream, const Territory& territory) {
 	if (territory._owner != NULL) {
-		return stream << territory._territoryName << " currently has " << territory._armies << "armies owned by " << territory._owner << endl;
+		return stream << territory._territoryName << " currently has " << territory._armies << " armies owned by " << territory._owner->getName() << endl;
 	}
 	else {
 		return stream << territory._territoryName << " belongs to no one " << endl;
@@ -280,43 +303,56 @@ ostream& operator<< (ostream& stream, const Territory& territory) {
 //------------------------------------------------------------------------------------------------CONTINENT-----------------------------------------------------------------------------------------------------------------------------------------
 Continent::Continent() :_continentName(), _bonusArmies()
 {
+	cout << "Creating default continent..." << endl;
 }
 
 Continent::Continent(const Continent& continent)
 {
+	cout << "Creating a continent copy..." << endl;
 	this->_continentName = continent._continentName;
 	this->_bonusArmies = continent._bonusArmies;
 	for (auto adjNode : continent._territories) {
 		this->_territories.push_back(new Territory(*adjNode));
 	}
-	for (auto adjNode : continent._adjacentContinents) {
+	//For now there will not be any link between continents
+	/*for (auto adjNode : continent._adjacentContinents) {
 		this->_adjacentContinents.push_back(new Continent(*adjNode));
-	}
+	}*/
 }
 
 Continent::Continent(int id,string continentName, int bonusArmies) :_id(id),_continentName(continentName), _bonusArmies(bonusArmies)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies << endl;
 }
 
-Continent::Continent(int id,string continentName, int bonusArmies, vector<Territory*> territories) :_id(id), _continentName(continentName), _bonusArmies(bonusArmies), _territories(territories)
+Continent::Continent(int id,string continentName, int bonusArmies, vector<Territory*>* territories) :_id(id), _continentName(continentName), _bonusArmies(bonusArmies), _territories(*territories)
 {
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies <<"\tcontains "<<territories->size()<<" territories"<< endl;
+}
+
+Continent::~Continent()
+{
+	cout << "Destroying the continent: " << _continentName << endl;
+	_territories.erase(_territories.begin(), _territories.end());
+	//I don't think it should destroy the territories as each territory will call its own destructor
+	/*for (auto territory : _territories) {
+		delete territory;
+		territory = NULL;
+	}*/
 }
 
 Continent& Continent::operator=(const Continent& continent)
 {
+	cout << "Creating a continent copy..." << endl;
 	return *(new Continent(continent));
 }
 
 Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
 {
-}
-
-Continent::Continent(int id,int bonusArmies) : _id(id), _bonusArmies(bonusArmies)
-{
-}
-
-Continent::Continent(int id,int bonusArmies, vector<Territory*> territories) : _id(id),_bonusArmies(bonusArmies), _territories(territories)
-{
+	cout << "Creating a continent..." << endl;
+	cout << "id-->" << id << "\tcontinentName-->" << continentName << endl;
 }
 
 bool Continent::setBonusArmies(int bonus)
@@ -334,9 +370,9 @@ int Continent::getBonusArmies()
 	return _bonusArmies;
 }
 
-int Continent::territoriesSize()
+int Continent::continentSize()
 {
-	return _territories.size();
+	return static_cast<int>(_territories.size());
 }
 int Continent::getId()
 {
@@ -349,18 +385,19 @@ bool Continent::addTerritory(Territory* territory)
 	{
 		// territory->getContinent() != 0
 		_territories.push_back(territory);
+		cout << territory->getTerritoryName() << " has been added" << endl;
 		return true;
 	}
 	return false;
 }
+string Continent::getContinentName()
+{
+	return _continentName;
+}
 ostream& operator<<(ostream& stream, const Continent& continent) {
 	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
 }
-vector<Territory> Continent::getTerritories()
+vector<Territory*>* Continent::getTerritories()
 {
-	vector<Territory> territories;
-	for (int i = 0; i < _territories.size(); i++) {
-		territories.push_back(*_territories[i]);
-	}
-	return territories;
+	return &_territories;
 }
