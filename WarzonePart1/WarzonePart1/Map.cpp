@@ -80,12 +80,12 @@ bool Map::checkTerritories()
 	// 2. take unique elements
 	// 3. if territories size != unique elements, there is an issue
 
-	list<int> ids;
+	list<string> ids;
 
 	for (auto continent : _continents) {
 		vector<Territory*>* temp = continent->getTerritories();
 		for (auto territory : *temp) {
-			ids.push_back(territory->getId());
+			ids.push_back(territory->getTerritoryName());
 		}
 	}
 	int initialListSize = ids.size();
