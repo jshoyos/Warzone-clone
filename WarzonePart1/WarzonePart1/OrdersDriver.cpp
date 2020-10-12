@@ -1,3 +1,5 @@
+//This file contains the main function that serves for testing
+
 #include "Orders.h"
 #include <iostream>
 #include <vector>
@@ -14,7 +16,9 @@ int main()
 	Negotiate* order4 = new Negotiate("negotiate");
 
 	OrdersList* commandList = new OrdersList();
+	//Testing validate method, this should fail since the order has not been added to the List.
 	order1->validate(&commandList->_ordersList);
+
 	commandList->queueOrder(dynamic_cast<Order*>(order1));
 	commandList->queueOrder(dynamic_cast<Order*>(order2));
 	commandList->queueOrder(dynamic_cast<Order*>(order3));
@@ -35,6 +39,9 @@ int main()
 
 	commandList->remove(&commandList->_ordersList, 3);
 	cout << "Removing element 3 from the list" << endl;
-
 	cout << *commandList << endl;
+
+	delete commandList;
+	commandList = NULL;
+
 }

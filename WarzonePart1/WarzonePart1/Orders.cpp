@@ -215,6 +215,15 @@ OrdersList::OrdersList(int size) :_size(size)
 OrdersList::OrdersList(const OrdersList&)
 {
 }
+//Destructor for OrdersList
+OrdersList::~OrdersList()
+{
+	cout << "Destroying OrdersList" << endl;
+	for (auto order : _ordersList) {
+		delete order;
+		order = NULL;
+	}
+}
 //remove method for OrdersList class
 vector<Order*>* OrdersList::remove(vector<Order*>* list, int index)
 {

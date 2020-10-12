@@ -32,6 +32,7 @@ public:
 	OrdersList();
 	OrdersList(int);
 	OrdersList(const OrdersList&);
+	~OrdersList();//clears the adjacent order vector
 
 #pragma endregion
 #pragma region methods 
