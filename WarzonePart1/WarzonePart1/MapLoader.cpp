@@ -10,147 +10,200 @@ Map *MapLoader::createMap()
 
     fstream stream(_fileName);
 
-    vector<Continent *> continents;
-    vector<Territory *> territories;
-
-    string tag_continents = "[continents]";
-    string tag_countries = "[countries]";
-    string tag_borders = "[borders]";
-    string tag_other = "[other]";
-
-    enum Mode
+    if (!stream)
     {
-        other,
-        territory,
-        continent,
-        border
-    };
+        cout << "File didnt work";
 
-    Mode mode = other;
+        stream.close();
+        return NULL;
+    }
 
-    vector<string> tokens;
-    istringstream iss;
-    string word;
-    string line;
-
-    Territory *current;
-
-    string name;
-    int territory_id;
-    int continent_id;
-
-    int continent_count = 0;
-
-    while (getline(stream, line))
+    else
     {
+        vector<Continent *> continents;
+        vector<Territory *> territories;
 
-        if (line == tag_continents)
+        string tag_continents = "[continents]";
+        string tag_countries = "[countries]";
+        string tag_borders = "[borders]";
+        string tag_files = "[files]";
+
+        enum Mode
         {
-            getline(stream, line);
-            mode = continent;
-        }
+            other,
+            territory,
+            continent,
+            border,
+            files
+        };
 
-        else if (line == tag_countries)
+        vector<bool> tags_read(4, false);
+
+        Mode mode = other;
+
+        vector<string> tokens;
+        istringstream iss;
+        string word;
+        string line;
+
+        Territory *current;
+        Territory *newTerritory;
+        int current_id;
+
+
+        string name;
+        int territory_id;
+        int continent_id;
+
+        int continent_count = 0;
+        int territory_count = 0;
+
+        while (getline(stream, line))
         {
-            getline(stream, line);
-            mode = territory;
-        }
 
-        else if (line == tag_borders)
-        {
-            getline(stream, line);
-            mode = border;
-        }
+            // check if line has a tag and then skip it
+            if (line == tag_continents)
+            {
+                getline(stream, line);
+                mode = continent;
+            }
 
-        // this should be done ONLY if tag was not read
+            else if (line == tag_countries)
+            {
+                getline(stream, line);
+                mode = territory;
+            }
 
-        tokens = vector<string>();
-        iss = istringstream(line);
+            else if (line == tag_borders)
+            {
+                getline(stream, line);
+                mode = border;
+            }
 
-        while (iss >> word)
-            tokens.push_back(word);
+            else if (line == tag_files)
+            {
+                getline(stream, line);
+                mode = files;
+            }
 
-        // skip newlines
-        if (line.size() != 0)
-        {
+            // this should be done ONLY if tag was not read
 
-            switch (mode)
+            tokens = vector<string>();
+            iss = istringstream(line);
+
+            while (iss >> word)
+                tokens.push_back(word);
+
+            // skip newlines, skip possible duplicates of tags
+            if (line.size() != 0 && line != tag_files && line != tag_continents
+                && line != tag_countries && line != tag_countries)
             {
 
-            case continent:
-
-                continent_id = continent_count++;
-                name = tokens[0];
-
-                continents.push_back(new Continent(continent_id, name));
-                cout << *continents.back() << endl;
-                break;
-
-            case territory:
-
-                territory_id = stoi(tokens[0]) - 1;
-                continent_id = stoi(tokens[2]) - 1;
-
-                name = tokens[1];
-
-                territories.push_back(new Territory(territory_id, name, continent_id));
-                current = territories.back();
-                cout << current->getId() << endl;
-                cout << *territories.back() << endl;
-                break;
-
-            case border:
-
-                // first number is the territory to add borders to
-                // 3 2 3 11 ---> 3 is current_id, [2, 3, 11] are borders
-                int current_id = stoi(tokens[0]) - 1;
-                Territory *territory = territories[current_id];
-
-                // the rest are borders
-                cout << "Here are some borders of " << territory->getTerritoryName() << " " << current_id << endl;
-                cout << "------------------------" << endl;
-                tokens.erase(tokens.begin());
-                for (int i = 0; i < tokens.size(); ++i)
+                // Map loader will not be happy if it gets a bad line in a tag
+                // it will crash
+                switch (mode)
                 {
-                    int adjacent_id = stoi(tokens[i]) - 1;
-                    territory->addBorder(territories[adjacent_id]);
-                    cout << territories[adjacent_id]->getTerritoryName() << endl;
-                }
-                break;
-            };
+
+                case continent:
+
+                    tags_read[0] = true;
+
+                    continent_id = continent_count++;
+                    name = tokens[0];
+
+                    // If tokens[0] is not good, fail
+
+                    continents.push_back(new Continent(continent_id, name));
+                    cout << *continents.back() << endl;
+                    break;
+
+                case territory:
+
+                    tags_read[1] = true;
+
+                    // If tokens[0 & 2] is not good, fail
+
+                    territory_id = territory_count++;
+                    continent_id = stoi(tokens[2]) - 1;
+
+                    name = tokens[1];
+
+                    territories.push_back(new Territory(territory_id, name, continent_id));
+                    current = territories.back();
+                    cout << current->getId() << endl;
+                    cout << *territories.back() << endl;
+                    break;
+
+                case border:
+
+                    tags_read[2] = true;
+
+                    // first number is the territory to add borders to
+                    // 3 2 3 11 ---> 3 is current_id, [2, 3, 11] are borders
+                    current_id = stoi(tokens[0]) - 1;
+                    newTerritory = territories[current_id];
+
+                    // the rest are borders
+                    cout << "Here are some borders of " << newTerritory->getTerritoryName() << " " << current_id << endl;
+                    cout << "------------------------" << endl;
+                    tokens.erase(tokens.begin());
+                    for (int i = 0; i < tokens.size(); ++i)
+                    {
+
+                        // If tokens[i] is not good, fail
+
+                        int adjacent_id = stoi(tokens[i]) - 1;
+                        newTerritory->addBorder(territories[adjacent_id]);
+                        cout << territories[adjacent_id]->getTerritoryName() << endl;
+                    }
+                    break;
+                
+                case files:
+                    tags_read[3] = true;
+                    break;
+                };
+            }
         }
+
+        for (bool tag : tags_read)
+        {
+            cout << tag;
+            if (!tag)
+            {
+                for (auto territroy : territories) delete territroy;
+                for (auto continent : continents) delete continent;
+                delete map;
+
+                cout << "Were all tags read?" << tags_read[0] << " " << tags_read[1] << " " << tags_read[2] << " " << tags_read[3];
+
+                stream.close();
+                return NULL;
+            }
+        }
+
+        for (auto c : continents)
+        {
+            map->addContinent(c);
+        }
+
+        for (auto t : territories)
+        {
+            map->addTerritory(t);
+        }
+
+        stream.close();
+        return map;
     }
-
-    for (auto c : continents)
-    {
-        map->addContinent(c);
-    }
-
-    for (auto t : territories)
-    {
-        map->addTerritory(t);
-    }
-
-    // Release memory if it fails?
-
-    stream.close();
-    return map;
 }
 
-<<<<<<< HEAD
-// Add readline method that will leave if tag is read
-
-MapLoader::MapLoader(string fileName) : _fileName(fileName)
-=======
-MapLoader& MapLoader::operator=(const MapLoader& maploader)
->>>>>>> origin/master
+MapLoader &MapLoader::operator=(const MapLoader &maploader)
 {
     return *(new MapLoader(maploader));
 }
 
 // Add readline method that will leave if tag is read
 
-MapLoader::MapLoader():_fileName()
+MapLoader::MapLoader() : _fileName()
 {
 }
 
@@ -158,7 +211,12 @@ MapLoader::MapLoader(string fileName) : _fileName(fileName)
 {
 }
 
-MapLoader::MapLoader(const MapLoader& mapLoader)
+void MapLoader::setFileName(string fileName)
+{
+    _fileName = fileName;
+}
+
+MapLoader::MapLoader(const MapLoader &mapLoader)
 {
     cout << "Copy constructor... This should never be called since its a service not an object" << endl;
     //only for correction purposes
@@ -170,7 +228,7 @@ MapLoader::~MapLoader()
     cout << "Destructor for MapLoader" << endl;
 }
 
-ostream& operator<<(ostream& os, const MapLoader& mapLoader)
+ostream &operator<<(ostream &os, const MapLoader &mapLoader)
 {
     return os << "Loading map file: " << mapLoader._fileName << endl;
 }

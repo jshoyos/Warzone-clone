@@ -1,6 +1,7 @@
 #include "Map.h"
 #include <map>
 #include <list>
+#include <algorithm>
 //--------------------------------------------------------------------------------------------------------------------MAP---------------------------------------------------------------------------------------------
 Map::Map() :_numberOfContinents(0)
 {
@@ -60,34 +61,34 @@ Map& Map::operator=(const Map& map)
 	return *(new Map(map));
 }
 
-bool Map::checkTerritories()
-{
+// bool Map::checkTerritories()
+// {
 
-	// i honesetly dont know if this one works
+// 	// i honesetly dont know if this one works
 
-	// check for empty continents
+// 	// check for empty continents
 
-	// for (Continent *continent : _continents)
-	// 	if (continent->territoriesSize() == 0)
-	// 	{
-	// 		return 0;
-	// 	}
+// 	// for (Continent *continent : _continents)
+// 	// 	if (continent->territoriesSize() == 0)
+// 	// 	{
+// 	// 		return 0;
+// 	// 	}
 
-	// 1. put all territories in continents into a collection
-	// 2. take unique elements
-	// 3. if territories size != unique elements, there is an issue
+// 	// 1. put all territories in continents into a collection
+// 	// 2. take unique elements
+// 	// 3. if territories size != unique elements, there is an issue
 
-	list<int> ids;
+// 	list<int> ids;
 
-	for (auto continent : _continents) {
-	}
+// 	for (auto continent : _continents) {
+// 	}
 
-	ids.sort();
-	ids.unique();
+// 	ids.sort();
+// 	ids.unique();
 
-	if (ids.size() != _territories.size())
-		return 0;
-}
+// 	if (ids.size() != _territories.size())
+// 		return 0;
+// }
 
 bool Map::isConnected()
 {

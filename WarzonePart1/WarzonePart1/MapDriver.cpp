@@ -15,17 +15,10 @@ int main()
 	Territory* Malvinas = new Territory(0,"Islas Malvinas", 1-1);
 	Territory* Tierra_del_Fuego = new Territory(1,"Tierra_del_Fuego", 1-1);
 	Territory* Santa_Cruz = new Territory(2,"Santa_Cruz", 1-1);
-<<<<<<< HEAD
-	Territory* Río_Negro = new Territory(3,"Río_Negro", 1-1);
-	Territory* Neuquén = new Territory(4,"Neuquén", 1-1);
-
-	Territory* Paysandú = new Territory(5,"Paysandú", 2-1);
-=======
 	Territory* Rio_Negro = new Territory(3,"Río_Negro", 1-1);
 	Territory* Neuquen = new Territory(4,"Neuquén", 1-1);
 
 	Territory* Paysandu = new Territory(5,"Paysandú", 2-1);
->>>>>>> origin/master
 	Territory* Maldonado = new Territory(6,"Maldonado", 2-1);
 	Territory* Montevideo = new Territory(7,"Montevideo", 2-1);
 
@@ -36,15 +29,9 @@ int main()
 	map->addTerritory(Malvinas);
 	map->addTerritory(Tierra_del_Fuego);
 	map->addTerritory(Santa_Cruz);
-<<<<<<< HEAD
-	map->addTerritory(Río_Negro);
-	map->addTerritory(Neuquén);
-	map->addTerritory(Paysandú);
-=======
 	map->addTerritory(Rio_Negro);
 	map->addTerritory(Neuquen);
 	map->addTerritory(Paysandu);
->>>>>>> origin/master
 	map->addTerritory(Maldonado);
 	map->addTerritory(Montevideo);
 
