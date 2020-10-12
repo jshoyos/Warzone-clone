@@ -80,20 +80,20 @@ bool Map::checkTerritories()
 	// 2. take unique elements
 	// 3. if territories size != unique elements, there is an issue
 
-	list<string> ids;
+	list<string> territoriesNames;
 
 	for (auto continent : _continents) {
 		vector<Territory*>* temp = continent->getTerritories();
 		for (auto territory : *temp) {
-			ids.push_back(territory->getTerritoryName());
+			territoriesNames.push_back(territory->getTerritoryName());
 		}
 	}
-	int initialListSize = ids.size();
-	ids.sort();
-	ids.unique();
+	int initialListSize = territoriesNames.size();
+	territoriesNames.sort();
+	territoriesNames.unique();
 
 
-	if (ids.size() != initialListSize) {
+	if (territoriesNames.size() != initialListSize) {
 		cout << "OH OH THERE SEEMS TO BE A SHAPESHIFTER" << endl;
 		return false;
 	}
