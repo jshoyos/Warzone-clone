@@ -66,8 +66,6 @@ Map& Map::operator=(const Map& map)
 bool Map::checkTerritories()
 {
 
-// 	// i honesetly dont know if this one works
-
 // 	// check for empty continents
 
 	for (Continent* continent : _continents) {
@@ -80,7 +78,6 @@ bool Map::checkTerritories()
 // 	// 1. put all territories in continents into a collection
 // 	// 2. take unique elements
 // 	// 3. if territories size != unique elements, there is an issue
-
 	list<string> territoriesNames;
 
 	for (auto continent : _continents) {
