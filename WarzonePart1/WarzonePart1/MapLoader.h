@@ -7,7 +7,8 @@ using namespace std;
 class MapLoader 
 {
     string _fileName;
-    bool isFileValid();
+    bool intToken(string intToken);
+    bool strToken(string strToken);
 
 public:
     MapLoader();
@@ -15,7 +16,7 @@ public:
     MapLoader(const MapLoader&);
     ~MapLoader();
     Map* createMap();
-    bool setFileName();
+    void setFileName(string fileName);
     MapLoader& operator=(const MapLoader&);
     friend ostream& operator<<(ostream&, const MapLoader&);
 };

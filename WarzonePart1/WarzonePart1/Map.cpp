@@ -1,6 +1,7 @@
 #include "Map.h"
 #include <map>
 #include <list>
+#include <algorithm>
 //--------------------------------------------------------------------------------------------------------------------MAP---------------------------------------------------------------------------------------------
 Map::Map() :_numberOfContinents(0)
 {
@@ -65,9 +66,7 @@ Map& Map::operator=(const Map& map)
 bool Map::checkTerritories()
 {
 
-	// i honesetly dont know if this one works
-
-	// check for empty continents
+// 	// check for empty continents
 
 	for (Continent* continent : _continents) {
 		if (continent->continentSize() == 0)
@@ -76,10 +75,9 @@ bool Map::checkTerritories()
 		}
 	 }
 
-	// 1. put all territories in continents into a collection
-	// 2. take unique elements
-	// 3. if territories size != unique elements, there is an issue
-
+// 	// 1. put all territories in continents into a collection
+// 	// 2. take unique elements
+// 	// 3. if territories size != unique elements, there is an issue
 	list<string> territoriesNames;
 
 	for (auto continent : _continents) {
@@ -157,10 +155,10 @@ bool Map::addContinent(Continent* continent)
 
 bool Map::addTerritory(Territory* territory)
 {
+	cout << territory->getTerritoryName() << endl;
 	if (territory != NULL && territory->getTerritoryName() != "")
-		// i commented this out because i think the ids can be 0
-		//territory->getContinent() != 0
 	{
+		
 		_territories.push_back(territory);
 		_continents[territory->getContinent()]->addTerritory(territory);
 		return true;
