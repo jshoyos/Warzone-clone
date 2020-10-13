@@ -124,7 +124,7 @@ Map *MapLoader::createMap()
                 case Mode::continent:
 
                     // test if line has enough tokens
-                    if (!(tokens.size() > 0))
+                    if (tokens.size() == 0)
                     {
                         cout << "There is an issue with a continent in the file" << endl;
                         delete map;
@@ -146,7 +146,7 @@ Map *MapLoader::createMap()
                 // Test if there are at least 3 tokens in each line
                 case Mode::territory:
 
-                    if (!(tokens.size() > 3))
+                    if (tokens.size() < 3)
                     {
                         cout << "There is an issue with a territory in the file" << endl;
                         delete map;
@@ -160,6 +160,14 @@ Map *MapLoader::createMap()
                     continent_id = stoi(tokens[2]) - 1;
                     name = tokens[1];
 
+                    // Does the continent id make sense?
+                    if (continent_id >= continents.size()) {
+                        cout << "continent_id doesnt make sense" << endl;
+                        delete map;
+                        return NULL;
+                    }
+
+
                     territories.push_back(new Territory(territory_id, name, continent_id));
                     current = territories.back();
                     cout << current->getId() << endl;
@@ -168,17 +176,39 @@ Map *MapLoader::createMap()
 
                 // Change mode to handle borders
                 // Give each territory a continent id
-                // Test if there are at least 3 tokens in each line
+                // Test if there are more than 1 token in each line
+                // Must be read LAST to work
                 case Mode::border:
 
-                    if (!(tokens.size() > 0))
+                    // Check whether territories were defined earlier
+                    if (territories.size() == 0) {
+                        cout << "Territories and continents should be defined before borders" << endl;
+                        delete map;
+                        return NULL;
+                    }
+
+                    // Check if there are enough toke s 
+                    else if (tokens.size() == 0)
                     {
                         cout << "There is an issue with a border in the file" << endl;
                         delete map;
                         return NULL;
                     }
 
+                    // Check whether each border makes sense
+                    for (string token : tokens) {
+                        int id = stoi(token) - 1;
+                        if (id >= territories.size() || id < 0)
+                        {
+                            cout << "Theres a border that's invalid" << endl;
+                            delete map;
+                            return NULL;
+                        }
+                            
+                    }
+
                     tags_read[2] = true;
+
 
                     // first number is the territory to add borders to
                     // 3 2 3 11 ---> 3 is current_id, [2, 3, 11] are borders
