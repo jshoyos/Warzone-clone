@@ -187,7 +187,7 @@ Map *MapLoader::createMap()
                         return NULL;
                     }
 
-                    // Check if there are enough toke s 
+                    // Check if there are enough tokens 
                     else if (tokens.size() == 0)
                     {
                         cout << "There is an issue with a border in the file" << endl;

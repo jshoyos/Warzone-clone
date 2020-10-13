@@ -16,7 +16,7 @@ int main()
     // loader.setFileName(".map");
     // Map* mapWrong2 = loader.createMap();
 
-    // // test bad file (not all tokens)
-    // loader.setFileName("sw_baltic_bad.map");
-    // Map* mapWrong3 = loader.createMap();
+    // test bad file (not all tokens)
+    loader.setFileName("sw_baltic_bad.map");
+    Map* mapWrong3 = loader.createMap();
 }
