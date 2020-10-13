@@ -7,12 +7,16 @@ int Player::_id = 0;
 //Default constructor for player
 Player::Player()
 {
+	_hand = new Hand();
+	_orderList = new OrdersList();
 	_id++; //increments static int (id)
 }
 
 //Destructor for a player
 Player::~Player()
 {
+	delete _orderList; _orderList = NULL;
+	delete _hand; _hand = NULL;
 }
 
 //Copy constructor for a player 
@@ -22,25 +26,27 @@ Player::Player(const Player& player)
 	this->_name = player._name;
 	
 	//Iterates through list and copies onjects
-	for (int i = 0; i < player._orderList.size();i++) {
-		this->_orderList[i] = player._orderList[i];
+	for (int i = 0; i < player._orderList->_ordersList.size();i++) {
+		this->_orderList->_ordersList[i] = player._orderList->_ordersList[i];
 	}
 	for (int i = 0; i < player._territoryList.size();i++) {
 		this->_territoryList[i] = player._territoryList[i];
 	}
-	for (int i = 0; i < player._hand.size();i++) {
-		this->_hand[i] = player._hand[i];
+	for (int i = 0; i < player._hand->handOfCards.size();i++) {
+		this->_hand->handOfCards[i] = player._hand->handOfCards[i];
 	}
 	
 }
 //Parameterized constructor accpeting a string and increments the id
 Player::Player(string name) :_name(name)
 {
+	_hand = new Hand();
+	_orderList = new OrdersList();
 	_id++; //increments static int (id)
 }
 
 //Parameterized constructor accpeting a list of orders, a list of cards and a list of territories.
-Player::Player(string name, vector<Orders*>* orders, vector<Cards*>* cards, vector<Territory*>* territories) : _name(name), _orderList(*orders), _hand(*cards), _territoryList(*territories)
+Player::Player(string name, OrdersList* orders, Hand* hand, vector<Territory*>* territories) : _name(name), _orderList(orders), _hand(hand), _territoryList(*territories)
 {
 	_id++; //increments static int (id)
 }
@@ -54,14 +60,14 @@ string Player::getName()
 }
 
 //get method that returns a players list of orders
-vector<Orders*>* Player::getOrderList()
+OrdersList* Player::getOrderList()
 {
-	return &_orderList;
+	return _orderList;
 }
 //get method that returns list of cards in a players hand
-vector<Cards*>* Player::getHand()
+Hand* Player::getHand()
 {
-	return &_hand;
+	return _hand;
 }
 
 //get method that returns a list of territories owned 
@@ -82,25 +88,15 @@ bool Player::setName(string name)
 	return false;
 }
 //add order to players order's list
-bool Player::addOrder(Orders* order)
+bool Player::addOrder(Order* order)
 {
-	if (order != NULL)
-	{
-		_orderList.push_back(order);
-		return true;
-	}
-	return false;
+	return _orderList->queueOrder(order);
 }
 
 //add cards to players hand
-bool Player::addCard(Cards* card)
+void Player::addCard(Card card)
 {
-	if (card != NULL)
-	{
-		_hand.push_back(card);
-		return true;
-	}
-	return false;
+	_hand->insertCard(card);
 }
 
 //add territories to players list of territories
@@ -146,15 +142,15 @@ vector<Territory*>* Player::toAttack()
 }
 
 //method that creates order and adds it to player's order list
-void Player::issueOrder()
+void Player::issueOrder(string orderName)
 {
 	//maybe recieve order as parameter
-	Orders* newOrder = new Orders();
+	Order* newOrder = new Order(orderName);
 	addOrder(newOrder);
 }
 
 //overwritting string operator for class player
 ostream& operator<< (ostream& stream, const Player& player)
 {
-	return stream << player._name << " currently has " << player._orderList.size() << " orders, " << player._hand.size() << " cards, and has " << player._territoryList.size() << " territories." << endl;
+	return stream << player._name << " currently has " << player._orderList->_ordersList.size() << " orders, " << player._hand->handOfCards.size() << " cards, and " << player._territoryList.size() << " territories." << endl;
 }

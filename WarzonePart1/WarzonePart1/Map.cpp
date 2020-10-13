@@ -36,9 +36,11 @@ Map::~Map()
 	cout << "DESTROYING THE MAP ITS THE END OF THE WORLD!!!!!!!" << endl;
 	for (auto territory : _territories) {
 		delete territory;
+		territory = NULL;
 	}
 	for (auto continent : _continents) {
 		delete continent;
+		continent = NULL;
 	}
 }
 
@@ -49,7 +51,7 @@ bool Map::validate()
 	// wont mean anything if graph is not undirected
 	//
 	// I think you might have to do it for every node in the graph to ensure undirected
-	if (!isConnected())
+	if (!isConnected() && !checkTerritories())
 	{
 		return false;
 	}
@@ -61,34 +63,43 @@ Map& Map::operator=(const Map& map)
 	return *(new Map(map));
 }
 
-// bool Map::checkTerritories()
-// {
+bool Map::checkTerritories()
+{
 
 // 	// i honesetly dont know if this one works
 
 // 	// check for empty continents
 
-// 	// for (Continent *continent : _continents)
-// 	// 	if (continent->territoriesSize() == 0)
-// 	// 	{
-// 	// 		return 0;
-// 	// 	}
+	for (Continent* continent : _continents) {
+		if (continent->continentSize() == 0)
+		{
+			return false;
+		}
+	 }
 
 // 	// 1. put all territories in continents into a collection
 // 	// 2. take unique elements
 // 	// 3. if territories size != unique elements, there is an issue
 
-// 	list<int> ids;
+	list<string> territoriesNames;
 
-// 	for (auto continent : _continents) {
-// 	}
+	for (auto continent : _continents) {
+		vector<Territory*>* temp = continent->getTerritories();
+		for (auto territory : *temp) {
+			territoriesNames.push_back(territory->getTerritoryName());
+		}
+	}
+	int initialListSize = territoriesNames.size();
+	territoriesNames.sort();
+	territoriesNames.unique();
 
-// 	ids.sort();
-// 	ids.unique();
 
-// 	if (ids.size() != _territories.size())
-// 		return 0;
-// }
+	if (territoriesNames.size() != initialListSize) {
+		cout << "OH OH THERE SEEMS TO BE A SHAPESHIFTER" << endl;
+		return false;
+	}
+	return true;
+}
 
 bool Map::isConnected()
 {
