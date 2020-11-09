@@ -284,14 +284,14 @@ MapLoader::MapLoader() : _fileName("")
 }
 
 // Parametrized constructor
-MapLoader::MapLoader(string fileName) : _fileName(fileName)
+MapLoader::MapLoader(string fileName) : _fileName("Maps/"+fileName)
 {
 }
 
 // Set name for file
 void MapLoader::setFileName(string fileName)
 {
-    _fileName = fileName;
+    _fileName = "Maps/"+fileName;
 }
 
 MapLoader::MapLoader(const MapLoader &mapLoader)
