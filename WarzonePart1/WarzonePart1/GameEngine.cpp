@@ -11,6 +11,7 @@ int GameStart::selectedOption = 0;
 vector<string> GameStart::maps = vector<string>();
 MapLoader  * GameStart::mapLoader = new MapLoader();
 vector <Player*> GameStart::players = vector<Player*>();
+Deck* GameStart::deck = nullptr;
 
 void GameStart::displayMapOptions()
 {
@@ -35,12 +36,20 @@ int GameStart::numberOfPlayersSelection()
     }
     return numberOfPlayers;
 }
+void GameStart::generateDeck()
+{
+    int deckSize;
+    cout << "Please enter a deck size: ";
+    cin >> deckSize;
+    cout << "Genarating Deck..." << endl;
+    GameStart::deck = new Deck(deckSize);
+}
 Map* GameStart::selectMap()
 {
     displayMapOptions();
     cout << "Type your selection here: ";
     cin >> selectedOption;
-    while (selectedOption < 0 || selectedOption > 6) {
+    while (selectedOption < 0 || selectedOption > GameStart::maps.size()) {
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
@@ -59,4 +68,11 @@ void GameStart::createPlayers()
         cin >> name;
         players.push_back(new Player(name));
     }
+}
+
+void GameStart::start()
+{
+    GameStart::selectMap();
+    GameStart::createPlayers();
+    GameStart::generateDeck();
 }

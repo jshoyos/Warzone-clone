@@ -1,7 +1,6 @@
 #include "GameEngine.h"
 
 int main() {
-	GameStart::selectMap();
-	GameStart::createPlayers();
+	GameStart::start();
 	return 0;
 }
