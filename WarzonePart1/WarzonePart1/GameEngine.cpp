@@ -1,17 +1,62 @@
 #include "GameEngine.h"
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
+#include<iostream>
+#include<filesystem>
+#include<string>
+
+using namespace std;
+namespace fs = std::filesystem;
 
 const string GameStart::PATH = "Maps/";
-Map GameStart::selectMap()
-{
-    for (auto& entry : fs::directory_iterator(PATH)) {
+int GameStart::selectedOption = 0;
+vector<string> GameStart::maps = vector<string>();
+MapLoader  * GameStart::mapLoader = new MapLoader();
+vector <Player*> GameStart::players = vector<Player*>();
 
+void GameStart::displayMapOptions()
+{
+    cout << "Please Select One of the Following Available Maps:" << endl;
+    int index = 0;
+    
+    for (auto& entry : fs::directory_iterator(PATH)) {
+        GameStart::maps.push_back(entry.path().string());
+        cout << "(" << index << ") " << entry.path() << endl;
+        index++;
     }
-    return Map();
+}
+int GameStart::numberOfPlayersSelection()
+{
+    int numberOfPlayers;
+    cout << "Please enter the number of players [2-5]: ";
+    cin >> numberOfPlayers;
+    while (numberOfPlayers < 2 || numberOfPlayers > 5) {
+        cout << "INVALID NUMBER OF PLAYERS" << endl;
+        cout << "This game can only be played between 2 and 5 players. Make a new selection: ";
+        cin >> numberOfPlayers;
+    }
+    return numberOfPlayers;
+}
+Map* GameStart::selectMap()
+{
+    displayMapOptions();
+    cout << "Type your selection here: ";
+    cin >> selectedOption;
+    while (selectedOption < 0 || selectedOption > 6) {
+        cout << "Invalid selection..." << endl << "Please select again: ";
+        cin >> selectedOption;
+    }
+    mapLoader-> setFileName(GameStart::maps[selectedOption]);
+    cout << "Creaing map from " << GameStart::maps[selectedOption] << "..." << endl;
+    Map *map = mapLoader->createMap();
+    return map;
 }
 
-vector<Player*> GameStart::createPlayers(int)
+void GameStart::createPlayers()
 {
-    return vector<Player*>();
+    int numberOfPlayers = numberOfPlayersSelection();
+    for (int i = 0; i < numberOfPlayers; ++i) {
+        string name;
+        cout << "Enter player " << i + 1 << " name: ";
+        cin >> name;
+        players.push_back(new Player(name));
+    }
 }

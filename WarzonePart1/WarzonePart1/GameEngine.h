@@ -8,12 +8,17 @@ private:
 	const static string PATH;
 	static vector<string> maps;
 	static int selectedOption;
-	static void displayMapOptions();
+	static MapLoader* mapLoader;
+	static vector<Player*> players;
 
+#pragma region helperMethods
+	static void displayMapOptions();
+	static int numberOfPlayersSelection();
+#pragma endregion
 public:
 #pragma region methods
-	static Map selectMap();
-	static vector<Player*> createPlayers(int);
+	static Map* selectMap();
+	static void createPlayers();
 #pragma endregion
 };
 
