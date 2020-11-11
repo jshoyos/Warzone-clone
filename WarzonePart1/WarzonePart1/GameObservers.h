@@ -9,12 +9,12 @@ public:
 
 class Publisher {
 private:
-	vector<reference_wrapper<IObservable>> subscribers;
+	vector<IObservable*> observers;
 public:
-	void subscribe(IObservable&);
+	void subscribe(IObservable*);
 	void nofityAll();
-	void unsubscribe(IObservable&);
-	bool isSubscribed(const IObservable&);
+	void unsubscribe(IObservable*);
+	bool isSubscribed(IObservable*) const;
 };
 
 class PhaseObserver : IObservable {
@@ -23,5 +23,6 @@ public:
 };
 
 class GameStatisticsObserver : IObservable {
-
+public:
+	void update() override;
 };

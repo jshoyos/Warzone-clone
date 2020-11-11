@@ -1,29 +1,32 @@
 #include "GameObservers.h"
 #include "GameObservers.h"
 
-bool Publisher::isSubscribed(const IObservable& observer)
+bool Publisher::isSubscribed(IObservable *observer) const
 {
-	for (IObservable& sub : subscribers) {
-		if (&sub == &observer ){
+	for (IObservable *obs : observers) {
+		if (obs == observer ){
 			return true;
 		}
 	}
 	return false;
 }
 
-void Publisher::subscribe(IObservable& observer)
+void Publisher::subscribe(IObservable *observer)
 {
-	subscribers.push_back(observer);
+	observers.push_back(observer);
 }
 
 void Publisher::nofityAll()
 {
-	for (IObservable& subscriber : subscribers) {
-		subscriber.update();
+	for (IObservable *observer : observers) {
+		observer->update();
 	}
 }
 
-void Publisher::unsubscribe(IObservable&)
+void Publisher::unsubscribe(IObservable* observer)
 {
-	remove_if(subscribers.begin(), subscribers.end(), isSubscribed);
+	if (isSubscribed(observer)) {
+		auto it = find(observers.begin(), observers.end(), observer);
+		observers.erase(it);
+	}
 }
