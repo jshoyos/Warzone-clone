@@ -44,6 +44,15 @@ void GameStart::generateDeck()
     cout << "Genarating Deck..." << endl;
     GameStart::deck = new Deck(deckSize);
 }
+void GameStart::toggleObserverOnOff(Publisher& publisher,IObservable& observer,bool on)
+{
+    if (on && !publisher.isSubscribed(observer)) {
+        publisher.subscribe(observer);
+    }
+    else {
+        publisher.unsubscribe(observer);
+    }
+}
 Map* GameStart::selectMap()
 {
     displayMapOptions();
