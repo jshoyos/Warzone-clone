@@ -18,10 +18,11 @@ private:
 #pragma endregion
 public:
 #pragma region methods
-	static void toggleObserverOnOff(Publisher&,IObservable&,bool);
+//	static void toggleObserverOnOff(Publisher&,IObservable&,bool);
 	static Map* selectMap();
 	static void createPlayers();
 	static void start();
 #pragma endregion
 };
 
+void orderOfPlay(int nnumbOfPlayers);

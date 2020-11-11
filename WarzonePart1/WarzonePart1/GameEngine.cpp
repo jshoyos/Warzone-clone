@@ -44,15 +44,15 @@ void GameStart::generateDeck()
     cout << "Genarating Deck..." << endl;
     GameStart::deck = new Deck(deckSize);
 }
-void GameStart::toggleObserverOnOff(Publisher& publisher,IObservable& observer,bool on)
-{
-    if (on && !publisher.isSubscribed(observer)) {
-        publisher.subscribe(observer);
-    }
-    else {
-        publisher.unsubscribe(observer);
-    }
-}
+//void GameStart::toggleObserverOnOff(Publisher& publisher,IObservable& observer,bool on)
+//{
+//    if (on && !publisher.isSubscribed(observer)) {
+//        publisher.subscribe(observer);
+//    }
+//    else {
+//        publisher.unsubscribe(observer);
+//    }
+//}
 Map* GameStart::selectMap()
 {
     displayMapOptions();
@@ -62,7 +62,7 @@ Map* GameStart::selectMap()
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
-    mapLoader-> setFileName(GameStart::maps[selectedOption]);
+    mapLoader-> setFileName(GameStart::maps[selectedOption].substr(5));
     cout << "Creaing map from " << GameStart::maps[selectedOption] << "..." << endl;
     Map *map = mapLoader->createMap();
     return map;
