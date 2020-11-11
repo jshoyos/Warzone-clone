@@ -7,6 +7,8 @@ int Player::_id = 0;
 //Default constructor for player
 Player::Player()
 {
+	_reinforcementPool = 0;
+	_name = "";
 	_hand = new Hand();
 	_orderList = new OrdersList();
 	_id++; //increments static int (id)
@@ -24,6 +26,7 @@ Player::Player(const Player& player)
 {
 	this->_id = player._id;
 	this->_name = player._name;
+	this->_reinforcementPool = player._reinforcementPool;
 	
 	//Iterates through list and copies onjects
 	for (int i = 0; i < player._orderList->_ordersList.size();i++) {
@@ -37,8 +40,17 @@ Player::Player(const Player& player)
 	}
 	
 }
-//Parameterized constructor accpeting a string and increments the id
+//Parameterized constructor accpeting a string, and increments the id
 Player::Player(string name) :_name(name)
+{
+	_reinforcementPool = 0;
+	_hand = new Hand();
+	_orderList = new OrdersList();
+	_id++; //increments static int (id)
+}
+
+//Parameterized constructor accpeting a string, an int and increments the id
+Player::Player(string name, int num) :_name(name),_reinforcementPool(num)
 {
 	_hand = new Hand();
 	_orderList = new OrdersList();
@@ -46,7 +58,7 @@ Player::Player(string name) :_name(name)
 }
 
 //Parameterized constructor accpeting a list of orders, a list of cards and a list of territories.
-Player::Player(string name, OrdersList* orders, Hand* hand, vector<Territory*>* territories) : _name(name), _orderList(orders), _hand(hand), _territoryList(*territories)
+Player::Player(string name, OrdersList* orders, Hand* hand, vector<Territory*>* territories,int num) : _name(name), _orderList(orders), _hand(hand), _territoryList(*territories), _reinforcementPool(num)
 {
 	_id++; //increments static int (id)
 }
@@ -74,6 +86,11 @@ Hand* Player::getHand()
 vector<Territory*>* Player::getTerritoryList()
 {
 	return &_territoryList;
+}
+
+int Player::getReinforcementPool()
+{
+	return _reinforcementPool;
 }
 
 //---------------------------------- Setters --------------------------------\\
@@ -107,6 +124,15 @@ bool Player::conquerTerritory(Territory* territory)
 	{
 		_territoryList.push_back(territory);
 		territory->setOwner(this);
+		return true;
+	}
+	return false;
+}
+
+bool Player::setReinforcementPool(int reinforcementPool)
+{
+	if (reinforcementPool != NULL) {
+		_reinforcementPool = reinforcementPool;
 		return true;
 	}
 	return false;
@@ -152,5 +178,5 @@ void Player::issueOrder(string orderName)
 //overwritting string operator for class player
 ostream& operator<< (ostream& stream, const Player& player)
 {
-	return stream << player._name << " currently has " << player._orderList->_ordersList.size() << " orders, " << player._hand->handOfCards.size() << " cards, and " << player._territoryList.size() << " territories." << endl;
+	return stream << player._name << " currently has " << player._orderList->_ordersList.size() << " orders, " << player._hand->handOfCards.size() << " cards, " << player._territoryList.size() << " territories, and " << player._reinforcementPool<< "armies in pool."<< endl;
 }
