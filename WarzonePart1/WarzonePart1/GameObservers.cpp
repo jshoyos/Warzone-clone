@@ -35,6 +35,10 @@ void Publisher::unsubscribe(IObservable* observer)
 
 void PhaseObserver::update(string data)
 {
-	cout << "\e[1;1H\e[2J";
+#if defined(WIN32)
+	system("cls");
+#else
+	system("clear");
+#endif
 	cout << data;
 }

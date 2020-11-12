@@ -1,14 +1,11 @@
 #include "GameEngine.h"
-
 #include<iostream>
 #include<filesystem>
 #include<string>
-
 #include <vector>
 #include <random>
 
 using namespace std;
-
 namespace fs = std::filesystem;
 
 const string GameStart::PATH = "Maps/";
@@ -22,6 +19,7 @@ Map* GameStart::map = nullptr;
 void GameStart::displayMapOptions()
 {
     cout << "Welcome to Warzone! \n\nPlease Select One of the Following Available Maps:" << endl;
+
     int index = 0;
     
     for (auto& entry : fs::directory_iterator(PATH)) {
@@ -64,7 +62,8 @@ Map* GameStart::selectMap()
     displayMapOptions();
     cout << "\nType your selection here: ";
     cin >> selectedOption;
-    while (selectedOption < 0 || selectedOption >= (int)GameStart::maps.size()) {        // make it >= 
+    while (selectedOption < 0 || selectedOption >= (int)GameStart::maps.size()) { 
+
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
@@ -75,7 +74,6 @@ Map* GameStart::selectMap()
     cout << "\nMap loading complete. \n\nLet's now validate the map:\n" << endl;
     map->validate();
     cout << endl;
-
     return map;
 }
 
@@ -97,6 +95,7 @@ void GameStart::start()
     GameStart::createPlayers();
     GameStart::generateDeck();
 }
+
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -208,8 +207,3 @@ void GameStartup::startupPhase() {
     assignTerritories();
     initializeArmies();
 }
-
-
-
-
-

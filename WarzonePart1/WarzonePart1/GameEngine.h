@@ -16,12 +16,12 @@ private:
 #pragma endregion
 
 public:
+
 	static vector<Player*> players;
 	static Map* map;
 	static Deck* deck;
-
 #pragma region methods
-	static void toggleObserverOnOff(Publisher*, IObservable*, bool);
+	static void toggleObserverOnOff(Publisher*,IObservable*,bool);
 	static Map* selectMap();
 	static void createPlayers();
 	static void start();
