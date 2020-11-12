@@ -10,6 +10,7 @@ private:
 	static Deck *deck;
 	static MapLoader* mapLoader;
 	static vector<Player*> players;
+	static Map* map;
 
 #pragma region helperMethods
 	static void displayMapOptions();
