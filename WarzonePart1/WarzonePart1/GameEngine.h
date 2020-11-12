@@ -7,10 +7,7 @@ private:
 	const static string PATH;
 	static vector<string> maps;
 	static int selectedOption;
-	static Deck *deck;
 	static MapLoader* mapLoader;
-	static vector<Player*> players;
-	static Map* map;
 
 #pragma region helperMethods
 	static void displayMapOptions();
@@ -18,6 +15,10 @@ private:
 	static void generateDeck();
 #pragma endregion
 public:
+
+	static vector<Player*> players;
+	static Map* map;
+	static Deck* deck;
 #pragma region methods
 	static void toggleObserverOnOff(Publisher*,IObservable*,bool);
 	static Map* selectMap();
