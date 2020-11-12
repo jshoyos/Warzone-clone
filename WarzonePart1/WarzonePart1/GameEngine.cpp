@@ -168,7 +168,7 @@ void GameStartup::assignTerritories() {
     cout << "\nLet's do the math quickly... \n\n";
     for (int i = 0; i < numbPlayers; i++)
         cout << "- Player \"" << GameStart::players[i]->getName() <<"\" has " << (GameStart::players[i]->getTerritoryList())->size() << " territories" << endl;
-    cout << "\nTotal is " << mapSize << ", which matches the number of territories in the map, awesome!";
+    cout << "\nThat's " << mapSize << "territories, which matches the number of territories in the map, awesome!";
 
 }
 
