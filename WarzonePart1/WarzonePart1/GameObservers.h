@@ -4,24 +4,25 @@ using namespace std;
 #pragma once
 class IObservable {
 public:
-	virtual void update() = 0;
+	virtual void update(string) = 0;
 };
 
 class Publisher {
 private:
-	vector<reference_wrapper<IObservable>> subscribers;
+	vector<IObservable*> observers;
 public:
-	void subscribe(IObservable&);
-	void nofityAll();
-	void unsubscribe(IObservable&);
-	bool isSubscribed(const IObservable&);
+	void subscribe(IObservable*);
+	void nofityAll(string data);
+	void unsubscribe(IObservable*);
+	bool isSubscribed(IObservable*) const;
 };
 
 class PhaseObserver : IObservable {
 public:
-	void update() override;
+	void update(string) override;
 };
 
 class GameStatisticsObserver : IObservable {
-
+public:
+	void update(string) override;
 };

@@ -1,29 +1,44 @@
 #include "GameObservers.h"
-#include "GameObservers.h"
+#include <iostream>
 
-bool Publisher::isSubscribed(const IObservable& observer)
+using namespace std;
+
+bool Publisher::isSubscribed(IObservable *observer) const
 {
-	for (IObservable& sub : subscribers) {
-		if (&sub == &observer ){
+	for (IObservable *obs : observers) {
+		if (obs == observer ){
 			return true;
 		}
 	}
 	return false;
 }
 
-void Publisher::subscribe(IObservable& observer)
+void Publisher::subscribe(IObservable *observer)
 {
-	subscribers.push_back(observer);
+	observers.push_back(observer);
 }
 
-void Publisher::nofityAll()
+void Publisher::nofityAll(string data)
 {
-	for (IObservable& subscriber : subscribers) {
-		subscriber.update();
+	for (IObservable *observer : observers) {
+		observer->update(data);
 	}
 }
 
-void Publisher::unsubscribe(IObservable&)
+void Publisher::unsubscribe(IObservable* observer)
 {
-	remove_if(subscribers.begin(), subscribers.end(), isSubscribed);
+	if (isSubscribed(observer)) {
+		auto it = find(observers.begin(), observers.end(), observer);
+		observers.erase(it);
+	}
+}
+
+void PhaseObserver::update(string data)
+{
+#if defined(WIN32)
+	system("cls");
+#else
+	system("clear");
+#endif
+	cout << data;
 }
