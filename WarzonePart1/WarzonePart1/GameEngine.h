@@ -10,6 +10,7 @@ private:
 	static Deck *deck;
 	static MapLoader* mapLoader;
 	static vector<Player*> players;
+	static Map* map;
 
 #pragma region helperMethods
 	static void displayMapOptions();
@@ -18,7 +19,7 @@ private:
 #pragma endregion
 public:
 #pragma region methods
-//	static void toggleObserverOnOff(Publisher&,IObservable&,bool);
+	static void toggleObserverOnOff(Publisher*,IObservable*,bool);
 	static Map* selectMap();
 	static void createPlayers();
 	static void start();
