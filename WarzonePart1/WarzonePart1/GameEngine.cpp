@@ -1,9 +1,14 @@
 #include "GameEngine.h"
+
 #include<iostream>
 #include<filesystem>
 #include<string>
 
+#include <vector>
+#include <random>
+
 using namespace std;
+
 namespace fs = std::filesystem;
 
 const string GameStart::PATH = "Maps/";
@@ -16,7 +21,7 @@ Map* GameStart::map = nullptr;
 
 void GameStart::displayMapOptions()
 {
-    cout << "Please Select One of the Following Available Maps:" << endl;
+    cout << "Welcome to Warzone! \n\nPlease Select One of the Following Available Maps:" << endl;
     int index = 0;
     
     for (auto& entry : fs::directory_iterator(PATH)) {
@@ -40,9 +45,9 @@ int GameStart::numberOfPlayersSelection()
 void GameStart::generateDeck()
 {
     int deckSize;
-    cout << "Please enter a deck size: ";
+    cout << "\nPlease enter a deck size: ";
     cin >> deckSize;
-    cout << "Genarating Deck..." << endl;
+    cout << "\nGenarating Deck..." << endl << endl;
     GameStart::deck = new Deck(deckSize);
 }
 void GameStart::toggleObserverOnOff(Publisher* publisher,IObservable* observer,bool on)
@@ -57,21 +62,27 @@ void GameStart::toggleObserverOnOff(Publisher* publisher,IObservable* observer,b
 Map* GameStart::selectMap()
 {
     displayMapOptions();
-    cout << "Type your selection here: ";
+    cout << "\nType your selection here: ";
     cin >> selectedOption;
-    while (selectedOption < 0 || selectedOption > (int)GameStart::maps.size()) {
+    while (selectedOption < 0 || selectedOption >= (int)GameStart::maps.size()) {        // make it >= 
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
-    mapLoader-> setFileName(GameStart::maps[selectedOption].substr(5));
-    cout << "Creaing map from " << GameStart::maps[selectedOption] << "..." << endl;
-    Map *map = mapLoader->createMap();
+    mapLoader-> setFileName(GameStart::maps[selectedOption]);
+    cout << "Creating map from " << GameStart::maps[selectedOption] << "..." << endl;
+    GameStart::map = mapLoader->createMap();
+    
+    cout << "\nMap loading complete. \n\nLet's now validate the map:\n" << endl;
+    map->validate();
+    cout << endl;
+
     return map;
 }
 
 void GameStart::createPlayers()
 {
     int numberOfPlayers = numberOfPlayersSelection();
+    cout << endl;
     for (int i = 0; i < numberOfPlayers; ++i) {
         string name;
         cout << "Enter player " << i + 1 << " name: ";
@@ -86,5 +97,119 @@ void GameStart::start()
     GameStart::createPlayers();
     GameStart::generateDeck();
 }
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// This method shuffles our vector of Players. 
+// Example: original vector: (bob, mike, chris), new vector: (mike, chris, bob), where players[0] is now mike. 
+
+void GameStartup ::randomPlayerOrder() {
+
+    random_device rd;
+    mt19937 g(rd());
+    cout << "\nAgain, our players are: \n" << endl;
+    for (int i = 0; i < GameStart::players.size(); i++)
+        cout << i << ". " << GameStart::players[i]->getName() << endl;
+
+    shuffle(GameStart::players.begin(), GameStart::players.end(), g);
+
+    cout << "\nThe order of play though will be determined randomly, and as follow: \n" << endl;
+    for (int i = 0; i < GameStart::players.size(); i++)
+        cout << "Player " << i << ": " << GameStart::players[i]->getName() << endl;
+
+}
+
+// This method randomly assigns territories to each player, in a round-robin fashion
+
+void GameStartup::assignTerritories() {
+
+    int mapSize = GameStart::map->getMapSizeTerritory();
+    int numbPlayers = GameStart::players.size();
+    cout << "\nUsing Round-Robin, let's randomly assign all " << mapSize << " territories to each player: \n" << endl;
+    int playerIndex = 0;
+
+    // Let's create a dummy_vec with values 0 to (n-1) where n = mapSize. 
+    // Let's shuffle the values in that dummy (ie: 4, 13, 39, 17, 3, etc)
+    // Then the value at index 0 (let's say it's 4) will be used as the index-value of our territories vector, in order to randomly assign a territory to a player.. 
+    // So, following on this example, if value at dummy_vec[0] is 4, then we assign the territory at territories[4] to the first player, and we keep going like that in RR
+    // until we went through all the dummy_vector values, and (ultimately) all territories have been randomly assigned to our players, in a round-robin fashion.
+
+    random_device rd;
+    mt19937 g(rd());
+    vector<int> dummy_vec(mapSize);
+    for (int i = 0; i < mapSize; i++)
+        dummy_vec[i] = i;
+    shuffle(dummy_vec.begin(), dummy_vec.end(), g);
+
+    
+    for (int i = 0; i < mapSize; i++) {
+
+        if (playerIndex == numbPlayers)
+            playerIndex = 0;
+
+        GameStart::players[playerIndex % numbPlayers]->conquerTerritory(GameStart::map->getTerritoryById(dummy_vec[i]));
+       
+        // adding this would be redundant: (*GameStart::map->getTerritoryById(dummy_vec[i])).setOwner(players[playerIndex % numbPlayers]);
+        // since Player::conquerTerritory takes care of doing it already: territory->setOwner(this);
+
+        cout << "Player \"" << GameStart::players[playerIndex]->getName() << "\" was assigned Territory: \""
+             << (GameStart::map->getTerritoryById(dummy_vec[i]))->getTerritoryName() << "\" " << endl;
+
+        playerIndex++;
+          
+    }
+
+    cout << "\nLet's review the list of territories of each player:\n" << endl;
+    for (int i = 0; i < numbPlayers; i++)
+        for (int j = 0; j < (GameStart::players[i]->getTerritoryList())->size(); j++)
+            cout << *GameStart::players[i]->getTerritoryList()->at(j);
+
+    cout << "\nLet's do the math quickly... \n\n";
+    for (int i = 0; i < numbPlayers; i++)
+        cout << "- Player \"" << GameStart::players[i]->getName() <<"\" has " << (GameStart::players[i]->getTerritoryList())->size() << " territories" << endl;
+    cout << "\nTotal is " << mapSize << ", which matches the number of territories in the map, awesome!";
+
+}
+
+void GameStartup::initializeArmies() {
+    int numbPlayers = GameStart::players.size();
+    switch (numbPlayers) {
+        case 2:
+            for (int i = 0; i < numbPlayers; i++)
+                GameStart::players[i]->setReinforcementPool(40);
+            break;
+        case 3:
+            for (int i = 0; i < numbPlayers; i++)
+                GameStart::players[i]->setReinforcementPool(35);
+            break;
+        case 4:
+            for (int i = 0; i < numbPlayers; i++)
+                GameStart::players[i]->setReinforcementPool(30);
+            break;
+        case 5:
+            for (int i = 0; i < numbPlayers; i++)
+                GameStart::players[i]->setReinforcementPool(25);
+            break;
+    }
+
+    cout << "\n\nLast but not least, since we have " << numbPlayers << " players, each will be receiving " << GameStart::players[0]->getReinforcementPool() 
+         << " armies in their reinforcement pool. Let's verifty that:\n" << endl;
+    
+    for (int i = 0; i < numbPlayers; i++) 
+        cout << "- Player \"" << GameStart::players[i]->getName() << "\" has " << GameStart::players[i]->getReinforcementPool() << " armies in their reinforcement pool." << endl;
+    cout << endl << "Alright! Looks like we're all set. And now, let the game begin!" << endl << endl;
+
+}
+
+
+void GameStartup::startupPhase() {
+    randomPlayerOrder();
+    assignTerritories();
+    initializeArmies();
+}
+
+
+
 
 

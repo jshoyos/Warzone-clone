@@ -22,7 +22,7 @@ class Player
 	Hand *_hand;
 	//List of the Player's Territories
 	vector<Territory*> _territoryList;
-	//List of the Player's Territories
+	//Number of Armies in the Player's Reinforcement Pool
 	int _reinforcementPool;
 
 public:
@@ -48,11 +48,15 @@ public:
 	vector<Territory*>* getTerritoryList();
 	int getReinforcementPool();
 
+	int getID();         //d_rivi
+
 	//setters
 	bool setName(string);
 	bool addOrder(Order*);
 	void addCard(Card);
 	bool conquerTerritory(Territory*);
 	bool setReinforcementPool(int);
+
+	void setID(int new_id);        //d_rivi
 };
 

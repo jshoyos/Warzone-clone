@@ -122,7 +122,7 @@ bool Map::isConnected()
 		}
 	}
 
-	cout << "Yay! I am fully connected! :)" << endl;
+	cout << "Success: The map is fully connected!" << endl;
 	return true;
 }
 

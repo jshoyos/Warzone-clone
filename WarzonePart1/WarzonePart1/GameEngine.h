@@ -14,17 +14,28 @@ private:
 	static int numberOfPlayersSelection();
 	static void generateDeck();
 #pragma endregion
-public:
 
+public:
 	static vector<Player*> players;
 	static Map* map;
 	static Deck* deck;
+
 #pragma region methods
-	static void toggleObserverOnOff(Publisher*,IObservable*,bool);
+	static void toggleObserverOnOff(Publisher*, IObservable*, bool);
 	static Map* selectMap();
 	static void createPlayers();
 	static void start();
 #pragma endregion
+
 };
 
-void orderOfPlay(int nnumbOfPlayers);
+	// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class GameStartup{
+public:
+		static void randomPlayerOrder();
+		static void assignTerritories();
+		static void initializeArmies();
+		static void startupPhase();
+};
+
