@@ -12,6 +12,7 @@ vector<string> GameStart::maps = vector<string>();
 MapLoader  * GameStart::mapLoader = new MapLoader();
 vector <Player*> GameStart::players = vector<Player*>();
 Deck* GameStart::deck = nullptr;
+Map* map = nullptr;
 
 void GameStart::displayMapOptions()
 {
@@ -81,7 +82,7 @@ void GameStart::createPlayers()
 
 void GameStart::start()
 {
-    GameStart::selectMap();
+    GameStart::map = GameStart::selectMap();
     GameStart::createPlayers();
     GameStart::generateDeck();
 }
