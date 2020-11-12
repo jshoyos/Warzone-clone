@@ -194,7 +194,7 @@ void GameStartup::initializeArmies() {
     }
 
     cout << "\n\nLast but not least, since we have " << numbPlayers << " players, each will be receiving " << GameStart::players[0]->getReinforcementPool() 
-         << " armies in their reinforcement pool. Let's verifty that:\n" << endl;
+         << " armies in their reinforcement pool. Let's verify that:\n" << endl;
     
     for (int i = 0; i < numbPlayers; i++) 
         cout << "- Player \"" << GameStart::players[i]->getName() << "\" has " << GameStart::players[i]->getReinforcementPool() << " armies in their reinforcement pool." << endl;
