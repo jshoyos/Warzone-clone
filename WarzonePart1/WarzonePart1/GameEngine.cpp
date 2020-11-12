@@ -85,3 +85,26 @@ void GameStart::start()
     GameStart::createPlayers();
     GameStart::generateDeck();
 }
+
+
+// ------------------------------------------- Main Game Loop ---------------------------------------- \\
+
+void MainGameLoop::runMainloop()
+{
+	GameStart::start();
+	
+
+
+}
+
+void MainGameLoop::reinforcementPhase()
+{
+}
+
+void MainGameLoop::issueOrderPhase()
+{
+}
+
+void MainGameLoop::orderExecutionPhase()
+{
+}

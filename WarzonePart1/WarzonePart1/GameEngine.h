@@ -25,3 +25,13 @@ public:
 #pragma endregion
 };
 
+class MainGameLoop {
+private:
+	GameStart gs;
+public:
+	void runMainloop();
+	void reinforcementPhase();
+	void issueOrderPhase();
+	void orderExecutionPhase();
+
+};

@@ -22,7 +22,7 @@ class Player
 	Hand *_hand;
 	//List of the Player's Territories
 	vector<Territory*> _territoryList;
-	//List of the Player's Territories
+	//Number of armies for a player
 	int _reinforcementPool;
 
 public:
