@@ -19,6 +19,7 @@ public:
 	//constructors
 	Order();
 	Order(const Order&);
+	Order(Player*);
 	Order(Player*, Territory*, int);
 	
 	//methods
@@ -118,8 +119,8 @@ public:
 	Airlift();
 	Airlift(const Airlift&);
 	Airlift(Player*, Territory*, Territory*, int);
-	bool validate(vector<Order*>*);	//validate method for the airlift order
-	void execute(vector<Order*>*);	//execute method for the airlift order
+	bool validate();	//validate method for the airlift order
+	void execute();	//execute method for the airlift order
 
 	//getter
 	Territory* getSource();
@@ -129,19 +130,13 @@ public:
 
 };
 class Negotiate :public Order {
-	Territory* _source;
+	Player* _p2;
 public:
 
 	Negotiate();
 	Negotiate(const Negotiate&);
-	Negotiate(Player*, Territory*, Territory*, int);
-	bool validate(vector<Order*>*);	//validate method for the negotiate order
-	void execute(vector<Order*>*);	//execute method for the negotiate order
-
-	//getter
-	Territory* getSource();
-
-	//setter
-	bool setSource(Territory* source);
+	Negotiate(Player*, Player*);
+	bool validate();	//validate method for the negotiate order
+	void execute();	//execute method for the negotiate order
 
 };

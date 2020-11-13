@@ -22,6 +22,10 @@ Order::Order(const Order&)
 {
 }
 
+Order::Order(Player* p) : _p(p)
+{
+}
+
 Order::Order(Player* p, Territory* target, int numberOfArmies) : _p(p), _target(target), _numberOfArmies(numberOfArmies)
 {
 	
@@ -106,7 +110,7 @@ Deploy::Deploy(Player* p, Territory* target, int numberOfArmies):Order(p, target
 //validate method for the deploy order
 bool Deploy::validate()
 {
-	/*vector<Territory*> *territoryList = getPlayer()->getTerritoryList();
+	vector<Territory*> *territoryList = getPlayer()->getTerritoryList();
 	if (getNumberOfArmies() <= 0)
 	{
 		if (std::find(territoryList->begin(), territoryList->end(), getTarget()) != territoryList->end()) {
@@ -121,24 +125,28 @@ bool Deploy::validate()
 	else {
 		cout << "ERROR: " << getNumberOfArmies() << " must be greater than 0 " << endl;
 		return false;
-	}*/
+	}
 	return false;
 }
 //execute method for the deploy order
 void Deploy::execute()
 {
-	/*if(validate())
+	if(validate())
 	{
 		getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
 		cout << "Deploying" << getNumberOfArmies() << " armies to " << getTarget()->getTerritoryName() << endl;
-	}*/
+	}
 }
 
 Advance::Advance()
 {
+	_source = nullptr;
+
 }
 Advance::Advance(const Advance&)
 {
+	_source = nullptr;
+
 }
 Advance::Advance(Player* p, Territory* source, Territory* target, int numberOfArmies):Order(p, target, numberOfArmies)
 {
@@ -198,11 +206,11 @@ void Advance::execute()
 	vector<Territory*> adjacentList = *getSource()->getAdjacent();
 	if (validate())
 	{
-		if (std::find(territoryList.begin(), territoryList.end(), getSource) != territoryList.end() && std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
+		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
 			getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
 			getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
 		}
-		cout << "Advancing " << getNumberOfArmies() << " armies from " << getSource() << " to" << getTarget() << endl;
+		cout << "Advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to" << getTarget()->getTerritoryName() << endl;
 	}
 
 	if (validate())
@@ -269,12 +277,22 @@ Bomb::Bomb(Player* p, Territory* target, int numberOfArmies) : Order(p, target, 
 //validate method for the bomb order
 bool Bomb::validate()
 {
-
+	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
+	if (std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end() ) {
+		cout << "ERROR: You cannot bomb your own territory!" << endl;
+		return false;
+	}
+	return true;
 }
 //execute method for the bomb order
 void Bomb::execute()
 {
-	
+	if (validate())
+	{
+		int half = (getTarget()->getArmies()) / 2;
+		getTarget()->setArmies(half);
+		cout << getTarget()->getTerritoryName() << " has been bombed! Only " << half << " armies remain!" << endl;
+	}
 }
 
 
@@ -293,28 +311,49 @@ Blockade::Blockade(Player* p, Territory* target, int numberOfArmies) : Order(p, 
 //validate method for the blockade order
 bool Blockade::validate()
 {
-	
+	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
+
+	if (std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
+		return true;
+	}
+	cout << "ERROR: You can only call a blockade order on your own territory" << endl;
 }
 //execute method for the blockade order
 void Blockade::execute()
 {
-	
+	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
+
+	if (validate())
+	{
+		int doubled = (getTarget()->getArmies()) * 2;
+		getTarget()->setArmies(doubled);
+		territoryList.erase((std::remove(territoryList.begin(), territoryList.end(), getTarget()), territoryList.end()));
+		cout << "Executing Blockade on " << getTarget()->getTerritoryName() << ". There are now " << doubled << " armies on this territory. It is now a neutral territory." << endl;
+	}
 }
 
 Airlift::Airlift()
 {
+	_source = nullptr;
+
 }
 Airlift::Airlift(const Airlift&)
 {
+	_source = nullptr;
 }
 Airlift::Airlift(Player* p, Territory* source, Territory* target, int numberOfArmies) :Order(p, target, numberOfArmies)
 {
 	_source = source;
 }
 //validate method for the airlift order
-bool Airlift::validate(vector<Order*>* list)
+bool Airlift::validate()
 {
-	
+	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
+	if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
+		return true;
+	}
+	cout << "You can only airlift from territories that you own!" << endl;
+	return false;
 }
 
 Territory* Airlift::getSource()
@@ -333,9 +372,62 @@ bool Airlift::setSource(Territory* source)
 }
 
 //execute method for the airlift order
-void Airlift::execute(vector<Order*>* list)
+void Airlift::execute()
 {
-	
+	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
+	if (validate())
+	{
+		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
+			getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
+			getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
+		}
+		cout << "Airlifting " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to" << getTarget()->getTerritoryName() << endl;
+	}
+
+	if (validate())
+	{
+		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
+			cout << "Airlifting into enemy territory. Incoming battle! " << getTarget()->getTerritoryName() << " with " << getNumberOfArmies() << endl;
+			srand(time(0));
+			int attackers = getNumberOfArmies();
+			int defenders = getTarget()->getArmies();
+
+			while (attackers != 0 && defenders != 0) {
+				int random1 = rand() % 10 + 1;
+				int random2 = rand() % 10 + 1;
+				if (random1 < 7)
+				{
+					defenders--;
+				}
+				if (random2 < 8)
+				{
+					attackers--;
+				}
+			}
+
+			if (attackers == 0)
+			{
+				getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
+				getTarget()->setArmies(defenders);
+				cout << "All invading armies have been killed,  " << defenders << " armies remain in " << getTarget()->getTerritoryName() << endl;
+			}
+
+			if (defenders == 0)
+			{
+				getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
+				getTarget()->setArmies(attackers);
+				cout << "All defending armies have been killed,  " << attackers << " armies have conquered " << getTarget()->getTerritoryName() << endl;
+
+				//Pointer to territory
+				getPlayer()->conquerTerritory(getTarget());
+				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
+				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
+
+				//TODO: add card after conquering territory
+			}
+
+		}
+	}
 }
 
 
@@ -347,33 +439,24 @@ Negotiate::Negotiate(const Negotiate&)
 {
 }
 
-Negotiate::Negotiate(Player*, Territory*, Territory*, int)
+Negotiate::Negotiate(Player* p, Player* p2) : Order(p)
 {
+	_p2 = p2;
 }
 
 //validate method for the negotiate order
-bool Negotiate::validate(vector<Order*>* list)
+bool Negotiate::validate()
 {
-	
-}
-
-Territory* Negotiate::getSource()
-{
-	return _source;
-}
-bool Negotiate::setSource(Territory* source)
-{
-	if (source != NULL)
+	if (_p2 = getPlayer())
 	{
-		_source = source;
-		return true;
+		cout << "You can only negotiate with an enemy player!" << endl;
+		return false;
 	}
-
-	return false;
+	return true;
 }
 
 //execute method for the negotiate order
-void Negotiate::execute(vector<Order*>* list)
+void Negotiate::execute()
 {
 	
 }
