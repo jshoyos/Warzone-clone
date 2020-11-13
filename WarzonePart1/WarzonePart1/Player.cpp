@@ -1,6 +1,5 @@
 #include "Player.h"
 
-
 int Player::_id = 0;
 //----------------------------- Constructors ----------------------------------\\
 
@@ -156,23 +155,41 @@ vector<Territory*>* Player::toDefend()
 //method that returns a list of territories to attack (not owned by player)
 vector<Territory*>* Player::toAttack()
 {	
-	//arbitrary set of territories to attack
-	Territory* Canada = new Territory(0, "Canada", 0);
-	Territory* USA = new Territory(1, "USA", 0);
+	vector<Territory*>* attackList = new vector<Territory*>();
 
-	vector<Territory*> *terrList = new vector<Territory*>();
-	terrList->push_back(Canada);
-	terrList->push_back(USA);
+	for (Territory* terr : *getTerritoryList()) {
 
-	return terrList;
+		for (Territory* adjTerr : *terr->getAdjacent()) {
+
+			//checks if adjacent territories are part of the players territories.
+			if (!(std::find(getTerritoryList()->begin(), getTerritoryList()->end(), adjTerr) != getTerritoryList()->end())){
+				attackList->push_back(adjTerr);
+			}
+		}
+
+	}
+
+	return attackList;
 }
 
 //method that creates order and adds it to player's order list
 void Player::issueOrder(string orderName)
 {
-	//maybe recieve order as parameter
-	Order* newOrder = new Order(orderName);
-	addOrder(newOrder);
+	if (orderName._Equal("deploy")) {
+		Order* newOrder = new Order(orderName);
+		addOrder(newOrder);
+
+	}
+	else if(orderName._Equal("advance")){
+		Order* newOrder = new Order(orderName);
+		addOrder(newOrder);
+	}
+	else {
+		Order* newOrder = new Order(orderName);
+		addOrder(newOrder);
+	}
+
+
 }
 
 //overwritting string operator for class player

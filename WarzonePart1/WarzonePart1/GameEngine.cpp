@@ -2,6 +2,7 @@
 #include<iostream>
 #include<filesystem>
 #include<string>
+#include <cmath>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -94,21 +95,67 @@ void GameStart::start()
 
 void MainGameLoop::runMainloop()
 {
-	GameStart::start();
+	GameStart::start();	//sets up the initial parameters of the game
+	while (true) { //map != conquered 
+		
+		for (Player* player : GameStart::players) {
+			reinforcementPhase(player);
+		}
+
+		for (Player* player : GameStart::players) {
+			issueOrderPhase(player);
+		}
+
+		for (Player* player : GameStart::players) {
+			orderExecutionPhase(player);
+		}
+		
+		
+	}
+
+}
+
+void MainGameLoop::reinforcementPhase(Player* player)
+{
+	int playerTerritoryNum = player->getTerritoryList()->size();
+	int armyNum = floor(playerTerritoryNum / 3);
+
+	for (Continent* cont : *GameStart::map->getContinents())
+	{
+		if (checkOwnedContinent(player, cont)) {
+			armyNum = armyNum + cont->getBonusArmies();
+		}
+	}
+	player->setReinforcementPool(armyNum);
+
+}
+
+void MainGameLoop::issueOrderPhase(Player* player)
+{
+	cout << player->getName() << "issues deploy order" << endl;
+	while (player->getReinforcementPool() != 0) {
+		player->issueOrder("deploy");
+	}
+	/*player->toAttack();
+	player->toDefend();
+	player->issueOrder("");*/
+
+}
+
+void MainGameLoop::orderExecutionPhase(Player* player)
+{
+
+}
+
+bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
+{
+	for (Territory* terr : *cont->getTerritories()) {
+			
+		if (terr->getOwner().getName() != player->getName()) {
+			return false;
+		}
+	}
 	
-
-
-}
-
-void MainGameLoop::reinforcementPhase()
-{
-}
-
-void MainGameLoop::issueOrderPhase()
-{
-}
-
-void MainGameLoop::orderExecutionPhase()
-{
+	return true;
 }
 

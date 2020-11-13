@@ -27,10 +27,16 @@ public:
 
 class MainGameLoop {
 private:
-	GameStart gs;
+	//GameStart gs;
 public:
 	void runMainloop();
-	void reinforcementPhase();
-	void issueOrderPhase();
-	void orderExecutionPhase();
+	void reinforcementPhase(Player*);
+	void issueOrderPhase(Player*);
+	void orderExecutionPhase(Player*);
+	
+#pragma region helperMethods
+	bool checkOwnedContinent(Player* player, Continent* cont);
+
+#pragma endregion
+
 };
