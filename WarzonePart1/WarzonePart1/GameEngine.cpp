@@ -134,7 +134,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
 {
 	cout << player->getName() << "issues deploy order" << endl;
 	while (player->getReinforcementPool() != 0) {
-		player->issueOrder("deploy");
+		//player->issueOrder("deploy");	//randomly pick territory to assign 
 	}
 	/*player->toAttack();
 	player->toDefend();

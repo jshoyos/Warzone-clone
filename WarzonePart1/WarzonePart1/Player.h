@@ -9,6 +9,8 @@
 using namespace std;
 
 class Territory;
+class Order;
+class OrderList;
 
 class Player
 {
@@ -39,7 +41,7 @@ public:
 	friend ostream& operator<< (ostream&, const Player&);	//Overloading of string operator
 	vector<Territory*>* toDefend();		//toDefend() method for a player
 	vector<Territory*>* toAttack();		//toAttack() method for a player
-	void issueOrder(string);			//issueOrder() method for a player
+	void issueOrder(string , Player*, Territory*,Territory*, int );			//issueOrder() method for a player
 
 	//getters
 	string getName();

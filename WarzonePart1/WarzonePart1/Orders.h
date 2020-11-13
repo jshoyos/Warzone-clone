@@ -118,8 +118,8 @@ public:
 	Airlift();
 	Airlift(const Airlift&);
 	Airlift(Player*, Territory*, Territory*, int);
-	bool validate(vector<Order*>*);	//validate method for the airlift order
-	void execute(vector<Order*>*);	//execute method for the airlift order
+	bool validate();	//validate method for the airlift order
+	void execute();	//execute method for the airlift order
 
 	//getter
 	Territory* getSource();
@@ -135,8 +135,8 @@ public:
 	Negotiate();
 	Negotiate(const Negotiate&);
 	Negotiate(Player*, Territory*, Territory*, int);
-	bool validate(vector<Order*>*);	//validate method for the negotiate order
-	void execute(vector<Order*>*);	//execute method for the negotiate order
+	bool validate();	//validate method for the negotiate order
+	void execute();	//execute method for the negotiate order
 
 	//getter
 	Territory* getSource();

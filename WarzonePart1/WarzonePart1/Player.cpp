@@ -173,19 +173,31 @@ vector<Territory*>* Player::toAttack()
 }
 
 //method that creates order and adds it to player's order list
-void Player::issueOrder(string orderName)
+void Player::issueOrder(string orderName, Player* p, Territory* source = NULL, Territory* target, int numberOfArmies)
 {
 	if (orderName._Equal("deploy")) {
-		Order* newOrder = new Order(orderName);
+		Deploy* newOrder = new Deploy(p, target, numberOfArmies);
 		addOrder(newOrder);
 
 	}
 	else if(orderName._Equal("advance")){
-		Order* newOrder = new Order(orderName);
+		Advance* newOrder = new Advance(p, source, target, numberOfArmies);
 		addOrder(newOrder);
 	}
-	else {
-		Order* newOrder = new Order(orderName);
+	else if(orderName._Equal("airlift")){
+		Airlift* newOrder = new Airlift(p, source, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if (orderName._Equal("bomb")) {
+		Bomb* newOrder = new Bomb(p, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if (orderName._Equal("blockade")) {
+		Blockade* newOrder = new Blockade(p, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if (orderName._Equal("negotiate")) {
+		Negotiate* newOrder = new Negotiate(p, source, target, numberOfArmies);
 		addOrder(newOrder);
 	}
 
