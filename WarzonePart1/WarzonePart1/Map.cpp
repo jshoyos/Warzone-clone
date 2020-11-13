@@ -33,7 +33,7 @@ Map::Map(int numberOfContinents, vector<Continent*>* continents) : _numberOfCont
 
 Map::~Map()
 {
-	cout << "\nMap is now deleted. System will exit." << endl;
+	cout << "\n>>> Map is now deleted. System will exit." << endl;
 	for (auto territory : _territories) {
 		delete territory;
 		territory = NULL;

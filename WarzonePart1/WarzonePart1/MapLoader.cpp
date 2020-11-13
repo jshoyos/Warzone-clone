@@ -165,7 +165,7 @@ Map *MapLoader::createMap()
 
                     // Does the continent id make sense?
                     if (continent_id >= continents.size()) {
-                        cout << ">>> Map_Loader_Error: An invalid continent_id has been detected.\n>>> Map will be deleted and system will exit." << endl;
+                        cout << "\n>>> Map_Loader_Error: An invalid continent_id has been detected.\n>>> Map will be deleted and system will exit." << endl;
                         delete map;
                         exit(1);
                         return NULL;
