@@ -27,6 +27,10 @@ void GameStart::displayMapOptions()
         cout << "(" << index << ") " << entry.path() << endl;
         index++;
     }
+
+    //for the purpose of a file-not-found error
+    cout << "(" << index << ") \"Maps\/file_not_found.map\"" << endl;    
+
 }
 int GameStart::numberOfPlayersSelection()
 {
@@ -62,16 +66,23 @@ Map* GameStart::selectMap()
     displayMapOptions();
     cout << "\nType your selection here: ";
     cin >> selectedOption;
-    while (selectedOption < 0 || selectedOption >= (int)GameStart::maps.size()) { 
 
+    // for the purpose of a file-not-found error
+    if (selectedOption == (int)GameStart::maps.size()) {                                               
+        mapLoader->setFileName("file_not_found.maps");
+        cout << "\nCreating map from Maps/file_not_found.map..." << endl << endl;
+        GameStart::map = mapLoader->createMap();
+    }
+
+    while (selectedOption < 0 || selectedOption > (int)GameStart::maps.size()) { 
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
     mapLoader-> setFileName(GameStart::maps[selectedOption]);
-    cout << "Creating map from " << GameStart::maps[selectedOption] << "..." << endl;
+    cout << "\nCreating map from " << GameStart::maps[selectedOption] << "..." << endl << endl;
     GameStart::map = mapLoader->createMap();
     
-    cout << "\nMap loading complete. \n\nLet's now validate the map:\n" << endl;
+    cout << "\nMap has been created. \n\nLet's now validate the map:\n" << endl;
     map->validate();
     cout << endl;
     return map;
