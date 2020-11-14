@@ -13,6 +13,15 @@ bool Publisher::isSubscribed(IObservable *observer) const
 	return false;
 }
 
+void IObservable::clearScreen()
+{
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+	system("cls");
+#else
+	system("clear");
+#endif
+}
+
 void Publisher::subscribe(IObservable *observer)
 {
 	observers.push_back(observer);
@@ -35,10 +44,12 @@ void Publisher::unsubscribe(IObservable* observer)
 
 void PhaseObserver::update(string data)
 {
-#if defined(WIN32)
-	system("cls");
-#else
-	system("clear");
-#endif
+	IObservable::clearScreen();
+	cout << data;
+}
+
+void GameStatisticsObserver::update(string data)
+{
+	IObservable::clearScreen();
 	cout << data;
 }
