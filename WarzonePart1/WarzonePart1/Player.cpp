@@ -92,6 +92,13 @@ int Player::getReinforcementPool()
 	return _reinforcementPool;
 }
 
+<<<<<<< HEAD
+=======
+int Player::getID() {        //d_rivi
+	return _id;
+}
+
+>>>>>>> 350fc43d0c30d5e950e9c23e2edee6af9f372155
 //---------------------------------- Setters --------------------------------\\
 
 //set players name 
@@ -103,11 +110,20 @@ bool Player::setName(string name)
 	}
 	return false;
 }
+<<<<<<< HEAD
 bool Player::setOrderList(OrdersList* list)
 {
 	_orderList = list;
 	return false;
 }
+=======
+
+//set players id 
+void Player::setID(int id) {        //d_rivi
+	_id = id;
+}
+
+>>>>>>> 350fc43d0c30d5e950e9c23e2edee6af9f372155
 //add order to players order's list
 bool Player::addOrder(Order* order)
 {

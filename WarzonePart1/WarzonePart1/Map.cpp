@@ -5,12 +5,12 @@
 //--------------------------------------------------------------------------------------------------------------------MAP---------------------------------------------------------------------------------------------
 Map::Map() :_numberOfContinents(0)
 {
-	cout << "Creating default Map..." << endl;
+	//cout << "Creating a Default Map:" << endl;
 }
 
 Map::Map(const Map& map)
 {
-	cout << "Creating a map copy..." << endl;
+	cout << "Creating a Map Copy: " << endl;
 	this->_numberOfContinents = map._numberOfContinents;
 	for (auto continent : map._continents) {
 		this->_continents.push_back(new Continent(*continent));
@@ -21,19 +21,19 @@ Map::Map(const Map& map)
 }
 Map::Map(int numberOfContinents) : _numberOfContinents(numberOfContinents)
 {
-	cout << "Creating a Map..." << endl;
-	cout << "number of continents-->" << numberOfContinents<<endl;
+	//cout << "Creating a Map:" << endl;
+	cout << "Number of continents in the map: " << numberOfContinents<<endl<<endl;
 }
 
 Map::Map(int numberOfContinents, vector<Continent*>* continents) : _numberOfContinents(numberOfContinents), _continents(*continents)
 {
-	cout << "Creating a Map..." << endl;
-	cout << "number of continents-->" << numberOfContinents<<endl;
+	//cout << "Creating a Map:" << endl;
+	cout << "Number of continents in the map: " << _continents.size()<<endl;
 }
 
 Map::~Map()
 {
-	cout << "DESTROYING THE MAP ITS THE END OF THE WORLD!!!!!!!" << endl;
+	cout << "\n>>> Map is now deleted. System will exit." << endl;
 	for (auto territory : _territories) {
 		delete territory;
 		territory = NULL;
@@ -42,6 +42,7 @@ Map::~Map()
 		delete continent;
 		continent = NULL;
 	}
+	EXIT_FAILURE;
 }
 
 bool Map::validate()
@@ -92,7 +93,7 @@ bool Map::checkTerritories()
 
 
 	if (territoriesNames.size() != initialListSize) {
-		cout << "OH OH THERE SEEMS TO BE A SHAPESHIFTER" << endl;
+		cout << ">>> Map_Error: A duplicate territory has been detected.\n>>> Map will be deleted and system will exit. " << endl;
 		return false;
 	}
 	return true;
@@ -116,13 +117,14 @@ bool Map::isConnected()
 		{
 			if (!vis)
 			{
-				cout << "I found a path I could not reach :(" << endl;
+				cout << ">>> MAP_DFS_Error: A territory could not be reached! \n>>> Map is not a connected graph. \n>>> Map will be deleted and system will exit." << endl;
+				exit(1);
 				return false;
 			}
 		}
 	}
 
-	cout << "Yay! I am fully connected! :)" << endl;
+	cout << "Success! The map is a fully connected graph." << endl;
 	return true;
 }
 
@@ -147,7 +149,7 @@ bool Map::addContinent(Continent* continent)
 	if (continent != NULL)
 	{
 		_continents.push_back(continent);
-		cout << continent->getContinentName() << " has been added" << endl;
+		//cout << "Continent " << continent->getContinentName() << " has been added. " << endl;
 		return true;
 	}
 	return false;
@@ -155,7 +157,7 @@ bool Map::addContinent(Continent* continent)
 
 bool Map::addTerritory(Territory* territory)
 {
-	cout << territory->getTerritoryName() << endl;
+	//cout << "Territory " << territory->getTerritoryName() << endl;
 	if (territory != NULL && territory->getTerritoryName() != "")
 	{
 		
@@ -198,7 +200,7 @@ int Map::getMapSizeTerritory()
 //---------------------------------------------------------------------------------------------------------TERRITORY--------------------------------------------------------------------------------------------------------------------
 Territory::Territory() :_id(),_territoryName(), _continent()
 {
-	cout << "Creating default territory..." << endl;
+	cout << "Creating a Default Territory:" << endl;
 }
 
 Territory::Territory(const Territory& territory)
@@ -215,20 +217,20 @@ Territory::Territory(const Territory& territory)
 
 Territory& Territory::operator=(const Territory& territory)
 {
-	cout << "Creating a territory copy..." << endl;
+	cout << "Creating a Territory Copy:" << endl;
 	return *(new Territory(territory));
 }
 
 Territory::Territory(int id, string territoryName, int continent) : _id(id), _territoryName(territoryName), _continent(continent)
 {
-	cout << "Creating a Territory..." << endl;
-	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent << endl;
+	cout << "\n>>> Creating a new territory:" << endl;
+	cout << "ID: " << id << ", Name: " << territoryName << ", Continent: " << continent << endl;
 }
 
 Territory::Territory(int id,string territoryName, int continent, vector<Territory*>* adjacentTerritories) :_id(id), _territoryName(territoryName), _continent(continent), _adjacentTerritories(*adjacentTerritories)
 {
-	cout << "Creating a Territory..." << endl;
-	cout << "id-->" << id << "\tterritoryName-->" << territoryName << "\tcontinent-->" << continent <<"shares border with "<<adjacentTerritories->size()<< endl;
+	cout << ">>> Creating a new territory:" << endl;
+	cout << "ID: " << id << ", Name: " << territoryName << ", Continent: " << continent <<"\n"<< territoryName <<" shares borders with "<<adjacentTerritories->size()<<" other territories." << endl;
 }
 
 Territory::~Territory()
@@ -295,7 +297,7 @@ bool Territory::addBorder(Territory* territory)
 	if (territory != NULL && territory->_territoryName != "")
 	{
 		_adjacentTerritories.push_back(territory);
-		cout << "A link from " << this->getTerritoryName() << " and " << territory->getTerritoryName() << " has been added" << endl;
+		cout << "A link from " << this->getTerritoryName() << " and " << territory->getTerritoryName() << " has been added." << endl;
 		return true;
 	}
 	return false;
@@ -303,21 +305,21 @@ bool Territory::addBorder(Territory* territory)
 
 ostream& operator<< (ostream& stream, const Territory& territory) {
 	if (territory._owner != NULL) {
-		return stream << territory._territoryName << " currently has " << territory._armies << " armies owned by " << territory._owner->getName() << endl;
+		return stream << territory._territoryName << " currently has " << territory._armies << " armies owned by " << territory._owner->getName() << "." << endl;
 	}
 	else {
-		return stream << territory._territoryName << " belongs to no one " << endl;
+		return stream << territory._territoryName << " currently belongs to no one." << endl;
 	}
 }
 //------------------------------------------------------------------------------------------------CONTINENT-----------------------------------------------------------------------------------------------------------------------------------------
 Continent::Continent() :_continentName(), _bonusArmies()
 {
-	cout << "Creating default continent..." << endl;
+	cout << "Creating default continent:" << endl;
 }
 
 Continent::Continent(const Continent& continent)
 {
-	cout << "Creating a continent copy..." << endl;
+	cout << "Creating a Continent Copy:" << endl;
 	this->_continentName = continent._continentName;
 	this->_bonusArmies = continent._bonusArmies;
 	for (auto adjNode : continent._territories) {
@@ -331,19 +333,19 @@ Continent::Continent(const Continent& continent)
 
 Continent::Continent(int id,string continentName, int bonusArmies) :_id(id),_continentName(continentName), _bonusArmies(bonusArmies)
 {
-	cout << "Creating a continent..." << endl;
-	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies << endl;
+	cout << ">>> Creating a new continent:" << endl;
+	cout << "ID: " << id << ", Name: " << continentName << ", Bonus Armies: " << bonusArmies << endl;
 }
 
 Continent::Continent(int id,string continentName, int bonusArmies, vector<Territory*>* territories) :_id(id), _continentName(continentName), _bonusArmies(bonusArmies), _territories(*territories)
 {
-	cout << "Creating a continent..." << endl;
-	cout << "id-->" << id << "\tcontinentName-->" << continentName << "\tbonusArmies-->" << bonusArmies <<"\tcontains "<<territories->size()<<" territories"<< endl;
+	cout << ">>> Creating a new continent:" << endl;
+	cout << "ID: " << id << ", Name: " << continentName << ", Bonus Armies: " << bonusArmies <<"\n"<< continentName <<" contains "<<territories->size()<<" territories."<< endl;
 }
 
 Continent::~Continent()
 {
-	cout << "Destroying the continent: " << _continentName << endl;
+	cout << "Destroying continent: " << _continentName << endl;
 	_territories.erase(_territories.begin(), _territories.end());
 	//I don't think it should destroy the territories as each territory will call its own destructor
 	/*for (auto territory : _territories) {
@@ -354,14 +356,14 @@ Continent::~Continent()
 
 Continent& Continent::operator=(const Continent& continent)
 {
-	cout << "Creating a continent copy..." << endl;
+	cout << "Creating a continent copy:" << endl;
 	return *(new Continent(continent));
 }
 
 Continent::Continent(int id, string continentName) : _id(id), _continentName(continentName)
 {
-	cout << "Creating a continent..." << endl;
-	cout << "id-->" << id << "\tcontinentName-->" << continentName << endl;
+	cout << ">>> Creating a new continent:" << endl;
+	cout << "ID: " << id << ", Name: " << continentName << endl;
 }
 
 bool Continent::setBonusArmies(int bonus)
@@ -394,7 +396,7 @@ bool Continent::addTerritory(Territory* territory)
 	{
 		// territory->getContinent() != 0
 		_territories.push_back(territory);
-		cout << territory->getTerritoryName() << " has been added" << endl;
+		//cout << "Territory " << territory->getTerritoryName() << " has been added." << endl;
 		return true;
 	}
 	return false;
@@ -404,7 +406,7 @@ string Continent::getContinentName()
 	return _continentName;
 }
 ostream& operator<<(ostream& stream, const Continent& continent) {
-	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " armies" << endl;
+	return stream << "Conquering " << continent._continentName << " gives you " << continent._bonusArmies << " bonus armies" << endl;
 }
 vector<Territory*>* Continent::getTerritories()
 {
