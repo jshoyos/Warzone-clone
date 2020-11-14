@@ -18,8 +18,11 @@ Order::Order()
 }
 
 //Copy constructor for Order
-Order::Order(const Order&)
+Order::Order(const Order& order)
 {
+	this->_numberOfArmies = order._numberOfArmies;
+	this->_p = order._p;
+	this->_target = order._target;
 }
 
 Order::Order(Player* p) : _p(p)
@@ -98,7 +101,7 @@ Deploy::Deploy()
 {
 }
 
-Deploy::Deploy(const Deploy&)
+Deploy::Deploy(const Deploy& deploy):Order(deploy)
 {
 }
 
@@ -143,9 +146,9 @@ Advance::Advance()
 	_source = nullptr;
 
 }
-Advance::Advance(const Advance&)
+Advance::Advance(const Advance& advance):Order(advance)
 {
-	_source = nullptr;
+	this->_source = advance._source;
 
 }
 Advance::Advance(Player* p, Territory* source, Territory* target, int numberOfArmies):Order(p, target, numberOfArmies)
@@ -470,8 +473,11 @@ OrdersList::OrdersList(int size) :_size(size)
 {
 }
 //Setter for copy constructor
-OrdersList::OrdersList(const OrdersList&)
+OrdersList::OrdersList(const OrdersList& orderList)
 {
+	/*for (auto order : orderList._ordersList) {
+		this->_ordersList.push_back(new Order(*order));
+	}*/
 }
 //Destructor for OrdersList
 OrdersList::~OrdersList()

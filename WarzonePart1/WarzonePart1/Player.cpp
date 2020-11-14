@@ -28,14 +28,17 @@ Player::Player(const Player& player)
 	this->_reinforcementPool = player._reinforcementPool;
 	
 	//Iterates through list and copies onjects
-	for (int i = 0; i < player._orderList->_ordersList.size();i++) {
-		this->_orderList->_ordersList[i] = player._orderList->_ordersList[i];
+
+	//call copy constructor of order
+	for (auto order : player._orderList->_ordersList) {
+		this->_orderList->_ordersList.push_back(new Order(*order));
 	}
-	for (int i = 0; i < player._territoryList.size();i++) {
-		this->_territoryList[i] = player._territoryList[i];
+	for (auto terr : player._territoryList) {
+		this->_territoryList.push_back(new Territory(*terr));
 	}
-	for (int i = 0; i < player._hand->handOfCards.size();i++) {
-		this->_hand->handOfCards[i] = player._hand->handOfCards[i];
+	//maybe call copy constructor of hand
+	for (auto card : player._hand->handOfCards) {
+		this->_hand->handOfCards.push_back(new Card(*card));
 	}
 	
 }
@@ -92,13 +95,10 @@ int Player::getReinforcementPool()
 	return _reinforcementPool;
 }
 
-<<<<<<< HEAD
-=======
 int Player::getID() {        //d_rivi
 	return _id;
 }
 
->>>>>>> 350fc43d0c30d5e950e9c23e2edee6af9f372155
 //---------------------------------- Setters --------------------------------\\
 
 //set players name 
@@ -110,20 +110,17 @@ bool Player::setName(string name)
 	}
 	return false;
 }
-<<<<<<< HEAD
-bool Player::setOrderList(OrdersList* list)
-{
-	_orderList = list;
-	return false;
-}
-=======
 
 //set players id 
 void Player::setID(int id) {        //d_rivi
 	_id = id;
 }
 
->>>>>>> 350fc43d0c30d5e950e9c23e2edee6af9f372155
+bool Player::setOrderList(OrdersList* list)
+{
+	_orderList = list;
+	return false;
+}
 //add order to players order's list
 bool Player::addOrder(Order* order)
 {
@@ -177,7 +174,7 @@ vector<Territory*>* Player::toDefend()
 vector<Territory*>* Player::toAttack()
 {	
 	vector<Territory*>* attackList = new vector<Territory*>();
-
+	
 	for (Territory* terr : *getTerritoryList()) {
 
 		for (Territory* adjTerr : *terr->getAdjacent()) {

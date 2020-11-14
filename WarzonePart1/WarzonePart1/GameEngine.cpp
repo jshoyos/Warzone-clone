@@ -231,6 +231,7 @@ void GameStartup::startupPhase() {
 void MainGameLoop::runMainloop()
 {
 	GameStart::start();	//sets up the initial parameters of the game
+    GameStartup::startupPhase();
    
     turn = 1;
 	while (true) { //map != conquered 
@@ -278,6 +279,7 @@ void MainGameLoop::reinforcementPhase(Player* player)
 
 void MainGameLoop::issueOrderPhase(Player* player)
 {
+    //initializing variables
     Territory* source = nullptr;
     Territory* target = nullptr;
     int max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0;

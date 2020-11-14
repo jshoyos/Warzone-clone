@@ -34,7 +34,6 @@
 //	player1->conquerTerritory(Río_Negro);
 //	player1->conquerTerritory(Neuquén);
 //	cout << "---------------------------------------------------------------------" << endl;
-<<<<<<< HEAD
 //	cout << "TESTETSTETSTETSTEST" << endl;
 //	player1->displayTerrList();
 //	cout << "remove terr"<<endl;
@@ -98,67 +97,6 @@
 //	//cout << endl << *player1 << endl;
 //	//cout << endl << "Thank you "<<player1->getName()<< " for playing Warzone! " << endl;
 //	//cout << "---------------------------------------------------------------------" << endl;
-=======
-//
-//
-//	//creating orders for player 1
-//	Order* order1 = dynamic_cast<Order*>(new Deploy("deploy"));
-//	Bomb* order2 = new Bomb("bomb");
-//	Airlift* order3 = new Airlift("airlift");
-//	Negotiate* order4 = new Negotiate("negotiate");
-//
-//	player1->addOrder(order1);
-//	player1->addOrder(order2);
-//	player1->addOrder(order3);
-//	player1->addOrder(order4);
-//
-//	//creating hand of cards for a player
-//	
-//	for (int i = 0; i < 5; i++) {
-//		card_drawn = myDeck.draw();
-//		player1->addCard(card_drawn);
-//	}
-//
-//
-//	cout << endl << *player1 << endl;
-//	//List of territories for player to defend
-//	vector<Territory*> defendTerr = *(player1->toDefend());
-//	cout << "---------------------------------------------------------------------" << endl;
-//	cout << "Here is a list of territories to Defend:" << endl;
-//	cout << endl;
-//
-//	//displays territories for player 1 to defend 
-//	for (int i = 0; i < defendTerr.size();i++) {
-//		cout << " -" << *defendTerr[i];
-//		cout << endl;
-//	}
-//	cout << "---------------------------------------------------------------------" << endl;
-//	//List of territories for player to attack
-//	vector<Territory*> attackTerr = *(player1->toAttack());
-//
-//	cout << "---------------------------------------------------------------------" << endl;
-//	cout << "Here is a list of territories to attack:" << endl;
-//	cout << endl;
-//
-//	//displays territories for player 1 to defend 
-//	for (int i = 0;i < attackTerr.size();i++) {
-//		cout<< " -" << *attackTerr[i] <<endl;
-//	}
-//
-//	cout << "---------------------------------------------------------------------" << endl;
-//	cout << endl << name << " issues a new order: \"create a blockade!\""<<endl;
-//	cout << endl;
-//	
-//	//player 1 issues new order based on order class
-//	player1->issueOrder("blockade");
-//	//displays player's list of orders
-//	cout << "List of orders issued by " << player1->getName()<< ": ";
-//	cout << endl << *player1->getOrderList() << endl;
-//	cout << "---------------------------------------------------------------------";
-//	cout << endl << *player1 << endl;
-//	cout << endl << "Thank you "<<player1->getName()<< " for playing Warzone! " << endl;
-//	cout << "---------------------------------------------------------------------" << endl;
->>>>>>> 350fc43d0c30d5e950e9c23e2edee6af9f372155
 //	
 //	
 //
