@@ -66,19 +66,18 @@ Map* GameStart::selectMap()
     displayMapOptions();
     cout << "\nType your selection here: ";
     cin >> selectedOption;
-
     // for the purpose of a file-not-found error
     if (selectedOption == (int)GameStart::maps.size()) {                                               
         mapLoader->setFileName("file_not_found.maps");
         cout << "\nCreating map from Maps/file_not_found.map..." << endl << endl;
         GameStart::map = mapLoader->createMap();
     }
-
-    while (selectedOption < 0 || selectedOption > (int)GameStart::maps.size()) { 
+    while (selectedOption < 0 || selectedOption >= (int)GameStart::maps.size()) { 
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
     mapLoader-> setFileName(GameStart::maps[selectedOption]);
+
     cout << "\nCreating map from " << GameStart::maps[selectedOption] << "..." << endl << endl;
     GameStart::map = mapLoader->createMap();
     
