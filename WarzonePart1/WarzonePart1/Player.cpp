@@ -103,6 +103,11 @@ bool Player::setName(string name)
 	}
 	return false;
 }
+bool Player::setOrderList(OrdersList* list)
+{
+	_orderList = list;
+	return false;
+}
 //add order to players order's list
 bool Player::addOrder(Order* order)
 {
@@ -110,7 +115,7 @@ bool Player::addOrder(Order* order)
 }
 
 //add cards to players hand
-void Player::addCard(Card card)
+void Player::addCard(Card* card)
 {
 	_hand->insertCard(card);
 }
@@ -173,35 +178,62 @@ vector<Territory*>* Player::toAttack()
 }
 
 //method that creates order and adds it to player's order list
-void Player::issueOrder(string orderName, Player* p, Territory* source = NULL, Territory* target, int numberOfArmies)
+void Player::issueOrder(string orderName, Player* p1, Player* p2, Territory* source, Territory* target, int numberOfArmies)
 {
 	if (orderName._Equal("deploy")) {
-		Deploy* newOrder = new Deploy(p, target, numberOfArmies);
+		Deploy* newOrder = new Deploy(p1, target, numberOfArmies);
 		addOrder(newOrder);
-
 	}
 	else if(orderName._Equal("advance")){
-		Advance* newOrder = new Advance(p, source, target, numberOfArmies);
+		Advance* newOrder = new Advance(p1, source, target, numberOfArmies);
 		addOrder(newOrder);
 	}
 	else if(orderName._Equal("airlift")){
-		Airlift* newOrder = new Airlift(p, source, target, numberOfArmies);
+		Airlift* newOrder = new Airlift(p1,source, target, numberOfArmies);
 		addOrder(newOrder);
 	}
 	else if (orderName._Equal("bomb")) {
-		Bomb* newOrder = new Bomb(p, target, numberOfArmies);
+		Bomb* newOrder = new Bomb(p1, target, numberOfArmies);
 		addOrder(newOrder);
 	}
 	else if (orderName._Equal("blockade")) {
-		Blockade* newOrder = new Blockade(p, target, numberOfArmies);
+		Blockade* newOrder = new Blockade(p1, target, numberOfArmies);
 		addOrder(newOrder);
 	}
 	else if (orderName._Equal("negotiate")) {
-		Negotiate* newOrder = new Negotiate(p, source, target, numberOfArmies);
+		Negotiate* newOrder = new Negotiate(p1,p2);
 		addOrder(newOrder);
 	}
+	else {
+		cout << "ERROR: unrecognized order!" << endl;
+	}
 
+}
 
+//removes territory from players territoryList
+bool Player::removeTerritory(Territory* terr)
+{
+	if (std::find(getTerritoryList()->begin(), getTerritoryList()->end(), terr) != getTerritoryList()->end()) {
+		_territoryList.erase(std::remove(_territoryList.begin(), _territoryList.end(), terr), _territoryList.end());
+		return true;
+	}
+
+	return false;
+}
+
+bool Player::removeCardFromHand(Card* card)
+{
+	if (std::find(getHand()->handOfCards.begin(), getHand()->handOfCards.end(), card) != getHand()->handOfCards.end()) {
+		getHand()->handOfCards.erase(std::remove(getHand()->handOfCards.begin(), getHand()->handOfCards.end(), card), getHand()->handOfCards.end());
+		return true;
+	}
+	return false;
+}
+void Player::displayTerrList()
+{
+	for (Territory* terr : *getTerritoryList()) {
+		cout << terr->getTerritoryName() << endl;
+	}
 }
 
 //overwritting string operator for class player

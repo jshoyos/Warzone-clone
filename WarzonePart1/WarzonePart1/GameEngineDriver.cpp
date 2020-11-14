@@ -1,6 +1,7 @@
 #include "GameEngine.h"
 
 int main() {
-	GameStart::start();
+	MainGameLoop game;
+	game.runMainloop();
 	return 0;
 }

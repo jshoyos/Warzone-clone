@@ -55,8 +55,8 @@ public:
 #pragma endregion
 #pragma region methods 
 	
-	vector<Order*>* remove(vector<Order*>*, int);	//remove method for OrdersList class
-	vector<Order*>* move(vector<Order*>*, int, int); //move method for OrdersList class
+	void remove(int);	//remove method for OrdersList class
+	void move(int, int); //move method for OrdersList class
 	bool queueOrder(Order*);	//method used to put an order into the list of orders
 	friend ostream& operator << (ostream&, const OrdersList&);
 

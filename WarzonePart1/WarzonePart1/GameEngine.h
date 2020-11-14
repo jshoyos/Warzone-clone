@@ -35,7 +35,8 @@ public:
 	void orderExecutionPhase(Player*);
 	
 #pragma region helperMethods
-	bool checkOwnedContinent(Player* player, Continent* cont);
+	bool checkOwnedContinent(Player*, Continent*);
+	bool priorityOrderList(Player*);
 
 #pragma endregion
 

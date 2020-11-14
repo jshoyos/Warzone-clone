@@ -96,6 +96,33 @@ Card::cardType Card::play() {
 
 }
 
+Card::cardType Card::play2(Player* cardOwner,
+						   Player* p1, Player* p2, Territory* source, 
+				           Territory* target, int numberOfArmies)
+{
+	Card::cardType card_type = this->type;
+
+	if (card_type == Card::Bomb) {
+		cardOwner->issueOrder("bomb",p1,p2,source,target,numberOfArmies);
+	}
+
+	else if (card_type == Card::Reinforcement) {
+		cardOwner->issueOrder("reinforcement", p1, p2, source, target, numberOfArmies);
+	}
+
+	else if (card_type == Card::Blockade) {
+		cardOwner->issueOrder("blockade", p1, p2, source, target, numberOfArmies);
+	}
+	else if (card_type == Card::Airlift) {
+		cardOwner->issueOrder("airlift", p1, p2, source, target, numberOfArmies);
+	}
+	else if (card_type == Card::Diplomacy) {
+		cardOwner->issueOrder("diplomacy", p1, p2, source, target, numberOfArmies);
+	}
+
+	return cardType();
+}
+
 //void displayOrderList() {   ////////////////// testing
 //	for (int i = 0; i < order_list.size(); i++) {
 //		cout << order_list.at(i);
@@ -286,10 +313,7 @@ ostream& operator<<(ostream& os, const Hand& h) {   // Overloaded stream inserti
 	return os;
 };
 
-void Hand::insertCard(Card c) {      // whatever card is passed (ie: card_drawn from the Deck) is added to the Hand. 
-	handOfCards.push_back(c);		 // add new card to the hand
-	numCards++;
-}
+
 
 void Hand::showHand() {
 	cout << "\n*** Current Hand: ***" << endl;
@@ -298,7 +322,7 @@ void Hand::showHand() {
 		if (!handOfCards.empty() && i < (int)handOfCards.size()) {
 
 			Card::cardType t;
-			t = handOfCards.at(i).getCardType();
+			t = handOfCards.at(i)->getCardType();
 			string type;
 
 			if (t == Card::Bomb) type = "Bomb";
@@ -313,6 +337,10 @@ void Hand::showHand() {
 	cout << "# of free slots left: " << (this->maxCards - this->numCards) << endl;
 }
 
+void Hand::insertCard(Card* c) {      // whatever card is passed (ie: card_drawn from the Deck) is added to the Hand. 
+	handOfCards.push_back(c);		  // add new card to the hand
+	numCards++;
+}
 
 int Hand::getHandSize() {
 	return (int)handOfCards.size();
@@ -321,3 +349,5 @@ int Hand::getHandSize() {
 int Hand::getMaxCards() {
 	return maxCards;
 }
+
+

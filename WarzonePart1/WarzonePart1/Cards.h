@@ -11,15 +11,18 @@
 #include <map>
 #include <iostream>
 #include <vector>
-
+#include "Orders.h"
+#include "Player.h"
 using namespace std;
+class Player;
+class Territory;
+
 
 struct Card {							// No attributes are of a user-defined type -> no need for pointers here
 
 	enum cardType {						// 5 types of cards in a deck
 		Bomb, Reinforcement, Blockade, Airlift, Diplomacy
 	};
-
 	cardType type{};
 
 	Card();								// Default constructor
@@ -31,6 +34,8 @@ struct Card {							// No attributes are of a user-defined type -> no need for p
 
 	cardType getCardType();
 	cardType play();
+	cardType play2(Player*,Player*,Player*, Territory*, Territory*, int);
+
 
 };
 
@@ -69,7 +74,7 @@ struct Deck {                       // No attributes are of a user-defined type 
 
 struct Hand {						// No attributes are of a user-defined type -> no need for pointers here
 
-	vector<Card> handOfCards{};		// A hand is a vector of Cards
+	vector<Card*> handOfCards{};		// A hand is a vector of Cards
 	int numCards{};					// Current # of cards in the hand
 	int maxCards;					// Maximum # of cards that a hand can hold 
 
@@ -80,10 +85,11 @@ struct Hand {						// No attributes are of a user-defined type -> no need for po
 	Hand(int);						  // Param'd constructor
 	Hand& operator =(const Hand& c);  // Overloaded assignment operator
 
-	void showHand();				// Prints out the cards in the hand, w corresponding slot #
-	void insertCard(Card);			// Takes a card, and insert it last in the hand
+	void showHand();					// Prints out the cards in the hand, w corresponding slot #
+	void insertCard(Card*);				// Takes a card, and insert it last in the hand
 	int getHandSize();
-	int getMaxCards();				// return the maximum number of cards a hand can hold
+	int getMaxCards();					// return the maximum number of cards a hand can hold
+	
 
 
 };

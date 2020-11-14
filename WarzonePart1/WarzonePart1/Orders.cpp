@@ -483,19 +483,17 @@ OrdersList::~OrdersList()
 	}
 }
 //remove method for OrdersList class
-vector<Order*>* OrdersList::remove(vector<Order*>* list, int index)
+void OrdersList::remove(int index)
 {
 	index = index - 1;
-	list->erase(list->begin() + (index));
-	return list;
+	_ordersList.erase(_ordersList.begin() + (index));
 }
 //move method for OrdersList class
-vector<Order*>* OrdersList::move(vector<Order*>* list, int a, int b)
+void OrdersList::move(int a, int b)
 {
 	a = (a - 1);
 	b = (b - 1);
-	iter_swap(list->begin() + (a), list->begin() + (b));
-	return list;
+	iter_swap(_ordersList.begin() + (a), _ordersList.begin() + (b));
 }
 //method used to put an order into the list of orders
 bool OrdersList::queueOrder(Order* order)
