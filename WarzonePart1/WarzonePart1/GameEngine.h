@@ -13,6 +13,7 @@ private:
 	static int numberOfPlayersSelection();
 	static void generateDeck();
 #pragma endregion
+
 public:
 	static vector<Player*> players;
 	static Map* map;
@@ -23,6 +24,17 @@ public:
 	static void createPlayers();
 	static void start();
 #pragma endregion
+
+};
+
+	// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class GameStartup{
+public:
+		static void randomPlayerOrder();
+		static void assignTerritories();
+		static void initializeArmies();
+		static void startupPhase();
 };
 
 class MainGameLoop {
