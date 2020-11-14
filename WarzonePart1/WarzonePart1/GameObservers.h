@@ -3,6 +3,8 @@
 using namespace std;
 #pragma once
 class IObservable {
+protected:
+	static void clearScreen();
 public:
 	virtual void update(string) = 0;
 };
