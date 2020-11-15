@@ -1,5 +1,7 @@
 #include "GameObservers.h"
+#include "GameEngine.h"
 #include <iostream>
+#include "TextTable.h"
 
 using namespace std;
 
@@ -15,7 +17,7 @@ bool Publisher::isSubscribed(IObservable *observer) const
 
 void IObservable::clearScreen()
 {
-#if defined(_WIN64)
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
 	system("cls");
 #else
 	system("clear");
@@ -27,7 +29,7 @@ void Publisher::subscribe(IObservable *observer)
 	observers.push_back(observer);
 }
 
-void Publisher::nofityAll(string data)
+void Publisher::notifyAll(string data)
 {
 	for (IObservable *observer : observers) {
 		observer->update(data);
@@ -50,6 +52,23 @@ void PhaseObserver::update(string data)
 
 void GameStatisticsObserver::update(string data)
 {
-	IObservable::clearScreen();
-	cout << data;
+	int mapSize = GameStart::map->getMapSizeTerritory();
+	TextTable t('-', '|', '+');
+	
+	t.add("Player Name");
+	t.add("Countries Owned");
+	t.add("Percentage Conquered");
+	t.endOfRow();
+
+	for (Player* player : GameStart::players) {
+		t.add(player->getName());
+		int countries = player->getTerritoryList()->size();
+		auto str = to_string(countries);
+		double percentage = countries / (double)mapSize;
+		auto percentageString = to_string(percentage);
+		t.add(str);
+		t.add(percentageString + "%");
+	}
+	t.setAlignment(2, TextTable::Alignment::RIGHT);
+	cout << t;
 }

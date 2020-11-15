@@ -77,5 +77,8 @@
     <ClInclude Include="GameObservers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
