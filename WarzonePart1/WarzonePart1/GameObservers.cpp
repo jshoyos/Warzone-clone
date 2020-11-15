@@ -15,7 +15,7 @@ bool Publisher::isSubscribed(IObservable *observer) const
 
 void IObservable::clearScreen()
 {
-#if defined(WIN32)
+#if defined(_WIN64)
 	system("cls");
 #else
 	system("clear");

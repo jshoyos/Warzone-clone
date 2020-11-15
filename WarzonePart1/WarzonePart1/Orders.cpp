@@ -269,7 +269,7 @@ Bomb::Bomb()
 {
 }
 
-Bomb::Bomb(const Bomb&)
+Bomb::Bomb(const Bomb& bomb):Order(bomb)
 {
 }
 
@@ -303,7 +303,7 @@ Blockade::Blockade()
 {
 }
 
-Blockade::Blockade(const Blockade&)
+Blockade::Blockade(const Blockade& blockade):Order(blockade)
 {
 }
 
@@ -340,9 +340,9 @@ Airlift::Airlift()
 	_source = nullptr;
 
 }
-Airlift::Airlift(const Airlift&)
+Airlift::Airlift(const Airlift& airlift) :Order(airlift)
 {
-	_source = nullptr;
+	this->_source = airlift._source;
 }
 Airlift::Airlift(Player* p, Territory* source, Territory* target, int numberOfArmies) :Order(p, target, numberOfArmies)
 {
@@ -438,8 +438,10 @@ Negotiate::Negotiate()
 {
 }
 
-Negotiate::Negotiate(const Negotiate&)
+
+Negotiate::Negotiate(const Negotiate& negotiate) :Order(negotiate)
 {
+	this->_p2 = negotiate._p2;
 }
 
 Negotiate::Negotiate(Player* p, Player* p2) : Order(p)
@@ -460,7 +462,7 @@ bool Negotiate::validate()
 
 //execute method for the negotiate order
 void Negotiate::execute()
-{
+{	
 	
 }
 
@@ -475,9 +477,28 @@ OrdersList::OrdersList(int size) :_size(size)
 //Setter for copy constructor
 OrdersList::OrdersList(const OrdersList& orderList)
 {
-	/*for (auto order : orderList._ordersList) {
-		this->_ordersList.push_back(new Order(*order));
-	}*/
+	for (auto order : orderList._ordersList) {
+		
+		if (Deploy* deploy = dynamic_cast<Deploy*>(order)) {
+			this->_ordersList.push_back(new Deploy(*deploy));
+		}
+		else if (Advance* advance = dynamic_cast<Advance*>(order)) {
+			this->_ordersList.push_back(new Advance(*advance));
+		}
+		else if(Bomb* bomb = dynamic_cast<Bomb*>(order)) {
+			this->_ordersList.push_back(new Bomb(*bomb));
+		}
+		else if (Blockade* blockade = dynamic_cast<Blockade*>(order)) {
+			this->_ordersList.push_back(new Blockade(*blockade));
+		}
+		else if (Airlift* airlift = dynamic_cast<Airlift*>(order)) {
+			this->_ordersList.push_back(new Airlift(*airlift));
+		}
+		else if (Negotiate* negotiate = dynamic_cast<Negotiate*>(order)) {
+			this->_ordersList.push_back(new Negotiate(*negotiate));
+		}
+		
+	}
 }
 //Destructor for OrdersList
 OrdersList::~OrdersList()
@@ -487,6 +508,10 @@ OrdersList::~OrdersList()
 		delete order;
 		order = NULL;
 	}
+}
+vector<Order*> OrdersList::getOrdersList()
+{
+	return _ordersList;
 }
 //remove method for OrdersList class
 void OrdersList::remove(int index)

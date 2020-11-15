@@ -228,8 +228,12 @@ void GameStartup::startupPhase() {
 
 // ------------------------------------------- Main Game Loop ---------------------------------------- \\
 
+Publisher MainGameLoop::phasePublisher = Publisher();
+PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver();
+
 void MainGameLoop::runMainloop()
 {
+    MainGameLoop::phasePublisher.subscribe(MainGameLoop::phaseObserver);
 	GameStart::start();	//sets up the initial parameters of the game
     GameStartup::startupPhase();
    
@@ -264,6 +268,8 @@ void MainGameLoop::runMainloop()
 
 void MainGameLoop::reinforcementPhase(Player* player)
 {
+    string test="test";
+  
 	int playerTerritoryNum = player->getTerritoryList()->size();
 	int armyNum = floor(playerTerritoryNum / 3);
 
@@ -274,7 +280,7 @@ void MainGameLoop::reinforcementPhase(Player* player)
 		}
 	}
 	player->setReinforcementPool(armyNum);
-
+    MainGameLoop::phasePublisher.nofityAll(test);
 }
 
 void MainGameLoop::issueOrderPhase(Player* player)
@@ -464,10 +470,6 @@ void MainGameLoop::orderExecutionPhase(Player* player)
         player->getOrderList()->remove(index);
         index++;
      }
-       
-    
-    
-
 }
 
 bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
@@ -507,7 +509,6 @@ bool MainGameLoop::priorityOrderList(Player* player) {
             else {
 
             }
-
         }
     }
     return true;

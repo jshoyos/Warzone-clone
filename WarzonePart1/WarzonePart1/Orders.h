@@ -45,7 +45,7 @@ class OrdersList
 {
 	int _size = 0;
 public:
-	vector<Order*> _ordersList;	//This is the list of orders where all the individual orders will be stored
+	
 #pragma region constructors
 	OrdersList();
 	OrdersList(int);

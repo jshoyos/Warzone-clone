@@ -39,16 +39,17 @@ public:
 
 class MainGameLoop {
 private:
-	//GameStart gs;
+	static Publisher phasePublisher;
+	static PhaseObserver* phaseObserver;
 public:
-	void runMainloop();
-	void reinforcementPhase(Player*);
-	void issueOrderPhase(Player*);
-	void orderExecutionPhase(Player*);
+	static void runMainloop();
+	static void reinforcementPhase(Player*);
+	static void issueOrderPhase(Player*);
+	static void orderExecutionPhase(Player*);
 	
 #pragma region helperMethods
-	bool checkOwnedContinent(Player*, Continent*);
-	bool priorityOrderList(Player*);
+	static bool checkOwnedContinent(Player*, Continent*);
+	static bool priorityOrderList(Player*);
 
 #pragma endregion
 

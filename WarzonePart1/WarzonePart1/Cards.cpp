@@ -293,6 +293,9 @@ Hand::Hand() {
 Hand::~Hand() {}					 //Hand has no pointer attribute 
 
 Hand::Hand(const Hand& h) {
+	for (auto card : h.handOfCards) {
+		this->handOfCards.push_back(new Card(*card));
+	}
 	this->maxCards = h.maxCards;
 	this->numCards = h.numCards;
 }

@@ -26,20 +26,14 @@ Player::Player(const Player& player)
 	this->_id = player._id;
 	this->_name = player._name;
 	this->_reinforcementPool = player._reinforcementPool;
+	this->_orderList = player._orderList;
+	this->_hand = player._hand;
 	
-	//Iterates through list and copies onjects
-
-	//call copy constructor of order
-	for (auto order : player._orderList->_ordersList) {
-		this->_orderList->_ordersList.push_back(new Order(*order));
-	}
+	//Iterates through list and copies objects
 	for (auto terr : player._territoryList) {
 		this->_territoryList.push_back(new Territory(*terr));
 	}
-	//maybe call copy constructor of hand
-	for (auto card : player._hand->handOfCards) {
-		this->_hand->handOfCards.push_back(new Card(*card));
-	}
+	
 	
 }
 //Parameterized constructor accpeting a string, and increments the id
