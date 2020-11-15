@@ -509,10 +509,6 @@ OrdersList::~OrdersList()
 		order = NULL;
 	}
 }
-vector<Order*> OrdersList::getOrdersList()
-{
-	return _ordersList;
-}
 //remove method for OrdersList class
 void OrdersList::remove(int index)
 {

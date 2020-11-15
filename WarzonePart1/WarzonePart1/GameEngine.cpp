@@ -230,6 +230,8 @@ void GameStartup::startupPhase() {
 
 Publisher MainGameLoop::phasePublisher = Publisher();
 PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver();
+GameStatisticsObserver* MainGameLoop::statsObserver = new GameStatisticsObserver();
+
 
 void MainGameLoop::runMainloop()
 {
@@ -268,8 +270,6 @@ void MainGameLoop::runMainloop()
 
 void MainGameLoop::reinforcementPhase(Player* player)
 {
-    string test="test";
-  
 	int playerTerritoryNum = player->getTerritoryList()->size();
 	int armyNum = floor(playerTerritoryNum / 3);
 
@@ -280,7 +280,6 @@ void MainGameLoop::reinforcementPhase(Player* player)
 		}
 	}
 	player->setReinforcementPool(armyNum);
-    MainGameLoop::phasePublisher.nofityAll(test);
 }
 
 void MainGameLoop::issueOrderPhase(Player* player)
@@ -418,30 +417,17 @@ void MainGameLoop::issueOrderPhase(Player* player)
 
         //----- Third step is to play a card from players hand and issue its order -----\\
         
-       
+        target =
+        source =
         max = player->toDefend()->size();
         max = player->toAttack()->size();
         randTerrIndex = rand() % max;
 
         Card* card = player->getHand()->handOfCards.at(0);
         
-        if (card->getCardType() == Card::Bomb) {
-          
-        }
-        else if (card->getCardType() == Card::Reinforcement) {
-           
-        }
-        else if (card->getCardType() == Card::Blockade) {
-
-        }
-        else if (card->getCardType() == Card::Airlift) {
-           
-        }
-        else if (card->getCardType() == Card::Diplomacy) {
-          
-        }
+        
         //implement random actions with random teritories and random armies
-        card->play2(player, player, nullptr, nullptr, player->toDefend()->at(0),1);
+        card->play2(player, player, player->toAttack()->at(0), player->toDefend()->at(0),1);
         player->removeCardFromHand(card);
         GameStart::deck->insertCard(*card);
        

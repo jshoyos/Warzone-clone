@@ -96,28 +96,27 @@ Card::cardType Card::play() {
 
 }
 
-Card::cardType Card::play2(Player* cardOwner,
-						   Player* p1, Player* p2, Territory* source, 
-				           Territory* target, int numberOfArmies)
+Card::cardType Card::play2(Player* p1,Player* p2, Territory* source,
+						   Territory* target,int numberOfArmies)
 {
 	Card::cardType card_type = this->type;
 
 	if (card_type == Card::Bomb) {
-		cardOwner->issueOrder("bomb",p1,p2,source,target,numberOfArmies);
+		p1->issueOrder("bomb",p1,p2,source,target,numberOfArmies);
 	}
 
 	else if (card_type == Card::Reinforcement) {
-		cardOwner->issueOrder("reinforcement", p1, p2, source, target, numberOfArmies);
+		p1->issueOrder("reinforcement", p1, p2, source, target, numberOfArmies);
 	}
 
 	else if (card_type == Card::Blockade) {
-		cardOwner->issueOrder("blockade", p1, p2, source, target, numberOfArmies);
+		p1->issueOrder("blockade", p1, p2, source, target, numberOfArmies);
 	}
 	else if (card_type == Card::Airlift) {
-		cardOwner->issueOrder("airlift", p1, p2, source, target, numberOfArmies);
+		p1->issueOrder("airlift", p1, p2, source, target, numberOfArmies);
 	}
 	else if (card_type == Card::Diplomacy) {
-		cardOwner->issueOrder("diplomacy", p1, p2, source, target, numberOfArmies);
+		p1->issueOrder("diplomacy", p1, p2, source, target, numberOfArmies);
 	}
 
 	return cardType();

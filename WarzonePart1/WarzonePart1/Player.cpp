@@ -224,6 +224,7 @@ bool Player::removeTerritory(Territory* terr)
 		_territoryList.erase(std::remove(_territoryList.begin(), _territoryList.end(), terr), _territoryList.end());
 		return true;
 	}
+	
 
 	return false;
 }

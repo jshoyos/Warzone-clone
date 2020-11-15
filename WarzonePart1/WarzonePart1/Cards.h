@@ -34,7 +34,7 @@ struct Card {							// No attributes are of a user-defined type -> no need for p
 
 	cardType getCardType();
 	cardType play();
-	cardType play2(Player*,Player*,Player*, Territory*, Territory*, int);
+	cardType play2(Player*,Player*, Territory*, Territory*, int);
 
 
 };

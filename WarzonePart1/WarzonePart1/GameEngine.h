@@ -40,7 +40,10 @@ public:
 class MainGameLoop {
 private:
 	static Publisher phasePublisher;
+	static Publisher statsPublisher;
 	static PhaseObserver* phaseObserver;
+	static GameStatisticsObserver* statsObserver;
+
 public:
 	static void runMainloop();
 	static void reinforcementPhase(Player*);

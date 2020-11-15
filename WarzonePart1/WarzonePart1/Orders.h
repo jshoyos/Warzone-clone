@@ -45,7 +45,7 @@ class OrdersList
 {
 	int _size = 0;
 public:
-	
+	vector<Order*> _ordersList;
 #pragma region constructors
 	OrdersList();
 	OrdersList(int);
@@ -54,7 +54,6 @@ public:
 
 #pragma endregion
 #pragma region methods 
-	
 	void remove(int);	//remove method for OrdersList class
 	void move(int, int); //move method for OrdersList class
 	bool queueOrder(Order*);	//method used to put an order into the list of orders
