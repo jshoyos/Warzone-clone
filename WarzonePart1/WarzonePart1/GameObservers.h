@@ -14,7 +14,7 @@ private:
 	vector<IObservable*> observers;
 public:
 	void subscribe(IObservable*);
-	void nofityAll(string data);
+	void notifyAll(string data);
 	void unsubscribe(IObservable*);
 	bool isSubscribed(IObservable*) const;
 };
