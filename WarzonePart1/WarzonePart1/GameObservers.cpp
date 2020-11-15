@@ -26,7 +26,9 @@ void IObservable::clearScreen()
 
 void Publisher::subscribe(IObservable *observer)
 {
-	observers.push_back(observer);
+	if (!isSubscribed(observer)) {
+		observers.push_back(observer);
+	}
 }
 
 void Publisher::notifyAll(string data)
@@ -47,7 +49,7 @@ void Publisher::unsubscribe(IObservable* observer)
 void PhaseObserver::update(string data)
 {
 	IObservable::clearScreen();
-	cout << data;
+	cout << data << endl;
 }
 
 void GameStatisticsObserver::update(string data)

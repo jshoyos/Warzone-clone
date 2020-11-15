@@ -57,7 +57,7 @@ void GameStart::toggleObserverOnOff(Publisher* publisher,IObservable* observer,b
     if (on && !publisher->isSubscribed(observer)) {
         publisher->subscribe(observer);
     }
-    else {
+    else if(!publisher->isSubscribed(observer)){
         publisher->unsubscribe(observer);
     }
 }
