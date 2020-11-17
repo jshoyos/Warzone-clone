@@ -237,5 +237,5 @@ void Player::displayTerrList()
 //overwritting string operator for class player
 ostream& operator<< (ostream& stream, const Player& player)
 {
-	return stream << player._name << " currently has " << player._orderList->_ordersList.size() << " orders, " << player._hand->handOfCards.size() << " cards, " << player._territoryList.size() << " territories, and " << player._reinforcementPool<< "armies in pool."<< endl;
+	return stream << player._name << " currently has " << player._orderList->getOrdersList().size() << " orders, " << player._hand->handOfCards.size() << " cards, and " << player._territoryList.size() << " territories." << endl;
 }

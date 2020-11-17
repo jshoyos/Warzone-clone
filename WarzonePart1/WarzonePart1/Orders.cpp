@@ -114,7 +114,7 @@ Deploy::Deploy(Player* p, Territory* target, int numberOfArmies):Order(p, target
 bool Deploy::validate()
 {
 	vector<Territory*> *territoryList = getPlayer()->getTerritoryList();
-	if (getNumberOfArmies() >= 0)
+	if (getNumberOfArmies() > 0)
 	{
 		if (std::find(territoryList->begin(), territoryList->end(), getTarget()) != territoryList->end()) {
 				return true;
@@ -126,7 +126,7 @@ bool Deploy::validate()
 			}
 	}
 	else {
-		cout << "ERROR: " << getNumberOfArmies() << " must be greater than 0 " << endl;
+		cout << "ERROR: You must deploy more than 0 armies " << endl;
 		return false;
 	}
 	return false;
@@ -137,7 +137,7 @@ void Deploy::execute()
 	if(validate())
 	{
 		getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
-		cout << "Deploying" << getNumberOfArmies() << " armies to " << getTarget()->getTerritoryName() << endl;
+		cout << "Deploying " << getNumberOfArmies() << " armies to " << getTarget()->getTerritoryName() << endl;
 	}
 }
 
@@ -161,12 +161,21 @@ bool Advance::validate()
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 	vector<Territory*> adjacentList = *getSource()->getAdjacent();
 
-	if (getNumberOfArmies() >= 0)
+	if (getNumberOfArmies() > 0)
 	{
 		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
 			
 			if (std::find(adjacentList.begin(), adjacentList.end(), getTarget()) != adjacentList.end()) {
 
+				for (Order* order : getTarget()->getOwner().getOrderList()->getOrdersList()) {
+					if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
+					{
+						if (contract->getPlayer2() == getPlayer()) {
+							cout << "ERROR: You cannot attack a territory you have negotiated with! Try again next turn" << endl;
+							return false;
+						}
+					}
+				}
 				return true;
 			}
 
@@ -196,7 +205,7 @@ bool Advance::setSource(Territory* source)
 {
 	if (source != NULL)
 	{
-		this->_source = source;
+		_source = source;
 		return true;
 	}
 
@@ -252,7 +261,7 @@ void Advance::execute()
 
 				//Pointer to territory
 				getPlayer()->conquerTerritory(getTarget());
-				vector<Territory*> listToUpdate = *getTarget()->getOwner()->getTerritoryList();
+				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
 				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
 
 				//TODO: add card after conquering territory
@@ -269,18 +278,30 @@ Bomb::Bomb()
 {
 }
 
-Bomb::Bomb(const Bomb& bomb):Order(bomb)
-{
-}
+
 
 Bomb::Bomb(Player* p, Territory* target, int numberOfArmies) : Order(p, target, numberOfArmies)
 {
 }
 
+Bomb::Bomb(const Bomb& bomb):Order(bomb)
+{
+}
 //validate method for the bomb order
 bool Bomb::validate()
-{
+
+
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
+
+	for (Order* order : getTarget()->getOwner().getOrderList()->getOrdersList()) {
+		if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
+		{
+			if (contract->getPlayer2() == getPlayer()) {
+				cout << "ERROR: You cannot bomb a territory you have negotiated with! Try again next turn" << endl;
+				return false;
+			}
+		}
+	}
 	if (std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end() ) {
 		cout << "ERROR: You cannot bomb your own territory!" << endl;
 		return false;
@@ -302,6 +323,8 @@ void Bomb::execute()
 Blockade::Blockade()
 {
 }
+
+
 
 Blockade::Blockade(const Blockade& blockade):Order(blockade)
 {
@@ -423,10 +446,10 @@ void Airlift::execute()
 
 				//Pointer to territory
 				getPlayer()->conquerTerritory(getTarget());
-				vector<Territory*> listToUpdate = *getTarget()->getOwner()->getTerritoryList();
+				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
 				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
 
-				//TODO: add card after conquering territory
+				//TODO: add card after conquering territory, check for neutral territory
 			}
 
 		}
@@ -436,6 +459,7 @@ void Airlift::execute()
 
 Negotiate::Negotiate()
 {
+	_p2 = nullptr;
 }
 
 
@@ -462,8 +486,16 @@ bool Negotiate::validate()
 
 //execute method for the negotiate order
 void Negotiate::execute()
-{	
-	
+{
+	if (validate())
+	{
+		cout << "Successful negotiating. No attack can be declared between " << getPlayer()->getName() << " and " << getPlayer2()->getName() << " until next turn" << endl;
+	}
+}
+
+Player* Negotiate::getPlayer2()
+{
+	return _p2;
 }
 
 OrdersList::OrdersList()
@@ -534,3 +566,9 @@ bool OrdersList::queueOrder(Order* order)
 	
 }
 
+vector<Order*> OrdersList::getOrdersList()
+{
+	return _ordersList;
+}
+
+//TODO: check if territory being attacked/bombed is neutral -> Advance, Airlift, Bomb
