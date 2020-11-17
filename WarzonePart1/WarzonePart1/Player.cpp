@@ -29,16 +29,6 @@ Player::Player(const Player& player)
 	this->_reinforcementPool = player._reinforcementPool;
 	
 	//Iterates through list and copies onjects
-	for (int i = 0; i < player._orderList->_ordersList.size();i++) {
-		this->_orderList->_ordersList[i] = player._orderList->_ordersList[i];
-	}
-	for (int i = 0; i < player._territoryList.size();i++) {
-		this->_territoryList[i] = player._territoryList[i];
-	}
-	for (int i = 0; i < player._hand->handOfCards.size();i++) {
-		this->_hand->handOfCards[i] = player._hand->handOfCards[i];
-	}
-	
 }
 //Parameterized constructor accpeting a string, and increments the id
 Player::Player(string name) :_name(name)
@@ -181,12 +171,12 @@ vector<Territory*>* Player::toAttack()
 void Player::issueOrder(string orderName)
 {
 	//maybe recieve order as parameter
-	Order* newOrder = new Order(orderName);
-	addOrder(newOrder);
+//	Order* newOrder = new Order(orderName);
+//	addOrder(newOrder);
 }
 
 //overwritting string operator for class player
 ostream& operator<< (ostream& stream, const Player& player)
 {
-	return stream << player._name << " currently has " << player._orderList->_ordersList.size() << " orders, " << player._hand->handOfCards.size() << " cards, " << player._territoryList.size() << " territories, and " << player._reinforcementPool<< "armies in pool."<< endl;
+	return stream << player._name << " currently has " << player._orderList->getOrdersList().size() << " orders, " << player._hand->handOfCards.size() << " cards, and " << player._territoryList.size() << " territories." << endl;
 }
