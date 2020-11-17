@@ -24,6 +24,14 @@ void IObservable::clearScreen()
 #endif
 }
 
+string IObservable::getName()
+{
+	for (int i = 0; i < observerName.size(); ++i) {
+		observerName[i] = toupper(observerName[i]);
+	}
+	return observerName;
+}
+
 void Publisher::subscribe(IObservable *observer)
 {
 	if (!isSubscribed(observer)) {
@@ -31,10 +39,15 @@ void Publisher::subscribe(IObservable *observer)
 	}
 }
 
-void Publisher::notifyAll(string data)
+void Publisher::notifyAll(string observerName, string data = "" )
 {
-	for (IObservable *observer : observers) {
-		observer->update(data);
+	for (int i = 0; i < observerName.size(); ++i) {
+		observerName[i] = toupper(observerName[i]);
+	}
+	for (IObservable* observer : observers) {
+		if (observerName == "ALL" || observerName == observer->getName()) {
+			observer->update(data);
+		}
 	}
 }
 
@@ -46,10 +59,20 @@ void Publisher::unsubscribe(IObservable* observer)
 	}
 }
 
+PhaseObserver::PhaseObserver(string name)
+{
+	observerName = name;
+}
+
 void PhaseObserver::update(string data)
 {
 	//IObservable::clearScreen();
 	cout << data << endl;
+}
+
+GameStatisticsObserver::GameStatisticsObserver(string name)
+{
+	observerName = name;
 }
 
 void GameStatisticsObserver::update(string data)
@@ -60,14 +83,14 @@ void GameStatisticsObserver::update(string data)
 	TextTable t('-', '|', '+');
 	
 	t.add("Player Name");
-	t.add("Countries Owned");
+	t.add("Territories Owned");
 	t.add("Percentage Conquered");
 	t.endOfRow();
 
 	for (Player* player : GameStart::players) {
 		int countries = player->getTerritoryList()->size();
 		auto str = to_string(countries);
-		double percentage = countries / (double)mapSize;
+		double percentage = (countries / (double)mapSize)*100;
 		auto percentageString = to_string(percentage);
 		if (percentage == 100) {
 			GameOver = true;
