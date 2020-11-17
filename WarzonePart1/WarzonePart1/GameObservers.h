@@ -14,17 +14,17 @@ private:
 	vector<IObservable*> observers;
 public:
 	void subscribe(IObservable*);
-	void nofityAll(string data);
+	void notifyAll(string data);
 	void unsubscribe(IObservable*);
 	bool isSubscribed(IObservable*) const;
 };
 
-class PhaseObserver : IObservable {
+class PhaseObserver : public IObservable {
 public:
 	void update(string) override;
 };
 
-class GameStatisticsObserver : IObservable {
+class GameStatisticsObserver : public IObservable {
 public:
 	void update(string) override;
 };

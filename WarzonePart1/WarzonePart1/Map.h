@@ -40,7 +40,7 @@ public:
 	int    getArmies();
 	int    getContinent();
 	int    getId();
-	Player getOwner();
+	Player* getOwner();
 	vector<Territory*>* getAdjacent();
 	string getTerritoryName();
 	//This method is used to add a link to a specific territory

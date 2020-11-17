@@ -1,6 +1,5 @@
 #include "Player.h"
 
-
 int Player::_id = 0;
 //----------------------------- Constructors ----------------------------------\\
 
@@ -27,8 +26,9 @@ Player::Player(const Player& player)
 	this->_id = player._id;
 	this->_name = player._name;
 	this->_reinforcementPool = player._reinforcementPool;
-	
-	//Iterates through list and copies onjects
+	this->_orderList = player._orderList;
+	this->_hand = player._hand;
+	this->_territoryList = player._territoryList;
 }
 //Parameterized constructor accpeting a string, and increments the id
 Player::Player(string name) :_name(name)
@@ -104,6 +104,11 @@ void Player::setID(int id) {        //d_rivi
 	_id = id;
 }
 
+bool Player::setOrderList(OrdersList* list)
+{
+	_orderList = list;
+	return false;
+}
 //add order to players order's list
 bool Player::addOrder(Order* order)
 {
@@ -111,7 +116,7 @@ bool Player::addOrder(Order* order)
 }
 
 //add cards to players hand
-void Player::addCard(Card card)
+void Player::addCard(Card* card)
 {
 	_hand->insertCard(card);
 }
@@ -129,13 +134,9 @@ bool Player::conquerTerritory(Territory* territory)
 	return false;
 }
 
-bool Player::setReinforcementPool(int reinforcementPool)
+void Player::setReinforcementPool(int reinforcementPool)
 {
-	if (reinforcementPool != NULL) {
 		_reinforcementPool = reinforcementPool;
-		return true;
-	}
-	return false;
 }
 
 //--------------------------------------------- Methods ---------------------------\\
@@ -156,23 +157,81 @@ vector<Territory*>* Player::toDefend()
 //method that returns a list of territories to attack (not owned by player)
 vector<Territory*>* Player::toAttack()
 {	
-	//arbitrary set of territories to attack
-	Territory* Canada = new Territory(0, "Canada", 0);
-	Territory* USA = new Territory(1, "USA", 0);
+	vector<Territory*>* attackList = new vector<Territory*>();
+	
+	for (Territory* terr : *getTerritoryList()) {
 
-	vector<Territory*> *terrList = new vector<Territory*>();
-	terrList->push_back(Canada);
-	terrList->push_back(USA);
+		for (Territory* adjTerr : *terr->getAdjacent()) {
 
-	return terrList;
+			//checks if adjacent territories are part of the players territories.
+			if (!(std::find(getTerritoryList()->begin(), getTerritoryList()->end(), adjTerr) != getTerritoryList()->end())){
+				attackList->push_back(adjTerr);
+			}
+		}
+
+	}
+
+	return attackList;
 }
 
 //method that creates order and adds it to player's order list
-void Player::issueOrder(string orderName)
+void Player::issueOrder(string orderName, Player* p1, Player* p2, Territory* source, Territory* target, int numberOfArmies)
 {
-	//maybe recieve order as parameter
-//	Order* newOrder = new Order(orderName);
-//	addOrder(newOrder);
+	if (orderName._Equal("deploy")) {
+		Deploy* newOrder = new Deploy(p1, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if(orderName._Equal("advance")){
+		Advance* newOrder = new Advance(p1, source, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if(orderName._Equal("airlift")){
+		Airlift* newOrder = new Airlift(p1,source, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if (orderName._Equal("bomb")) {
+		Bomb* newOrder = new Bomb(p1, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if (orderName._Equal("blockade")) {
+		Blockade* newOrder = new Blockade(p1, target, numberOfArmies);
+		addOrder(newOrder);
+	}
+	else if (orderName._Equal("negotiate")) {
+		Negotiate* newOrder = new Negotiate(p1,p2);
+		addOrder(newOrder);
+	}
+	else {
+		cout << "ERROR: unrecognized order!" << endl;
+	}
+
+}
+
+//removes territory from players territoryList
+bool Player::removeTerritory(Territory* terr)
+{
+	if (std::find(getTerritoryList()->begin(), getTerritoryList()->end(), terr) != getTerritoryList()->end()) {
+		_territoryList.erase(std::remove(_territoryList.begin(), _territoryList.end(), terr), _territoryList.end());
+		return true;
+	}
+	
+
+	return false;
+}
+
+bool Player::removeCardFromHand(Card* card)
+{
+	if (std::find(getHand()->handOfCards.begin(), getHand()->handOfCards.end(), card) != getHand()->handOfCards.end()) {
+		getHand()->handOfCards.erase(std::remove(getHand()->handOfCards.begin(), getHand()->handOfCards.end(), card), getHand()->handOfCards.end());
+		return true;
+	}
+	return false;
+}
+void Player::displayTerrList()
+{
+	for (Territory* terr : *getTerritoryList()) {
+		cout << terr->getTerritoryName() << endl;
+	}
 }
 
 //overwritting string operator for class player

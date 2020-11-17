@@ -18,8 +18,11 @@ Order::Order()
 }
 
 //Copy constructor for Order
-Order::Order(const Order&)
+Order::Order(const Order& order)
 {
+	this->_numberOfArmies = order._numberOfArmies;
+	this->_p = order._p;
+	this->_target = order._target;
 }
 
 Order::Order(Player* p) : _p(p)
@@ -98,7 +101,7 @@ Deploy::Deploy()
 {
 }
 
-Deploy::Deploy(const Deploy&)
+Deploy::Deploy(const Deploy& deploy):Order(deploy)
 {
 }
 
@@ -111,7 +114,7 @@ Deploy::Deploy(Player* p, Territory* target, int numberOfArmies):Order(p, target
 bool Deploy::validate()
 {
 	vector<Territory*> *territoryList = getPlayer()->getTerritoryList();
-	if (getNumberOfArmies() <= 0)
+	if (getNumberOfArmies() > 0)
 	{
 		if (std::find(territoryList->begin(), territoryList->end(), getTarget()) != territoryList->end()) {
 				return true;
@@ -143,14 +146,14 @@ Advance::Advance()
 	_source = nullptr;
 
 }
-Advance::Advance(const Advance&)
+Advance::Advance(const Advance& advance):Order(advance)
 {
-	_source = nullptr;
+	this->_source = advance._source;
 
 }
 Advance::Advance(Player* p, Territory* source, Territory* target, int numberOfArmies):Order(p, target, numberOfArmies)
 {
-	_source = source;
+	this->_source = source;
 }
 //validate method for the advance order
 bool Advance::validate()
@@ -275,17 +278,19 @@ Bomb::Bomb()
 {
 }
 
-Bomb::Bomb(const Bomb&)
-{
-}
+
 
 Bomb::Bomb(Player* p, Territory* target, int numberOfArmies) : Order(p, target, numberOfArmies)
 {
 }
 
+Bomb::Bomb(const Bomb& bomb):Order(bomb)
+{
+}
 //validate method for the bomb order
 bool Bomb::validate()
-{
+
+
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 
 	for (Order* order : getTarget()->getOwner().getOrderList()->getOrdersList()) {
@@ -319,7 +324,9 @@ Blockade::Blockade()
 {
 }
 
-Blockade::Blockade(const Blockade&)
+
+
+Blockade::Blockade(const Blockade& blockade):Order(blockade)
 {
 }
 
@@ -356,9 +363,9 @@ Airlift::Airlift()
 	_source = nullptr;
 
 }
-Airlift::Airlift(const Airlift&)
+Airlift::Airlift(const Airlift& airlift) :Order(airlift)
 {
-	_source = nullptr;
+	this->_source = airlift._source;
 }
 Airlift::Airlift(Player* p, Territory* source, Territory* target, int numberOfArmies) :Order(p, target, numberOfArmies)
 {
@@ -369,19 +376,7 @@ bool Airlift::validate()
 {
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 	if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
-		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()))
-		{
-			for (Order* order : getTarget()->getOwner().getOrderList()->getOrdersList()) {
-					if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
-					{
-						if (contract->getPlayer2() == getPlayer()) {
-							cout << "ERROR: You cannot attack a territory you have negotiated with! Try again next turn" << endl;
-							return false;
-						}
-					}
-			}
-			return true;
-		}
+		return true;
 	}
 	cout << "You can only airlift from territories that you own!" << endl;
 	return false;
@@ -467,9 +462,10 @@ Negotiate::Negotiate()
 	_p2 = nullptr;
 }
 
-Negotiate::Negotiate(const Negotiate&)
+
+Negotiate::Negotiate(const Negotiate& negotiate) :Order(negotiate)
 {
-	_p2 = nullptr;
+	this->_p2 = negotiate._p2;
 }
 
 Negotiate::Negotiate(Player* p, Player* p2) : Order(p)
@@ -511,8 +507,30 @@ OrdersList::OrdersList(int size) :_size(size)
 {
 }
 //Setter for copy constructor
-OrdersList::OrdersList(const OrdersList&)
+OrdersList::OrdersList(const OrdersList& orderList)
 {
+	for (auto order : orderList._ordersList) {
+		
+		if (Deploy* deploy = dynamic_cast<Deploy*>(order)) {
+			this->_ordersList.push_back(new Deploy(*deploy));
+		}
+		else if (Advance* advance = dynamic_cast<Advance*>(order)) {
+			this->_ordersList.push_back(new Advance(*advance));
+		}
+		else if(Bomb* bomb = dynamic_cast<Bomb*>(order)) {
+			this->_ordersList.push_back(new Bomb(*bomb));
+		}
+		else if (Blockade* blockade = dynamic_cast<Blockade*>(order)) {
+			this->_ordersList.push_back(new Blockade(*blockade));
+		}
+		else if (Airlift* airlift = dynamic_cast<Airlift*>(order)) {
+			this->_ordersList.push_back(new Airlift(*airlift));
+		}
+		else if (Negotiate* negotiate = dynamic_cast<Negotiate*>(order)) {
+			this->_ordersList.push_back(new Negotiate(*negotiate));
+		}
+		
+	}
 }
 //Destructor for OrdersList
 OrdersList::~OrdersList()
@@ -524,19 +542,16 @@ OrdersList::~OrdersList()
 	}
 }
 //remove method for OrdersList class
-vector<Order*>* OrdersList::remove(vector<Order*>* list, int index)
+void OrdersList::remove(int index)
 {
-	index = index - 1;
-	list->erase(list->begin() + (index));
-	return list;
+	_ordersList.erase(_ordersList.begin() + (index));
 }
 //move method for OrdersList class
-vector<Order*>* OrdersList::move(vector<Order*>* list, int a, int b)
+void OrdersList::move(int a, int b)
 {
 	a = (a - 1);
 	b = (b - 1);
-	iter_swap(list->begin() + (a), list->begin() + (b));
-	return list;
+	iter_swap(_ordersList.begin() + (a), _ordersList.begin() + (b));
 }
 //method used to put an order into the list of orders
 bool OrdersList::queueOrder(Order* order)

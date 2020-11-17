@@ -8,9 +8,11 @@
 
 using namespace std;
 
+class OrdersList;
 class Territory;
 class Order;
-class OrdersList;
+class Hand;
+class Card;
 
 class Player
 {
@@ -19,9 +21,9 @@ class Player
 	//Player's name
 	string _name = "";
 	//The list of orders made by a player
-	OrdersList *_orderList;
+	OrdersList* _orderList;
 	//The list of cards given to a player
-	Hand *_hand;
+	Hand* _hand;
 	//List of the Player's Territories
 	vector<Territory*> _territoryList;
 	//Number of Armies in the Player's Reinforcement Pool
@@ -41,7 +43,11 @@ public:
 	friend ostream& operator<< (ostream&, const Player&);	//Overloading of string operator
 	vector<Territory*>* toDefend();		//toDefend() method for a player
 	vector<Territory*>* toAttack();		//toAttack() method for a player
-	void issueOrder(string);			//issueOrder() method for a player
+	void issueOrder(string , Player*, Player* ,Territory*,Territory*, int );			//issueOrder() method for a player
+	bool removeTerritory(Territory*);	//removes territory from player's territory list
+	void displayTerrList();				//displays the names of territories from a player's territory list 
+	bool removeCardFromHand(Card*);		// removes a card from the a hand
+
 
 	//getters
 	string getName();
@@ -54,10 +60,11 @@ public:
 
 	//setters
 	bool setName(string);
+	bool setOrderList(OrdersList*);
 	bool addOrder(Order*);
-	void addCard(Card);
+	void addCard(Card*);
 	bool conquerTerritory(Territory*);
-	bool setReinforcementPool(int);
+	void setReinforcementPool(int);
 
 	void setID(int new_id);        //d_rivi
 };
