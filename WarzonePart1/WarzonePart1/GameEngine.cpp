@@ -61,10 +61,10 @@ void GameStart::generateDeck()
 
 void GameStart::toggleObserverOnOff(Publisher* publisher,IObservable* observer,bool on)
 {
-    if (on) { //&& !publisher->isSubscribed(observer)
+    if (on) {
         publisher->subscribe(observer);
     }
-    else {
+    else{
         publisher->unsubscribe(observer);
     }
 }

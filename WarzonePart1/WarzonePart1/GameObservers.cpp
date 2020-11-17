@@ -26,7 +26,9 @@ void IObservable::clearScreen()
 
 void Publisher::subscribe(IObservable *observer)
 {
-	observers.push_back(observer);
+	if (!isSubscribed(observer)) {
+		observers.push_back(observer);
+	}
 }
 
 void Publisher::notifyAll(string data)
@@ -47,12 +49,14 @@ void Publisher::unsubscribe(IObservable* observer)
 void PhaseObserver::update(string data)
 {
 	IObservable::clearScreen();
-	cout << data;
+	cout << data << endl;
 }
 
 void GameStatisticsObserver::update(string data)
 {
 	int mapSize = GameStart::map->getMapSizeTerritory();
+	Player* winner = nullptr;
+	bool GameOver = false;
 	TextTable t('-', '|', '+');
 	
 	t.add("Player Name");
@@ -61,15 +65,30 @@ void GameStatisticsObserver::update(string data)
 	t.endOfRow();
 
 	for (Player* player : GameStart::players) {
-		t.add(player->getName());
 		int countries = player->getTerritoryList()->size();
 		auto str = to_string(countries);
 		double percentage = countries / (double)mapSize;
 		auto percentageString = to_string(percentage);
-		t.add(str);
-		t.add(percentageString + "%");
-		t.endOfRow();
+		if (percentage == 100) {
+			GameOver = true;
+			winner = player;
+			break;
+		}
+		else if (percentage != 0) {
+			t.add(player->getName());
+			t.add(str);
+			t.add(percentageString + "%");
+		}
 	}
-	t.setAlignment(2, TextTable::Alignment::RIGHT);
-	cout << t;
+	if (GameOver) {
+		clearScreen();
+		TextTable winBanner('-', '|', '#');
+		winBanner.add("Congrats " + winner->getName() + " you have won!!!");
+		winBanner.endOfRow();
+		cout << winBanner;
+	}
+	else {
+		t.setAlignment(2, TextTable::Alignment::RIGHT);
+		cout << t;
+	}
 }
