@@ -7,9 +7,11 @@ using namespace std;
 /// </summary>
 class IObservable {
 protected:
+	string observerName;
 	static void clearScreen();
 public:
 	virtual void update(string) = 0; //Every child must implement their own update method
+	string getName();
 };
 
 /// <summary>
@@ -20,7 +22,7 @@ private:
 	vector<IObservable*> observers; //These are all the observers subscribed to the publisher
 public:
 	void subscribe(IObservable*); //method used for an observer to subscribe to a specific publisher
-	void notifyAll(string data); //iterates through all the observers subscribed and notifies them with their update method by polymorphism
+	void notifyAll(string observerName, string data); //iterates through all the observers subscribed and notifies them with their update method by polymorphism
 	void unsubscribe(IObservable*); //method used to unsubscribe an observer from the publisher
 	bool isSubscribed(IObservable*) const; //helper method to know if an observer is already subscribed to the publisher. will also be used in the subscribe method to ensure it is only subscribed once
 };
@@ -31,6 +33,7 @@ public:
 /// </summary>
 class PhaseObserver : public IObservable {
 public:
+	PhaseObserver(string);
 	void update(string) override; //Implements its own update method
 };
 
@@ -41,5 +44,6 @@ public:
 /// </summary>
 class GameStatisticsObserver : public IObservable {
 public:
+	GameStatisticsObserver(string);
 	void update(string) override; //Implements its own update method
 };

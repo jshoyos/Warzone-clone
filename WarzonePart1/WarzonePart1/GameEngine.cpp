@@ -252,7 +252,7 @@ void MainGameLoop::runMainloop()
             }
 			reinforcementPhase(player);
 		}
-        MainGameLoop::phasePublisher.notifyAll("phase1");
+        MainGameLoop::phasePublisher.notifyAll(, "phase1");
 		for (Player* player : GameStart::players) {
             if (player->getTerritoryList()->empty()) {
                 continue;
