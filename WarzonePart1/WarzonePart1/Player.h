@@ -64,7 +64,7 @@ public:
 	bool addOrder(Order*);
 	void addCard(Card*);
 	bool conquerTerritory(Territory*);
-	bool setReinforcementPool(int);
+	void setReinforcementPool(int);
 
 	void setID(int new_id);        //d_rivi
 };

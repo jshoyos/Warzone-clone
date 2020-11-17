@@ -28,13 +28,7 @@ Player::Player(const Player& player)
 	this->_reinforcementPool = player._reinforcementPool;
 	this->_orderList = player._orderList;
 	this->_hand = player._hand;
-	
-	//Iterates through list and copies objects
-	for (auto terr : player._territoryList) {
-		this->_territoryList.push_back(new Territory(*terr));
-	}
-	
-	
+	this->_territoryList = player._territoryList;
 }
 //Parameterized constructor accpeting a string, and increments the id
 Player::Player(string name) :_name(name)
@@ -140,13 +134,9 @@ bool Player::conquerTerritory(Territory* territory)
 	return false;
 }
 
-bool Player::setReinforcementPool(int reinforcementPool)
+void Player::setReinforcementPool(int reinforcementPool)
 {
-	if (reinforcementPool != NULL) {
 		_reinforcementPool = reinforcementPool;
-		return true;
-	}
-	return false;
 }
 
 //--------------------------------------------- Methods ---------------------------\\

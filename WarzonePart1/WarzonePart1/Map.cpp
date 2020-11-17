@@ -265,10 +265,10 @@ int Territory::getArmies()
 }
 
 
-Player Territory::getOwner()
+Player* Territory::getOwner()
 {
 	//TODO: once the player class has a copy constructor return a copy of the player
-	return *_owner;
+	return _owner;
 	//return new Player(*_owner);
 }
 

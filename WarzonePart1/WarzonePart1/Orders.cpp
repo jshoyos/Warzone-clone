@@ -114,7 +114,7 @@ Deploy::Deploy(Player* p, Territory* target, int numberOfArmies):Order(p, target
 bool Deploy::validate()
 {
 	vector<Territory*> *territoryList = getPlayer()->getTerritoryList();
-	if (getNumberOfArmies() <= 0)
+	if (getNumberOfArmies() >= 0)
 	{
 		if (std::find(territoryList->begin(), territoryList->end(), getTarget()) != territoryList->end()) {
 				return true;
@@ -153,7 +153,7 @@ Advance::Advance(const Advance& advance):Order(advance)
 }
 Advance::Advance(Player* p, Territory* source, Territory* target, int numberOfArmies):Order(p, target, numberOfArmies)
 {
-	_source = source;
+	this->_source = source;
 }
 //validate method for the advance order
 bool Advance::validate()
@@ -161,7 +161,7 @@ bool Advance::validate()
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 	vector<Territory*> adjacentList = *getSource()->getAdjacent();
 
-	if (getNumberOfArmies() <= 0)
+	if (getNumberOfArmies() >= 0)
 	{
 		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
 			
@@ -196,7 +196,7 @@ bool Advance::setSource(Territory* source)
 {
 	if (source != NULL)
 	{
-		_source = source;
+		this->_source = source;
 		return true;
 	}
 
@@ -252,7 +252,7 @@ void Advance::execute()
 
 				//Pointer to territory
 				getPlayer()->conquerTerritory(getTarget());
-				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
+				vector<Territory*> listToUpdate = *getTarget()->getOwner()->getTerritoryList();
 				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
 
 				//TODO: add card after conquering territory
@@ -423,7 +423,7 @@ void Airlift::execute()
 
 				//Pointer to territory
 				getPlayer()->conquerTerritory(getTarget());
-				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
+				vector<Territory*> listToUpdate = *getTarget()->getOwner()->getTerritoryList();
 				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
 
 				//TODO: add card after conquering territory
@@ -512,7 +512,6 @@ OrdersList::~OrdersList()
 //remove method for OrdersList class
 void OrdersList::remove(int index)
 {
-	index = index - 1;
 	_ordersList.erase(_ordersList.begin() + (index));
 }
 //move method for OrdersList class

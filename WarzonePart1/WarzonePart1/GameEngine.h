@@ -43,6 +43,8 @@ private:
 	static Publisher statsPublisher;
 	static PhaseObserver* phaseObserver;
 	static GameStatisticsObserver* statsObserver;
+	static int turn;
+	static int deployOrderLeft;
 
 public:
 	static void runMainloop();

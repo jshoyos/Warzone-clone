@@ -106,7 +106,7 @@ Card::cardType Card::play2(Player* p1,Player* p2, Territory* source,
 	}
 
 	else if (card_type == Card::Reinforcement) {
-		p1->issueOrder("reinforcement", p1, p2, source, target, numberOfArmies);
+		p1->issueOrder("advance", p1, p2, source, target, numberOfArmies);
 	}
 
 	else if (card_type == Card::Blockade) {
@@ -116,7 +116,7 @@ Card::cardType Card::play2(Player* p1,Player* p2, Territory* source,
 		p1->issueOrder("airlift", p1, p2, source, target, numberOfArmies);
 	}
 	else if (card_type == Card::Diplomacy) {
-		p1->issueOrder("diplomacy", p1, p2, source, target, numberOfArmies);
+		p1->issueOrder("negotiate", p1, p2, source, target, numberOfArmies);
 	}
 
 	return cardType();

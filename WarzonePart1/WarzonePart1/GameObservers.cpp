@@ -68,6 +68,7 @@ void GameStatisticsObserver::update(string data)
 		auto percentageString = to_string(percentage);
 		t.add(str);
 		t.add(percentageString + "%");
+		t.endOfRow();
 	}
 	t.setAlignment(2, TextTable::Alignment::RIGHT);
 	cout << t;
