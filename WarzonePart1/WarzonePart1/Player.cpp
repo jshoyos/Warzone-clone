@@ -7,6 +7,8 @@ int Player::_id = 0;
 //Default constructor for player
 Player::Player()
 {
+	_reinforcementPool = 0;
+	_name = "";
 	_hand = new Hand();
 	_orderList = new OrdersList();
 	_id++; //increments static int (id)
@@ -24,11 +26,21 @@ Player::Player(const Player& player)
 {
 	this->_id = player._id;
 	this->_name = player._name;
+	this->_reinforcementPool = player._reinforcementPool;
 	
 	//Iterates through list and copies onjects
 }
-//Parameterized constructor accpeting a string and increments the id
+//Parameterized constructor accpeting a string, and increments the id
 Player::Player(string name) :_name(name)
+{
+	_reinforcementPool = 0;
+	_hand = new Hand();
+	_orderList = new OrdersList();
+	_id++; //increments static int (id)
+}
+
+//Parameterized constructor accpeting a string, an int and increments the id
+Player::Player(string name, int num) :_name(name),_reinforcementPool(num)
 {
 	_hand = new Hand();
 	_orderList = new OrdersList();
@@ -36,7 +48,7 @@ Player::Player(string name) :_name(name)
 }
 
 //Parameterized constructor accpeting a list of orders, a list of cards and a list of territories.
-Player::Player(string name, OrdersList* orders, Hand* hand, vector<Territory*>* territories) : _name(name), _orderList(orders), _hand(hand), _territoryList(*territories)
+Player::Player(string name, OrdersList* orders, Hand* hand, vector<Territory*>* territories,int num) : _name(name), _orderList(orders), _hand(hand), _territoryList(*territories), _reinforcementPool(num)
 {
 	_id++; //increments static int (id)
 }
@@ -66,6 +78,15 @@ vector<Territory*>* Player::getTerritoryList()
 	return &_territoryList;
 }
 
+int Player::getReinforcementPool()
+{
+	return _reinforcementPool;
+}
+
+int Player::getID() {        //d_rivi
+	return _id;
+}
+
 //---------------------------------- Setters --------------------------------\\
 
 //set players name 
@@ -77,6 +98,12 @@ bool Player::setName(string name)
 	}
 	return false;
 }
+
+//set players id 
+void Player::setID(int id) {        //d_rivi
+	_id = id;
+}
+
 //add order to players order's list
 bool Player::addOrder(Order* order)
 {
@@ -97,6 +124,15 @@ bool Player::conquerTerritory(Territory* territory)
 	{
 		_territoryList.push_back(territory);
 		territory->setOwner(this);
+		return true;
+	}
+	return false;
+}
+
+bool Player::setReinforcementPool(int reinforcementPool)
+{
+	if (reinforcementPool != NULL) {
+		_reinforcementPool = reinforcementPool;
 		return true;
 	}
 	return false;

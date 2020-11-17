@@ -7,8 +7,8 @@
 Map *MapLoader::createMap()
 {
 
-    // random size for now
-    Map *map = new Map(40);
+    
+    Map *map = new Map();
 
     fstream stream(_fileName);
 
@@ -19,11 +19,11 @@ Map *MapLoader::createMap()
         return NULL;
     }
 
-    // Test if stream is open, if not map cannot be created
+    // Test if stream is open, if not (ie: file not found) map cannot be created
     if (!stream.is_open())
     {
-        cout << "File cant be accessed" << endl;
-
+        cout << ">>> Map_Loader_Error: File not found. \n\n>>> System will now exit." << endl;
+        exit(1);
         stream.close();
         return NULL;
     }
@@ -112,7 +112,7 @@ Map *MapLoader::createMap()
 
             // skip newlines, skip possible duplicates of tags
             if (line.size() != 0 && line != tag_files && line != tag_continents
-                && line != tag_countries && line != tag_countries)
+                && line != tag_countries && line != tag_borders)
             {
 
                 switch (mode)
@@ -126,9 +126,11 @@ Map *MapLoader::createMap()
                     // test if line has enough tokens
                     if (tokens.size() == 0)
                     {
-                        cout << "There is an issue with a continent in the file" << endl;
+                        cout << ">>> Map_Loader_Error: Error with one continent in the file. \n>>> Map will be deleted and system will exit." << endl;
                         delete map;
+                        exit(1);
                         return NULL;
+                        
                     }
 
                     tags_read[0] = true;
@@ -148,8 +150,9 @@ Map *MapLoader::createMap()
 
                     if (tokens.size() < 3)
                     {
-                        cout << "There is an issue with a territory in the file" << endl;
+                        cout << ">>> Map_Loader_Error: Error with one territory in the file.\n>>> Map will be deleted and system will exit." << endl;
                         delete map;
+                        exit(1);
                         return NULL;
                     }
 
@@ -162,16 +165,17 @@ Map *MapLoader::createMap()
 
                     // Does the continent id make sense?
                     if (continent_id >= continents.size()) {
-                        cout << "continent_id doesnt make sense" << endl;
+                        cout << "\n>>> Map_Loader_Error: An invalid continent_id has been detected.\n>>> Map will be deleted and system will exit." << endl;
                         delete map;
+                        exit(1);
                         return NULL;
                     }
 
 
                     territories.push_back(new Territory(territory_id, name, continent_id));
                     current = territories.back();
-                    cout << current->getId() << endl;
-                    cout << *territories.back() << endl;
+                    //cout << current->getId() << endl;
+                    //cout << *territories.back() << endl;
                     break;
 
                 // Change mode to handle borders
@@ -182,16 +186,18 @@ Map *MapLoader::createMap()
 
                     // Check whether territories were defined earlier
                     if (territories.size() == 0) {
-                        cout << "Territories and continents should be defined before borders" << endl;
+                        cout << ">>> Map_Loader_Error: Territories and continents should be defined before borders.\n>>> Map will be deleted and system will exit." << endl;
                         delete map;
+                        exit(1);
                         return NULL;
                     }
 
                     // Check if there are enough tokens 
                     else if (tokens.size() == 0)
                     {
-                        cout << "There is an issue with a border in the file" << endl;
+                        cout << ">>> Map_Loader_Error: Error with one border in the file. \n>>> Map will be deleted and system will exit." << endl;
                         delete map;
+                        exit(1);
                         return NULL;
                     }
 
@@ -200,8 +206,9 @@ Map *MapLoader::createMap()
                         int id = stoi(token) - 1;
                         if (id >= territories.size() || id < 0)
                         {
-                            cout << "Theres a border that's invalid" << endl;
+                            cout << ">>> Map_Loader_Error: A border in the map is invalid.\n>>> Map will be deleted and system will exit." << endl;
                             delete map;
+                            exit(1);
                             return NULL;
                         }
                             
@@ -217,8 +224,7 @@ Map *MapLoader::createMap()
                     newTerritory = territories[current_id];
 
                     // the rest are borders
-                    cout << "Here are some borders of " << newTerritory->getTerritoryName() << " " << current_id << endl;
-                    cout << "------------------------" << endl;
+                    cout << "\n>>> Linking " << newTerritory->getTerritoryName() << " to its neighbouring territories:"<< endl;
                     tokens.erase(tokens.begin());
                     for (int i = 0; i < tokens.size(); ++i)
                     {
@@ -227,7 +233,7 @@ Map *MapLoader::createMap()
 
                         int adjacent_id = stoi(tokens[i]) - 1;
                         newTerritory->addBorder(territories[adjacent_id]);
-                        cout << territories[adjacent_id]->getTerritoryName() << endl;
+                        //cout << territories[adjacent_id]->getTerritoryName() << endl;
                     }
                     break;
                 
@@ -242,14 +248,14 @@ Map *MapLoader::createMap()
 
         for (bool tag : tags_read)
         {
-            cout << tag;
+            //cout << tag;
             if (!tag)
             {
                 for (auto territroy : territories) delete territroy;
                 for (auto continent : continents) delete continent;
                 delete map;
 
-                cout << "Were all tags read?" << tags_read[0] << " " << tags_read[1] << " " << tags_read[2] << " " << tags_read[3];
+                //cout << "Were all tags read?" << tags_read[0] << " " << tags_read[1] << " " << tags_read[2] << " " << tags_read[3];
 
                 stream.close();
                 return NULL;
@@ -284,26 +290,27 @@ MapLoader::MapLoader() : _fileName("")
 }
 
 // Parametrized constructor
-MapLoader::MapLoader(string fileName) : _fileName("Maps/"+fileName)
+MapLoader::MapLoader(string fileName) : _fileName(fileName)
 {
 }
 
 // Set name for file
 void MapLoader::setFileName(string fileName)
 {
-    _fileName = "Maps/"+fileName;
+    _fileName = fileName;
 }
 
+// This should never be called since its a service not an object
 MapLoader::MapLoader(const MapLoader &mapLoader)
 {
-    cout << "Copy constructor... This should never be called since its a service not an object" << endl;
+    cout << "MapLoader Copy constructor" << endl;  
     //only for correction purposes
     //this->_fileName = mapLoader._fileName;
 }
 
 MapLoader::~MapLoader()
 {
-    cout << "Destructor for MapLoader" << endl;
+    cout << "MapLoader Destructor " << endl;
 }
 
 ostream &operator<<(ostream &os, const MapLoader &mapLoader)

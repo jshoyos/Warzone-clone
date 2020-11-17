@@ -24,6 +24,8 @@ class Player
 	Hand *_hand;
 	//List of the Player's Territories
 	vector<Territory*> _territoryList;
+	//Number of Armies in the Player's Reinforcement Pool
+	int _reinforcementPool;
 
 public:
 	//constructors
@@ -31,25 +33,32 @@ public:
 	~Player();						//destructor
 	Player(const Player&);			//copy constructor
 	Player(string);					//parameterized constructor accepting a string (name)
-	Player(string, OrdersList*, Hand*, vector<Territory*>*); //parameterized constructor 
+	Player(string,int);				//parameterized constructor accepting a string (name), and int (num)
+	Player(string, OrdersList*, Hand*, vector<Territory*>*,int); //parameterized constructor 
 
 	//methods
 	Player& operator= (const Player&);	//Overwritting assign operator
 	friend ostream& operator<< (ostream&, const Player&);	//Overloading of string operator
 	vector<Territory*>* toDefend();		//toDefend() method for a player
 	vector<Territory*>* toAttack();		//toAttack() method for a player
-	void issueOrder(string);					//issueOrder() method for a player
+	void issueOrder(string);			//issueOrder() method for a player
 
 	//getters
 	string getName();
 	OrdersList* getOrderList();
 	Hand* getHand();
 	vector<Territory*>* getTerritoryList();
+	int getReinforcementPool();
+
+	int getID();         //d_rivi
 
 	//setters
 	bool setName(string);
 	bool addOrder(Order*);
 	void addCard(Card);
 	bool conquerTerritory(Territory*);
+	bool setReinforcementPool(int);
+
+	void setID(int new_id);        //d_rivi
 };
 
