@@ -44,8 +44,10 @@ ostream& operator << (ostream&, const Order&);
 class OrdersList
 {
 	int _size = 0;
+
+private :
+		vector<Order*> _ordersList;	//This is the list of orders where all the individual orders will be stored
 public:
-	vector<Order*> _ordersList;	//This is the list of orders where all the individual orders will be stored
 #pragma region constructors
 	OrdersList();
 	OrdersList(int);
@@ -59,6 +61,9 @@ public:
 	vector<Order*>* move(vector<Order*>*, int, int); //move method for OrdersList class
 	bool queueOrder(Order*);	//method used to put an order into the list of orders
 	friend ostream& operator << (ostream&, const OrdersList&);
+
+	//getter
+	vector<Order*> getOrdersList();
 
 #pragma endregion
 
@@ -139,4 +144,6 @@ public:
 	bool validate();	//validate method for the negotiate order
 	void execute();	//execute method for the negotiate order
 
+	//getter
+	Player* getPlayer2();
 };

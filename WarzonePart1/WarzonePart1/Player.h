@@ -9,6 +9,8 @@
 using namespace std;
 
 class Territory;
+class Order;
+class OrdersList;
 
 class Player
 {

@@ -12,7 +12,7 @@ int main()
      //loader.setFileName("");
      //Map* mapWrong1 = loader.createMap();
 
-     // // test another bad file (invalid file)
+     // / test another bad file (invalid file)
      loader.setFileName(".map");
      Map* mapWrong2 = loader.createMap();
 
