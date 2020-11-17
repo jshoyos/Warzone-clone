@@ -478,11 +478,11 @@ void MainGameLoop::issueOrderPhase(Player* player)
 void MainGameLoop::orderExecutionPhase(Player* player)
 {
     //orderList size
-    int orderListSize = player->getOrderList()->_ordersList.size();
+    int orderListSize = player->getOrderList()->getOrdersList().size();
     int index = orderListSize - 1;
     
     index = 0;
-    for (Order* order : player->getOrderList()->_ordersList) {
+    for (Order* order : player->getOrderList()->getOrdersList()) {
         string orderName = typeid(*order).name();
         //makes sure deploy orders go first 
         if (!(orderName._Equal("class Deploy") || MainGameLoop::deployOrderLeft == GameStart::players.size())) {
@@ -507,7 +507,7 @@ bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 
 bool MainGameLoop::priorityOrderList(Player* player) {
     bool check = false;
-    int orderListSize = player->getOrderList()->_ordersList.size();
+    int orderListSize = player->getOrderList()->getOrdersList().size();
     int index = orderListSize - 1;
     int j = 0;
     //need to reorder list to represent priority list
@@ -515,7 +515,7 @@ bool MainGameLoop::priorityOrderList(Player* player) {
     {
         for (size_t i = j; i < orderListSize; i++)
         {
-            string orderName = typeid(player->getOrderList()->_ordersList.at(i)).name();
+            string orderName = typeid(player->getOrderList()->getOrdersList().at(i)).name();
 
             if (orderName._Equal("deploy"))
             {

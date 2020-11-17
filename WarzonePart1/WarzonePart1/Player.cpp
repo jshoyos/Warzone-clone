@@ -190,11 +190,11 @@ void Player::issueOrder(string orderName, Player* p1, Player* p2, Territory* sou
 		addOrder(newOrder);
 	}
 	else if (orderName._Equal("bomb")) {
-		Bomb* newOrder = new Bomb(p1, target, numberOfArmies);
+		Bomb* newOrder = new Bomb(p1, target);
 		addOrder(newOrder);
 	}
 	else if (orderName._Equal("blockade")) {
-		Blockade* newOrder = new Blockade(p1, target, numberOfArmies);
+		Blockade* newOrder = new Blockade(p1, target);
 		addOrder(newOrder);
 	}
 	else if (orderName._Equal("negotiate")) {
