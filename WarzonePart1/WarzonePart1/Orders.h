@@ -12,7 +12,6 @@ class Order
 {
 	Player* _p;
 	Territory* _target;
-	int _numberOfArmies;
 
 public: 
 
@@ -20,7 +19,7 @@ public:
 	Order();
 	Order(const Order&);
 	Order(Player*);
-	Order(Player*, Territory*, int);
+	Order(Player*, Territory*);
 	
 	//methods
 	friend ostream& operator << (ostream&, const Order&); //creating stream insertion operator
@@ -30,12 +29,10 @@ public:
 	//getters
 	Player* getPlayer();
 	Territory* getTarget();
-	int getNumberOfArmies();
 
 	//setters
 	bool setPlayer(Player* p);
 	bool setTarget(Territory* target);
-	bool setNumberOfArmies(int numberOfArmies);
 
 };
 
@@ -71,7 +68,7 @@ ostream& operator << (ostream&, const OrdersList&);
 
 //All the classes that correspond to an order
 class Deploy :public Order {
-
+	int _numberOfArmies;
 public:
 	Deploy();
 	Deploy(const Deploy&);
@@ -79,8 +76,14 @@ public:
 	bool validate();	//validate method for the deploy order
 	void execute();	//execute method for the deploy order
 
+	//getter
+	int getNumberOfArmies();
+
+	//setter
+	bool setNumberOfArmies(int numberOfArmies);
 };
 class Advance :public Order {
+	int _numberOfArmies;
 	Territory* _source;
 public:
 	Advance();
@@ -89,11 +92,13 @@ public:
 	bool validate();	//validate method for the advance order
 	void execute();	//execute method for the advance order
 
-	//getter
+	//getters
 	Territory* getSource();
+	int getNumberOfArmies();
 
-	//setter
+	//setters
 	bool setSource(Territory* source);
+	bool setNumberOfArmies(int numberOfArmies);
 
 };
 class Bomb :public Order {
@@ -101,7 +106,7 @@ public:
 
 	Bomb();
 	Bomb(const Bomb&);
-	Bomb(Player*, Territory*, int);
+	Bomb(Player*, Territory*);
 	bool validate();	//validate method for the bomb order
 	void execute();	//execute method for the bomb order
 
@@ -111,12 +116,13 @@ public:
 
 	Blockade();
 	Blockade(const Blockade&);
-	Blockade(Player*, Territory*, int);
+	Blockade(Player*, Territory*);
 	bool validate();	//validate method for the blockade order
 	void execute();	//execute method for the blockade order
 
 };
 class Airlift :public Order {
+	int _numberOfArmies;
 	Territory* _source;
 public:
 
@@ -128,9 +134,11 @@ public:
 
 	//getter
 	Territory* getSource();
+	int getNumberOfArmies();
 
 	//setter
 	bool setSource(Territory* source);
+	bool setNumberOfArmies(int numberOfArmies);
 
 };
 class Negotiate :public Order {

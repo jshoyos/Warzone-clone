@@ -14,13 +14,11 @@ Order::Order()
 {
 	_p = nullptr;
 	_target = nullptr;
-	_numberOfArmies = 0;
 }
 
 //Copy constructor for Order
 Order::Order(const Order& order)
 {
-	this->_numberOfArmies = order._numberOfArmies;
 	this->_p = order._p;
 	this->_target = order._target;
 }
@@ -29,7 +27,7 @@ Order::Order(Player* p) : _p(p)
 {
 }
 
-Order::Order(Player* p, Territory* target, int numberOfArmies) : _p(p), _target(target), _numberOfArmies(numberOfArmies)
+Order::Order(Player* p, Territory* target) : _p(p), _target(target)
 {
 	
 }
@@ -43,11 +41,6 @@ Player* Order::getPlayer()
 Territory* Order::getTarget()
 {
 	return _target;
-}
-
-int Order::getNumberOfArmies()
-{
-	return _numberOfArmies;
 }
 
 bool Order::setPlayer(Player* p)
@@ -69,12 +62,6 @@ bool Order::setTarget(Territory* target)
 		return true;
 	}
 	return false;
-}
-
-bool Order::setNumberOfArmies(int numberOfArmies)
-{
-	_numberOfArmies = numberOfArmies;
-	return true;
 }
 
 //Insertion stream operator
@@ -99,15 +86,17 @@ ostream& operator<<(ostream& stream, const OrdersList& list)
 
 Deploy::Deploy()
 {
+	_numberOfArmies = 0;
 }
 
 Deploy::Deploy(const Deploy& deploy):Order(deploy)
 {
+	this->_numberOfArmies = deploy._numberOfArmies;
 }
 
-Deploy::Deploy(Player* p, Territory* target, int numberOfArmies):Order(p, target, numberOfArmies)
+Deploy::Deploy(Player* p, Territory* target, int numberOfArmies):Order(p, target)
 {
-
+	_numberOfArmies = numberOfArmies;
 }
 
 //validate method for the deploy order
@@ -141,19 +130,33 @@ void Deploy::execute()
 	}
 }
 
+int Deploy::getNumberOfArmies()
+{
+	return _numberOfArmies;
+}
+
+bool Deploy::setNumberOfArmies(int numberOfArmies)
+{
+	_numberOfArmies = numberOfArmies;
+	return true;
+}
+
 Advance::Advance()
 {
 	_source = nullptr;
+	_numberOfArmies = 0;
 
 }
 Advance::Advance(const Advance& advance):Order(advance)
 {
 	this->_source = advance._source;
+	this->_numberOfArmies = advance._numberOfArmies;
 
 }
-Advance::Advance(Player* p, Territory* source, Territory* target, int numberOfArmies):Order(p, target, numberOfArmies)
+Advance::Advance(Player* p, Territory* source, Territory* target, int numberOfArmies):Order(p, target)
 {
 	this->_source = source;
+	_numberOfArmies = numberOfArmies;
 }
 //validate method for the advance order
 bool Advance::validate()
@@ -167,7 +170,7 @@ bool Advance::validate()
 			
 			if (std::find(adjacentList.begin(), adjacentList.end(), getTarget()) != adjacentList.end()) {
 
-				for (Order* order : getTarget()->getOwner().getOrderList()->getOrdersList()) {
+				for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 					if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 					{
 						if (contract->getPlayer2() == getPlayer()) {
@@ -201,6 +204,10 @@ Territory* Advance::getSource()
 {
 	return _source;
 }
+int Advance::getNumberOfArmies()
+{
+	return _numberOfArmies;
+}
 bool Advance::setSource(Territory* source)
 {
 	if (source != NULL)
@@ -210,6 +217,11 @@ bool Advance::setSource(Territory* source)
 	}
 
 	return false;
+}
+bool Advance::setNumberOfArmies(int numberOfArmies)
+{
+	_numberOfArmies = numberOfArmies;
+	return true;
 }
 //execute method for the advance order
 void Advance::execute()
@@ -222,7 +234,7 @@ void Advance::execute()
 			getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
 			getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
 		}
-		cout << "Advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to" << getTarget()->getTerritoryName() << endl;
+		cout << "Advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to " << getTarget()->getTerritoryName() << endl;
 	}
 
 	if (validate())
@@ -261,8 +273,7 @@ void Advance::execute()
 
 				//Pointer to territory
 				getPlayer()->conquerTerritory(getTarget());
-				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
-				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
+				getPlayer()->removeTerritory(getTarget());
 
 				//TODO: add card after conquering territory
 			}
@@ -276,12 +287,14 @@ void Advance::execute()
 
 Bomb::Bomb()
 {
+
 }
 
 
 
-Bomb::Bomb(Player* p, Territory* target, int numberOfArmies) : Order(p, target, numberOfArmies)
+Bomb::Bomb(Player* p, Territory* target) : Order(p, target)
 {
+
 }
 
 Bomb::Bomb(const Bomb& bomb):Order(bomb)
@@ -289,11 +302,10 @@ Bomb::Bomb(const Bomb& bomb):Order(bomb)
 }
 //validate method for the bomb order
 bool Bomb::validate()
-
-
+{
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 
-	for (Order* order : getTarget()->getOwner().getOrderList()->getOrdersList()) {
+	for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 		if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 		{
 			if (contract->getPlayer2() == getPlayer()) {
@@ -330,7 +342,7 @@ Blockade::Blockade(const Blockade& blockade):Order(blockade)
 {
 }
 
-Blockade::Blockade(Player* p, Territory* target, int numberOfArmies) : Order(p, target, numberOfArmies)
+Blockade::Blockade(Player* p, Territory* target) : Order(p, target)
 {
 }
 
@@ -361,30 +373,51 @@ void Blockade::execute()
 Airlift::Airlift()
 {
 	_source = nullptr;
+	_numberOfArmies = 0;
 
 }
 Airlift::Airlift(const Airlift& airlift) :Order(airlift)
 {
 	this->_source = airlift._source;
+	this->_numberOfArmies = airlift._numberOfArmies;
 }
-Airlift::Airlift(Player* p, Territory* source, Territory* target, int numberOfArmies) :Order(p, target, numberOfArmies)
+Airlift::Airlift(Player* p, Territory* source, Territory* target, int numberOfArmies) :Order(p, target)
 {
+	_numberOfArmies = numberOfArmies;
 	_source = source;
 }
 //validate method for the airlift order
 bool Airlift::validate()
 {
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
-	if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
-		return true;
+
+	if (getNumberOfArmies() > 0)
+	{
+		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
+				return true;
+			}
+		else {
+			cout << "You can only airlift from territories that you own!" << endl;
+				return false;
+		}
+			
 	}
-	cout << "You can only airlift from territories that you own!" << endl;
-	return false;
+
+	else
+	{
+		cout << "ERROR: You must deploy more than 0 armies " << endl;
+		return false;
+	}
+	
 }
 
 Territory* Airlift::getSource()
 {
 	return _source;
+}
+int Airlift::getNumberOfArmies()
+{
+	return _numberOfArmies;
 }
 bool Airlift::setSource(Territory* source)
 {
@@ -395,6 +428,12 @@ bool Airlift::setSource(Territory* source)
 	}
 
 	return false;
+}
+
+bool Airlift::setNumberOfArmies(int numberOfArmies)
+{
+	_numberOfArmies;
+	return true;
 }
 
 //execute method for the airlift order
@@ -446,8 +485,7 @@ void Airlift::execute()
 
 				//Pointer to territory
 				getPlayer()->conquerTerritory(getTarget());
-				vector<Territory*> listToUpdate = *getTarget()->getOwner().getTerritoryList();
-				listToUpdate.erase((std::remove(listToUpdate.begin(), listToUpdate.end(), getTarget()), listToUpdate.end()));
+				getPlayer()->removeTerritory(getTarget());
 
 				//TODO: add card after conquering territory, check for neutral territory
 			}
