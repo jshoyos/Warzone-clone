@@ -48,7 +48,7 @@ void Publisher::unsubscribe(IObservable* observer)
 
 void PhaseObserver::update(string data)
 {
-	IObservable::clearScreen();
+	//IObservable::clearScreen();
 	cout << data << endl;
 }
 
@@ -60,7 +60,7 @@ void GameStatisticsObserver::update(string data)
 	TextTable t('-', '|', '+');
 	
 	t.add("Player Name");
-	t.add("Countries Owned");
+	t.add("Territories Owned");
 	t.add("Percentage Conquered");
 	t.endOfRow();
 
@@ -78,6 +78,7 @@ void GameStatisticsObserver::update(string data)
 			t.add(player->getName());
 			t.add(str);
 			t.add(percentageString + "%");
+			t.endOfRow();
 		}
 	}
 	if (GameOver) {
