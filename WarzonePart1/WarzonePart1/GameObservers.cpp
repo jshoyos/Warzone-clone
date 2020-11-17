@@ -105,7 +105,7 @@ void GameStatisticsObserver::update(string data)
 		}
 	}
 	if (GameOver) {
-		clearScreen();
+		//clearScreen();
 		TextTable winBanner('-', '|', '#');
 		winBanner.add("Congrats " + winner->getName() + " you have won!!!");
 		winBanner.endOfRow();

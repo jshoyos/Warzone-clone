@@ -29,9 +29,9 @@ Order::Order(Player* p) : _p(p)
 
 Order::Order(Player* p, Territory* target) : _p(p), _target(target)
 {
-	phasePublisher = Publisher();
+	/*phasePublisher = Publisher();
 	statsObserver = new GameStatisticsObserver();
-	phasePublisher.subscribe(statsObserver);
+	phasePublisher.subscribe(statsObserver);*/
 }
 
 
@@ -281,6 +281,8 @@ void Advance::execute()
 				//Pointer to territory
 				getTarget()->getOwner()->removeTerritory(getTarget());
 				getPlayer()->conquerTerritory(getTarget());
+				
+				
 				
 				//phasePublisher.notifyAll("");
 				

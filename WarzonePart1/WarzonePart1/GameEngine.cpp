@@ -227,8 +227,8 @@ void GameStartup::startupPhase() {
 // ------------------------------------------- Main Game Loop ---------------------------------------- \\
 
 Publisher MainGameLoop::phasePublisher = Publisher();
-PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver();
-GameStatisticsObserver* MainGameLoop::statsObserver = new GameStatisticsObserver();
+PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver("phase");
+GameStatisticsObserver* MainGameLoop::statsObserver = new GameStatisticsObserver("stats");
 
 
 void MainGameLoop::runMainloop()
@@ -242,16 +242,29 @@ void MainGameLoop::runMainloop()
     GameStartup::startupPhase();
    
     MainGameLoop::turn = 1;
+    bool check = false;
 	while (GameStart::players.size()!=1) { //map != conquered 
+        //checks if player's lose
+        for (Player* player : GameStart::players) {
+            if (player->getTerritoryList()->size() == 0) {
+                cout << "remove player from game! You lose!" << endl;
+                GameStart::players.erase(std::remove(GameStart::players.begin(), GameStart::players.end(), player), GameStart::players.end());
+                check = true;
+                continue;
+            }
+        }
+        //checks if only one player exists
+        if (check == true) {
+            break;
+        }
         //Phase 1
-        
 		for (Player* player : GameStart::players) {
             cout << player->getName()<<"'s Reinforcement Phase!" << endl;
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
-            issueOrderPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase1");
+            reinforcementPhase(player);
+            MainGameLoop::phasePublisher.notifyAll("phase", "phase1");
 		}
        
         //Phase 2
@@ -261,7 +274,7 @@ void MainGameLoop::runMainloop()
                 continue;
             }
             issueOrderPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase2");
+            MainGameLoop::phasePublisher.notifyAll("phase","phase2");
 		}
         
         //executes just the deploy orders of the players
@@ -277,7 +290,7 @@ void MainGameLoop::runMainloop()
                 cout << "remove player from game! You lose!" << endl;
             }
             orderExecutionPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase3");
+            MainGameLoop::phasePublisher.notifyAll("phase", "phase3");
         }
         //Remaining orders execution phase 
         for (Player* player : GameStart::players) {
@@ -292,9 +305,10 @@ void MainGameLoop::runMainloop()
                 continue;
             }
             orderExecutionPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase3");
+            MainGameLoop::phasePublisher.notifyAll("phase", "phase3");
         }
-		
+        MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
+
         MainGameLoop::turn++;
 	}
     cout << GameStart::players.at(0) << " wins!" << endl;
@@ -324,13 +338,11 @@ void MainGameLoop::issueOrderPhase(Player* player)
     //initializing variables
     Territory* source = nullptr;
     Territory* target = nullptr;
-    int max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0;
+    int max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0,count=0;
     
     int armyNumber = 0;
     //on the first turn ditribute the armies evenly amongst the owned territories
     if (MainGameLoop::turn == 1) {
-        //armyNumber = player->getReinforcementPool();             
-        //tempNum = ceil(armyNumber / player->toDefend()->size()); 
         while (player->getReinforcementPool()!=0)
         {
             for (Territory* terr : *player->getTerritoryList()) {
@@ -379,44 +391,57 @@ void MainGameLoop::issueOrderPhase(Player* player)
         
         //initialize variables to 0
         srand(time(0));
-        max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0;
+        max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0; source = nullptr;count = 0;
         //randomly chooses between 1 (attack) and 0 (defend)
         int advanceStrategy = rand() % 2;   
 
         //Attack Strategy
         if (advanceStrategy == 1) {
-            srand(time(0));
-            //max index for attack Territory list
-            max = player->toAttack()->size();
-            //random territory index from attack list
-            randTerrIndex = rand() % max;    
-            
-            //Choose which owned territory will attack
-            target = player->toAttack()->at(randTerrIndex);
-            //finds owned territory that is adjacent to attacking territory
-            for (Territory* terr : *target->getAdjacent()) {
-                if (terr->getOwner()->getName()._Equal(player->getName())) {
-                    //sets the source territory
-                    source = terr;
-                    //max number of troops to send from selected territory. Minimum of 1 troop to send out
-                    max = source->getArmies(); min = 1;
-                    //random number of troops to attack with
-                    if (max == 0) {
-                        randomArmyNum = 0;
+            //gives three tries to find a source territory 
+            while (count < 3) {
+                srand(time(0));
+                //max index for attack Territory list
+                max = player->toAttack()->size();
+                //random territory index from attack list
+                randTerrIndex = rand() % max;
+
+                //Choose which owned territory will attack
+                target = player->toAttack()->at(randTerrIndex);
+                //finds owned territory that is adjacent to attacking territory
+                for (Territory* terr : *target->getAdjacent()) {
+                    if (terr->getOwner()->getName()._Equal(player->getName())) {
+                        //sets the source territory
+                        if (terr->getArmies() != 0) {
+                            source = terr;
+                            count = 4;
+                            break;
+                        }
                     }
-                    else if (MainGameLoop::turn > 20) {
-                        randomArmyNum = max;
-                    }
-                    else{
-                        randomArmyNum = rand() % max + min;
-                    }
-                    break;
                 }
+                count++;
+            }
+            if (source == nullptr) {
+                source = target->getAdjacent()->at(0);    
+            }
+            //max number of troops to send from selected territory. Minimum of 1 troop to send out
+            max = source->getArmies(); min = 1;
+            //random number of troops to attack with
+
+            if (max == 0) {
+                randomArmyNum = 0;
+            }
+            else if (MainGameLoop::turn > 20) {
+                randomArmyNum = max;
+            }
+            else {
+                randomArmyNum = rand() % max + min;
             }
             cout << player->getName() << " issues advance attack order" << endl;
 
             //issue advance attack order (added to player's orderList)
             player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
+            
+            
 
         }
         //Defense Strategy
@@ -507,7 +532,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
         }
         // ------------------------------------------------------------------------------- \\
 
-        //return "helo";
+        
     }
 }
 
