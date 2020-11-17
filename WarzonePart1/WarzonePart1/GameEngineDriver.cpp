@@ -1,7 +1,9 @@
 #include "GameEngine.h"
 
 int main() {
-	GameStart::start();
-	GameStartup::startupPhase();
+
+	MainGameLoop game;
+	game.runMainloop();
+
 	return 0;
 }

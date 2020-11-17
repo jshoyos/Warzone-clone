@@ -8,7 +8,6 @@ private:
 	static vector<string> maps;
 	static int selectedOption;
 	static MapLoader* mapLoader;
-
 #pragma region helperMethods
 	static void displayMapOptions();
 	static int numberOfPlayersSelection();
@@ -16,12 +15,11 @@ private:
 #pragma endregion
 
 public:
-
 	static vector<Player*> players;
 	static Map* map;
 	static Deck* deck;
 #pragma region methods
-	static void toggleObserverOnOff(Publisher*,IObservable*,bool);
+	static void toggleObserverOnOff(Publisher*, IObservable*, bool);
 	static Map* selectMap();
 	static void createPlayers();
 	static void start();
@@ -39,3 +37,25 @@ public:
 		static void startupPhase();
 };
 
+class MainGameLoop {
+private:
+	static Publisher phasePublisher;
+	static Publisher statsPublisher;
+	static PhaseObserver* phaseObserver;
+	static GameStatisticsObserver* statsObserver;
+	static int turn;
+	static int deployOrderLeft;
+
+public:
+	static void runMainloop();
+	static void reinforcementPhase(Player*);
+	static void issueOrderPhase(Player*);
+	static void orderExecutionPhase(Player*);
+	
+#pragma region helperMethods
+	static bool checkOwnedContinent(Player*, Continent*);
+	static bool priorityOrderList(Player*);
+
+#pragma endregion
+
+};
