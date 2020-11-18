@@ -52,7 +52,7 @@ public:
 
 class MainGameLoop {
 private:
-	static Publisher phasePublisher;
+	static Publisher publisher;
 	static Publisher statsPublisher;
 	static PhaseObserver* phaseObserver;
 	static GameStatisticsObserver* statsObserver;

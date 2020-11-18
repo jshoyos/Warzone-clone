@@ -218,32 +218,44 @@ void GameStartup::startupPhase() {
 
 // ------------------------------------------- Main Game Loop ---------------------------------------- \\
 
-Publisher MainGameLoop::phasePublisher = Publisher();
+Publisher MainGameLoop::publisher = Publisher();
 PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver("phase");
 GameStatisticsObserver* MainGameLoop::statsObserver = new GameStatisticsObserver("stats");
 
 
 void MainGameLoop::runMainloop()
 {
-    MainGameLoop::phasePublisher.subscribe(MainGameLoop::phaseObserver);
+    MainGameLoop::publisher.subscribe(MainGameLoop::phaseObserver);
 	GameStart::start();	//sets up the initial parameters of the game
-    
+    bool observeCheck = false;
+    bool continueToggle = false;
     //cout/cin do you want to toggle the following observers on and off
-    GameStart::toggleObserverOnOff(&MainGameLoop::phasePublisher, MainGameLoop::phaseObserver, true);
-    GameStart::toggleObserverOnOff(&MainGameLoop::phasePublisher, MainGameLoop::statsObserver, true);
+    do
+    {
+        cout << "Would you like to observe the phases of the game (1 for yes, 0 for no): ";
+        cin >> observeCheck;
+        GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::phaseObserver, observeCheck); 
+        cout << "Would you like to observe the statistics of the game (1 for yes, 0 for no): ";
+        cin >> observeCheck;
+        GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::statsObserver, observeCheck);
+        cout << "Would you like to make changes to the observers? (1 for yes, 0 for no): ";
+        cin >> continueToggle;
+    } while (continueToggle);
 
     GameStartup::startupPhase();
    
     MainGameLoop::turn = 1;
    
-	while (GameStart::players.size()!=1 ) { //map != conquered 
+	while (GameStart::players.size()!=1 ) { 
         //checks if player's lose and removes the players respectively
         bool check = false;
         for (Player* player : GameStart::players) {
             if (player->getTerritoryList()->size() == 0) {
                 cout << "remove player from game! You lose!" << endl;
                 GameStart::players.erase(std::remove(GameStart::players.begin(), GameStart::players.end(), player), GameStart::players.end());
+                delete player; player = NULL;
                 check = true;
+                MainGameLoop::publisher.notifyAll("stats", "");
                 continue;
             }
         }
@@ -253,22 +265,20 @@ void MainGameLoop::runMainloop()
         }
         //Phase 1
 		for (Player* player : GameStart::players) {
-            cout << player->getName()<<"'s Reinforcement Phase!" << endl;
+            MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s Reinforcement Phase!");
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
             reinforcementPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase", "phase1");
 		}
        
         //Phase 2
 		for (Player* player : GameStart::players) {
-            cout << player->getName() << "'s IssueOrdering Phase!" << endl;
+            MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s IssueOrdering Phase!");
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
             issueOrderPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase","phase2");
 		}
         
         //executes just the deploy orders of the players
@@ -276,34 +286,21 @@ void MainGameLoop::runMainloop()
         //Phase 3
         //Deploy order execution phase
         for (Player* player : GameStart::players) {
-            cout << player->getName() << "'s Deploy Execution Phase!" << endl;
+            MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s Order Execution Phase!");
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
-            if (player->getTerritoryList()->size() == 0) {
-                cout << "remove player from game! You lose!" << endl;
-            }
             orderExecutionPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase", "phase3");
         }
         //Remaining orders execution phase 
         for (Player* player : GameStart::players) {
 
-            cout << player->getName() << "'s Order Execution Phase!" << endl;
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
             //removes player from list if he does not own anymore territories
-            if (player->getTerritoryList()->size() == 0) {
-                cout << "remove player from game! You lose!" << endl;
-                GameStart::players.erase(std::remove(GameStart::players.begin(), GameStart::players.end(), player), GameStart::players.end());
-                continue;
-            }
             orderExecutionPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase", "phase3");
         }
-        MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
-
         MainGameLoop::turn++;
 	}
     if (GameStart::players.at(0)->toAttack()->size() !=0 )
@@ -311,12 +308,17 @@ void MainGameLoop::runMainloop()
         for (Territory* terr : *GameStart::players.at(0)->toAttack()) {
             GameStart::players.at(0)->conquerTerritory(terr);
         }
-        MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
     }
-    MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
+    MainGameLoop::publisher.notifyAll("stats", "");
     cout << "Game ended on turn "<<MainGameLoop::turn << endl;
     cout << *GameStart::players.at(0) << " wins!" << endl;
     cout << " Thanks for Playing!" << endl;
+
+    ///Deleting remaining items
+    delete GameStart::players.at(0);GameStart::players.at(0) = NULL;
+    delete GameStart::map; GameStart::map = NULL;
+    delete GameStart::deck; GameStart::deck = NULL;
+   
 }
 
 void MainGameLoop::reinforcementPhase(Player* player)
@@ -334,7 +336,6 @@ void MainGameLoop::reinforcementPhase(Player* player)
 		}
 	}
 	player->setReinforcementPool(armyNum);
-    //return to_string(armyNum) + " armies added;";
 }
 
 void MainGameLoop::issueOrderPhase(Player* player)
@@ -550,8 +551,7 @@ void MainGameLoop::orderExecutionPhase(Player* player)
     int orderListSize = player->getOrderList()->getOrdersList().size();
     int index = 0;
     int initialTerritoryListSize = player->getTerritoryList()->size();
-    
-    //shuffleOrderList(player);
+
     //priorityOrderList(player);
    
     for (Order* order : player->getOrderList()->getOrdersList()) {
@@ -566,7 +566,6 @@ void MainGameLoop::orderExecutionPhase(Player* player)
             player->getOrderList()->remove(index);  //removes deploy orders from the player's order list
         }
         
-        //index++;
      }
     for (Order* order : player->getOrderList()->getOrdersList()) {
         player->getOrderList()->remove(index);
@@ -576,8 +575,8 @@ void MainGameLoop::orderExecutionPhase(Player* player)
     if (newTerritoryListSize > initialTerritoryListSize)
     {
         player->addCard(GameStart::deck->draw());
+        MainGameLoop::publisher.notifyAll("stats", "");
     }
-    //return "";
 }
 
 bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
@@ -634,9 +633,3 @@ void MainGameLoop::priorityOrderList(Player* player) {
     }
 }
 
-void MainGameLoop::shuffleOrderList(Player* player) {
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(player->getOrderList()->getOrdersList().begin(), player->getOrderList()->getOrdersList().end(), g);
-    
-}

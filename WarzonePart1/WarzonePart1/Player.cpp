@@ -16,8 +16,10 @@ Player::Player()
 //Destructor for a player
 Player::~Player()
 {
+	
 	delete _orderList; _orderList = NULL;
-	delete _hand; _hand = NULL;
+	_hand = NULL;
+	cout << ">>>>>Deleting Player" << endl;
 }
 
 //Copy constructor for a player 

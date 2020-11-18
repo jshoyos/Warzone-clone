@@ -135,7 +135,14 @@ Card::cardType Card::play2(Player* p1,Player* p2, Territory* source,
 
 Deck::Deck() {}
 
-Deck::~Deck() {} // Deck has no pointer attribute 
+Deck::~Deck() {
+
+	for (Card* card : deck) {
+		delete card; card = NULL;
+	}
+	deck.erase(deck.begin(),deck.end());
+
+} // Deck has no pointer attribute 
 
 Deck::Deck(const Deck& d) {
 	this->deck = d.deck;
@@ -291,7 +298,13 @@ Hand::Hand() {
 	numCards = 0;
 }
 
-Hand::~Hand() {}					 //Hand has no pointer attribute 
+Hand::~Hand() {
+	for (Card* card : handOfCards) {
+		 card = NULL;
+	}
+	handOfCards.erase(handOfCards.begin(), handOfCards.end());
+
+}					 //Hand has no pointer attribute 
 
 Hand::Hand(const Hand& h) {
 	for (auto card : h.handOfCards) {

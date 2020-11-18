@@ -380,6 +380,7 @@ bool Blockade::validate()
 		return true;
 	}
 	cout << "ERROR: You can only call a blockade order on your own territory" << endl;
+	return false;
 }
 //execute method for the blockade order
 void Blockade::execute()
