@@ -551,6 +551,9 @@ void MainGameLoop::orderExecutionPhase(Player* player)
     int orderListSize = player->getOrderList()->getOrdersList().size();
     int index = 0;
     int initialTerritoryListSize = player->getTerritoryList()->size();
+    
+    //shuffleOrderList(player);
+    //priorityOrderList(player);
    
     for (Order* order : player->getOrderList()->getOrdersList()) {
         string orderName = typeid(*order).name();
@@ -618,8 +621,9 @@ bool MainGameLoop::priorityOrderList(Player* player) {
     return true;
 }
 
-bool MainGameLoop::shuffleOrderList(Player* player) {
-    
-   // shuffle(GameStart::players.begin(), GameStart::players.end(), g);
-    return true;
+Player* MainGameLoop::shuffleOrderList(Player* player) {
+    random_device rd;
+    mt19937 g(rd());
+    shuffle(player->getOrderList()->getOrdersList().begin(), player->getOrderList()->getOrdersList().end(), g);
+    return player;
 }
