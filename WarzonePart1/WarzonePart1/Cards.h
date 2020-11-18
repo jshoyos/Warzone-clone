@@ -13,6 +13,7 @@
 #include <vector>
 #include "Orders.h"
 #include "Player.h"
+
 using namespace std;
 class Player;
 class Territory;
@@ -46,7 +47,7 @@ static vector<string> order_list{};    // for play() method (order simulation)
 
 struct Deck {                       // No attributes are of a user-defined type -> no need for pointers here
 
-	vector<Card> deck;				// Decl is a vector of Card objects
+	vector<Card*> deck;				// Decl is a vector of Card objects
 	int deck_size = 0;
 	int numBomb{};					// # of cards of Type Bomb in the deck
 	int numReinforcement{};			//			  of Type Reinforcement
@@ -62,11 +63,11 @@ struct Deck {                       // No attributes are of a user-defined type 
 	Deck(int numCards);				  // Param'd constructor
 	Deck& operator =(const Deck& c);  // Overloaded assignment operator
 
-	Card draw();					// draw() method, draws a card at random
+	Card* draw();					// draw() method, draws a card at random
 	void deckStats();				// Details about the # of each 5 types of cards
 	int getDeckSize();
 	void printDeck();				// Prints out all the cards in the deck 
-	void insertCard(Card c);		// Takes a card and inserts it last in the deck
+	void insertCard(Card* c);		// Takes a card and inserts it last in the deck
 
 };
 

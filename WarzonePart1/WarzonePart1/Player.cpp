@@ -212,6 +212,7 @@ bool Player::removeTerritory(Territory* terr)
 {
 	if (std::find(getTerritoryList()->begin(), getTerritoryList()->end(), terr) != getTerritoryList()->end()) {
 		_territoryList.erase(std::remove(_territoryList.begin(), _territoryList.end(), terr), _territoryList.end());
+		terr->setOwner(nullptr);
 		return true;
 	}
 	

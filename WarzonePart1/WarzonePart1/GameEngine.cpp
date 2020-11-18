@@ -1,13 +1,5 @@
 #include "GameEngine.h"
-#include<iostream>
-#include<filesystem>
-#include<string>
-#include <vector>
-#include <random>
-#include <cmath>
-#include <stdlib.h> 
-#include <time.h>
-#include <typeinfo>
+
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -236,15 +228,17 @@ void MainGameLoop::runMainloop()
     MainGameLoop::phasePublisher.subscribe(MainGameLoop::phaseObserver);
 	GameStart::start();	//sets up the initial parameters of the game
     
+    //cout/cin do you want to toggle the following observers on and off
     GameStart::toggleObserverOnOff(&MainGameLoop::phasePublisher, MainGameLoop::phaseObserver, true);
     GameStart::toggleObserverOnOff(&MainGameLoop::phasePublisher, MainGameLoop::statsObserver, true);
 
     GameStartup::startupPhase();
    
     MainGameLoop::turn = 1;
-    bool check = false;
-	while (GameStart::players.size()!=1) { //map != conquered 
-        //checks if player's lose
+   
+	while (GameStart::players.size()!=1 ) { //map != conquered 
+        //checks if player's lose and removes the players respectively
+        bool check = false;
         for (Player* player : GameStart::players) {
             if (player->getTerritoryList()->size() == 0) {
                 cout << "remove player from game! You lose!" << endl;
@@ -255,7 +249,7 @@ void MainGameLoop::runMainloop()
         }
         //checks if only one player exists
         if (check == true) {
-            break;
+            continue;
         }
         //Phase 1
 		for (Player* player : GameStart::players) {
@@ -294,6 +288,7 @@ void MainGameLoop::runMainloop()
         }
         //Remaining orders execution phase 
         for (Player* player : GameStart::players) {
+
             cout << player->getName() << "'s Order Execution Phase!" << endl;
             if (player->getTerritoryList()->empty()) {
                 continue;
@@ -311,6 +306,16 @@ void MainGameLoop::runMainloop()
 
         MainGameLoop::turn++;
 	}
+    if (GameStart::players.at(0)->toAttack()->size() !=0 )
+    {
+        for (Territory* terr : *GameStart::players.at(0)->toAttack()) {
+            terr->setOwner(GameStart::players.at(0));
+            GameStart::players.at(0)->conquerTerritory(terr);
+        }
+        MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
+    }
+    MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
+    cout << MainGameLoop::turn << endl;
     cout << GameStart::players.at(0) << " wins!" << endl;
     cout << " Thanks for Playing!" << endl;
 }
@@ -335,6 +340,7 @@ void MainGameLoop::reinforcementPhase(Player* player)
 
 void MainGameLoop::issueOrderPhase(Player* player)
 {
+    srand(time(0));
     //initializing variables
     Territory* source = nullptr;
     Territory* target = nullptr;
@@ -361,7 +367,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
         
         //loops until there is no more army members in reinforcement pool
         while (player->getReinforcementPool() != 0) { 
-            srand(time(0));
+            
             //gets number of armies from players pool
             armyNumber = player->getReinforcementPool();
             //initialize variables to 0
@@ -389,95 +395,99 @@ void MainGameLoop::issueOrderPhase(Player* player)
 
         //----- Second step is to for a player to issue an advance  -----\\
         
+       
+        int num = 0;
+        int advanceStrategy = 0;
+        num = rand() % 5 + 1;
         //initialize variables to 0
-        srand(time(0));
-        max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0; source = nullptr;count = 0;
-        //randomly chooses between 1 (attack) and 0 (defend)
-        int advanceStrategy = rand() % 2;   
+        for (int i = 0;i < num;i++) {
+            max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0; source = nullptr;count = 0;
+            //randomly chooses between 1 (attack) and 0 (defend)
+            advanceStrategy = rand() % 2;
 
-        //Attack Strategy
-        if (advanceStrategy == 1) {
-            //gives three tries to find a source territory 
-            while (count < 3) {
-                srand(time(0));
-                //max index for attack Territory list
-                max = player->toAttack()->size();
-                //random territory index from attack list
+            //Attack Strategy
+            if (advanceStrategy == 1) {
+                //gives three tries to find a source territory 
+                while (count < 3) {
+                    //max index for attack Territory list
+                    max = player->toAttack()->size();
+                    //random territory index from attack list
+                    randTerrIndex = rand() % max;
+
+                    //Choose which owned territory will attack
+                    target = player->toAttack()->at(randTerrIndex);
+                    //finds owned territory that is adjacent to attacking territory
+                    for (Territory* terr : *target->getAdjacent()) {
+                        if (terr->getOwner()->getName()._Equal(player->getName())) {
+                            //sets the source territory
+                            if (terr->getArmies() != 0) {
+                                source = terr;
+                                count = 4;
+                                break;
+                            }
+                        }
+                    }
+                    count++;
+                }
+                if (source == nullptr) {
+                    source = target->getAdjacent()->at(0);
+                }
+                //max number of troops to send from selected territory. Minimum of 1 troop to send out
+                max = source->getArmies(); min = 1;
+                //random number of troops to attack with
+
+                if (max == 0) {
+                    randomArmyNum = 0;
+                }
+                else if (MainGameLoop::turn > 20) {
+                    randomArmyNum = max;
+                }
+                else {
+                    randomArmyNum = rand() % max + min;
+                }
+                cout << player->getName() << " issues advance attack order" << endl;
+
+                //issue advance attack order (added to player's orderList)
+                player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
+
+
+
+            }
+            //Defense Strategy
+            else if (advanceStrategy == 0) {
+                //max index for defend Territory list
+                max = player->toDefend()->size();
+                //random territory index from defend list
                 randTerrIndex = rand() % max;
 
-                //Choose which owned territory will attack
-                target = player->toAttack()->at(randTerrIndex);
+                //Choose which owned territory will be defended
+                target = player->toDefend()->at(randTerrIndex);
                 //finds owned territory that is adjacent to attacking territory
                 for (Territory* terr : *target->getAdjacent()) {
                     if (terr->getOwner()->getName()._Equal(player->getName())) {
                         //sets the source territory
-                        if (terr->getArmies() != 0) {
-                            source = terr;
-                            count = 4;
-                            break;
+                        source = terr;
+                        //max number of troops to send from selected territory. Minimum of 1 troup to send out
+                        max = source->getArmies(); min = 1;
+                        //random number of troops to attack with
+                        if (max == 0) {
+                            randomArmyNum = 0;
                         }
+                        else {
+                            randomArmyNum = rand() % max + min;
+                        }
+
+                        break;
+
                     }
                 }
-                count++;
-            }
-            if (source == nullptr) {
-                source = target->getAdjacent()->at(0);    
-            }
-            //max number of troops to send from selected territory. Minimum of 1 troop to send out
-            max = source->getArmies(); min = 1;
-            //random number of troops to attack with
+                cout << player->getName() << " issues advance defence order" << endl;
 
-            if (max == 0) {
-                randomArmyNum = 0;
+                //issue advance defence order (added to player's orderList)
+                player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
             }
-            else if (MainGameLoop::turn > 20) {
-                randomArmyNum = max;
-            }
-            else {
-                randomArmyNum = rand() % max + min;
-            }
-            cout << player->getName() << " issues advance attack order" << endl;
-
-            //issue advance attack order (added to player's orderList)
-            player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
-            
-            
-
         }
-        //Defense Strategy
-        else if(advanceStrategy == 0) {
-            srand(time(0));
-            //max index for defend Territory list
-            max = player->toDefend()->size();
-            //random territory index from defend list
-            randTerrIndex = rand() % max;
-
-            //Choose which owned territory will be defended
-            target = player->toDefend()->at(randTerrIndex);
-            //finds owned territory that is adjacent to attacking territory
-            for (Territory* terr : *target->getAdjacent()) {
-                if (terr->getOwner()->getName()._Equal(player->getName())) {
-                    //sets the source territory
-                    source = terr;
-                    //max number of troops to send from selected territory. Minimum of 1 troup to send out
-                    max = source->getArmies(); min = 1;
-                    //random number of troops to attack with
-                    if (max == 0) {
-                        randomArmyNum = 0;
-                    }
-                    else {
-                        randomArmyNum = rand() % max + min;
-                    }
-                        
-                    break;
-                    
-                }
-            }
-            cout << player->getName() << " issues advance defence order" << endl;
-
-            //issue advance defence order (added to player's orderList)
-            player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
-        }
+            
 
 
         // ------------------------------------------------------------------------------- \\
@@ -485,7 +495,6 @@ void MainGameLoop::issueOrderPhase(Player* player)
         //----- Third step is to play a card from players hand and issue its order -----\\
         
         //randomly chooses between 1 (attack) and 0 (defend)
-        srand(time(0));
         advanceStrategy = rand() % 2;
         //selecting target territory
         if (advanceStrategy == 0) {
@@ -528,7 +537,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
             //implement random actions with random teritories and random armies
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
-            GameStart::deck->insertCard(*card);
+            GameStart::deck->insertCard(card);
         }
         // ------------------------------------------------------------------------------- \\
 
@@ -540,9 +549,9 @@ void MainGameLoop::orderExecutionPhase(Player* player)
 {
     //orderList size
     int orderListSize = player->getOrderList()->getOrdersList().size();
-    int index = orderListSize - 1;
-    
-    index = 0;
+    int index = 0;
+    int initialTerritoryListSize = player->getTerritoryList()->size();
+   
     for (Order* order : player->getOrderList()->getOrdersList()) {
         string orderName = typeid(*order).name();
         //makes sure deploy orders go first 
@@ -551,9 +560,21 @@ void MainGameLoop::orderExecutionPhase(Player* player)
             return;
         }
         order->execute();
-        player->getOrderList()->remove(index);
+        if (orderName._Equal("class Deploy")) {
+            player->getOrderList()->remove(index);  //removes deploy orders from the player's order list
+        }
+        
         //index++;
      }
+    for (Order* order : player->getOrderList()->getOrdersList()) {
+        player->getOrderList()->remove(index);
+    }
+
+    int newTerritoryListSize = player->getTerritoryList()->size();
+    if (newTerritoryListSize > initialTerritoryListSize)
+    {
+        player->addCard(GameStart::deck->draw());
+    }
     //return "";
 }
 
@@ -597,3 +618,8 @@ bool MainGameLoop::priorityOrderList(Player* player) {
     return true;
 }
 
+bool MainGameLoop::shuffleOrderList(Player* player) {
+    
+   // shuffle(GameStart::players.begin(), GameStart::players.end(), g);
+    return true;
+}

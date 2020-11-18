@@ -377,7 +377,7 @@ void Blockade::execute()
 	{
 		int doubled = (getTarget()->getArmies()) * 2;
 		getTarget()->setArmies(doubled);
-		territoryList.erase((std::remove(territoryList.begin(), territoryList.end(), getTarget()), territoryList.end()));
+		getPlayer()->removeTerritory(getTarget());
 		cout << "Executing Blockade on " << getTarget()->getTerritoryName() << ". There are now " << doubled << " armies on this territory. It is now a neutral territory." << endl;
 	}
 }

@@ -172,25 +172,26 @@ Deck::Deck(int numCards) {
 	int random;
 
 	for (int i = 0; i < deck_size; i++) {  // shuffles the deck as it gets created
+		//srand(time(0));
 		random = rand() % 5;
 		if (random == 0 && max1 > 0) {
-			deck.push_back(Card(Card::Bomb));
+			deck.push_back(new Card(Card::Bomb));
 			max1--;
 		}
 		else if (random == 1 && max2 > 0) {
-			deck.push_back(Card(Card::Reinforcement));
+			deck.push_back(new Card(Card::Reinforcement));
 			max2--;
 		}
 		else if (random == 2 && max3 > 0) {
-			deck.push_back(Card(Card::Blockade));
+			deck.push_back(new Card(Card::Blockade));
 			max3--;
 		}
 		else if (random == 3 && max4 > 0) {
-			deck.push_back(Card(Card::Airlift));
+			deck.push_back(new Card(Card::Airlift));
 			max4--;
 		}
 		else if (random == 4 && max5 > 0) {
-			deck.push_back(Card(Card::Diplomacy));
+			deck.push_back(new Card(Card::Diplomacy));
 			max5--;
 		}
 		else {
@@ -211,14 +212,15 @@ ostream& operator<<(ostream& os, const Deck& d) {
 	return os;
 }; 
 
-Card Deck::draw() {
+Card* Deck::draw() {
 	if (!deck.empty()) {									  // deck being a vector<Cards>
+		srand(time(0));
 		int randomIndex = 0;
 		randomIndex = rand() % this->getDeckSize();
 
-		Card card_drawn = deck.at(randomIndex);				  // pick a card at index: randomIndex, and assign it to: card_drawn
+		Card* card_drawn = deck.at(randomIndex);			// pick a card at index: randomIndex, and assign it to: card_drawn
 		deck.erase(deck.begin() + randomIndex);			      // erase that card at index: randomIndex from the deck
-		Card::cardType card_type = card_drawn.getCardType();  // get card_type
+		Card::cardType card_type = card_drawn->getCardType();  // get card_type
 
 		if (card_type == Card::Bomb) numBomb--;               // update info about the remaining cards in the deck
 		else if (card_type == Card::Reinforcement) numReinforcement--;
@@ -235,9 +237,9 @@ Card Deck::draw() {
 
 }
 
-void Deck::insertCard(Card c) {
+void Deck::insertCard(Card* c) {
 	deck.push_back(c);
-	Card::cardType card_type = c.getCardType();
+	Card::cardType card_type = c->getCardType();
 	if (card_type == Card::Bomb) numBomb++;                  // update info about the remaining cards in the deck
 	else if (card_type == Card::Reinforcement) numReinforcement++;
 	else if (card_type == Card::Blockade) numBlockade++;
@@ -267,7 +269,7 @@ void Deck::printDeck() {
 	else {
 		for (int i = 0; i < (int)deck.size(); i++) {
 			Card::cardType t;
-			t = deck.at(i).getCardType();
+			t = deck.at(i)->getCardType();
 			string type;
 			if (t == Card::Bomb) type = "Bomb";
 			else if (t == Card::Reinforcement) type = "Reinforcement";

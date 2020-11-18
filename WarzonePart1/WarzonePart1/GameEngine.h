@@ -1,5 +1,14 @@
 #include "MapLoader.h"
 #include "GameObservers.h"
+#include<iostream>
+#include<filesystem>
+#include<string>
+#include <vector>
+#include <random>
+#include <cmath>
+#include <stdlib.h> 
+#include <time.h>
+#include <typeinfo>
 
 #pragma once
 /// <summary>
@@ -59,6 +68,7 @@ public:
 #pragma region helperMethods
 	static bool checkOwnedContinent(Player*, Continent*);
 	static bool priorityOrderList(Player*);
+	static bool shuffleOrderList(Player*);
 
 #pragma endregion
 
