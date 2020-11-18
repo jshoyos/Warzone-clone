@@ -165,7 +165,10 @@ vector<Territory*>* Player::toAttack()
 
 			//checks if adjacent territories are part of the players territories.
 			if (!(std::find(getTerritoryList()->begin(), getTerritoryList()->end(), adjTerr) != getTerritoryList()->end())){
-				attackList->push_back(adjTerr);
+				
+				if (!(std::find(attackList->begin(), attackList->end(), adjTerr) != attackList->end())) {
+					attackList->push_back(adjTerr);
+				}	
 			}
 		}
 
@@ -212,6 +215,7 @@ bool Player::removeTerritory(Territory* terr)
 {
 	if (std::find(getTerritoryList()->begin(), getTerritoryList()->end(), terr) != getTerritoryList()->end()) {
 		_territoryList.erase(std::remove(_territoryList.begin(), _territoryList.end(), terr), _territoryList.end());
+		terr->setOwner(nullptr);
 		return true;
 	}
 	

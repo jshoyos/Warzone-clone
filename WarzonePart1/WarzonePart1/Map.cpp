@@ -241,12 +241,8 @@ Territory::~Territory()
 
 bool Territory::setOwner(Player* owner)
 {
-	if (owner != NULL)
-	{
-		_owner = owner;
-		return true;
-	}
-	return false;
+	_owner = owner;
+	return true;
 }
 
 bool Territory::setArmies(int armies)
