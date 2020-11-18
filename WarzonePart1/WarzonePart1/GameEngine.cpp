@@ -346,7 +346,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
             //changes the troops number in the reinforcementPool
             player->setReinforcementPool(player->getReinforcementPool() - armyNumber);
 
-            cout << player->getName() << "issues deploy order" << endl;
+            cout << player->getName() << "  -> issues deploy order" << endl;
 
             //issue deploy order (added to player's orderList)
             player->issueOrder("deploy", player, nullptr, nullptr, target, randomArmyNum);
@@ -388,7 +388,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                     }
                 }
             }
-            cout << player->getName() << "issues advance attack order" << endl;
+            cout << player->getName() << "  -> issues advance attack order" << endl;
 
             //issue advance attack order (added to player's orderList)
             player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
@@ -420,7 +420,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                     }
                 }
             }
-            cout << player->getName() << "issues advance defence order" << endl;
+            cout << player->getName() << "  -> issues advance defence order" << endl;
 
             //issue advance defence order (added to player's orderList)
             player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
