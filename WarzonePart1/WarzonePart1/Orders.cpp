@@ -29,9 +29,6 @@ Order::Order(Player* p) : _p(p)
 
 Order::Order(Player* p, Territory* target) : _p(p), _target(target)
 {
-	/*phasePublisher = Publisher();
-	statsObserver = new GameStatisticsObserver();
-	phasePublisher.subscribe(statsObserver);*/
 }
 
 
@@ -128,7 +125,7 @@ void Deploy::execute()
 	if(validate())
 	{
 		getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
-		cout << "Deploying " << getNumberOfArmies() << " armies to " << getTarget()->getTerritoryName() << endl;
+		cout << getPlayer()->getName()<<" is deploying " << getNumberOfArmies() << " armies to " << getTarget()->getTerritoryName() << endl;
 	}
 }
 
@@ -248,7 +245,7 @@ void Advance::execute()
 			getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
 			getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
 		}
-		cout << "Advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to " << getTarget()->getTerritoryName() << endl;
+		cout << getPlayer()->getName()<<" is advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to " << getTarget()->getTerritoryName() << endl;
 	}
 
 	if (validate())
@@ -392,7 +389,7 @@ void Blockade::execute()
 		int doubled = (getTarget()->getArmies()) * 2;
 		getTarget()->setArmies(doubled);
 		getPlayer()->removeTerritory(getTarget());
-		cout << "Executing Blockade on " << getTarget()->getTerritoryName() << ". There are now " << doubled << " armies on this territory. It is now a neutral territory." << endl;
+		cout << getPlayer()->getName()<<" is executing a blockade on " << getTarget()->getTerritoryName() << ". There are now " << doubled << " armies on this territory. It is now a neutral territory." << endl;
 	}
 }
 
@@ -485,7 +482,7 @@ void Airlift::execute()
 	if (validate())
 	{
 		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
-			cout << "Airlifting into enemy territory. Incoming battle! " << getPlayer()->getName() << " is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << targetOwner << ", with " << getNumberOfArmies() << " armies." << endl;
+			cout << getPlayer()->getName() <<" is has ordered an airlifting into enemy territory. Incoming battle! " << getPlayer()->getName() << " is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << targetOwner << ", with " << getNumberOfArmies() << " armies." << endl;
 
 			srand(time(0));
 			int attackers = getNumberOfArmies();
@@ -552,7 +549,7 @@ Negotiate::Negotiate(Player* p, Player* p2) : Order(p)
 //validate method for the negotiate order
 bool Negotiate::validate()
 {
-	if (_p2 = getPlayer())
+	if (_p2->getName()._Equal(getPlayer()->getName()))
 	{
 		cout << "You can only negotiate with an enemy player!" << endl;
 		return false;

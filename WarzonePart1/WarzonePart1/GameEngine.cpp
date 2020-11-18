@@ -541,9 +541,9 @@ void MainGameLoop::issueOrderPhase(Player* player)
         }
        
         //select random player that is not self
-        max = player->toAttack()->size();
-        randTerrIndex = rand() % max; 
-        Player* p2 = player->toAttack()->at(randTerrIndex)->getOwner();
+        max = GameStart::players.size();
+        int randPlayer = rand() % max; 
+        Player* p2 = GameStart::players.at(randPlayer);
 
         if (player->getHand()->getHandSize() == 0) {
             cout << "no cards in hand" << endl;
@@ -611,11 +611,13 @@ void MainGameLoop::priorityOrderList(Player* player) {
 
     // Sort player's order list via selection sort
     for (int i = 0; i < size-1; i++) {
+
+        int current_max = 0;
+        int current_index = i;
+
         for (int j = i+1; j < size; j++) {
 
             string orderName = typeid(*player->getOrderList()->getOrdersList().at(i)).name();
-            int current_max = 0;
-            int current_index = i;
 
             if (orderName._Equal("class Deploy"))
             {
@@ -641,10 +643,14 @@ void MainGameLoop::priorityOrderList(Player* player) {
                     current_max = 1;
                 }
             }
-
-            // Swap at i and current_index
-            player->getOrderList()->move(current_index, i);
         }
+        // Swap at i and current_index
+        player->getOrderList()->move(current_index, i);
+    }
+
+    // Dunno why it gets reversed, put it back in front
+    for (int i = 0; i < (int)(size / 2); i++) {
+        player->getOrderList()->move((size-1) - i, i);
     }
 }
 
