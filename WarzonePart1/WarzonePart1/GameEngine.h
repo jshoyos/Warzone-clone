@@ -67,8 +67,8 @@ public:
 	
 #pragma region helperMethods
 	static bool checkOwnedContinent(Player*, Continent*);
-	static bool priorityOrderList(Player*);
-	static Player* shuffleOrderList(Player*);
+	static void priorityOrderList(Player*);
+	static void shuffleOrderList(Player*);
 
 #pragma endregion
 

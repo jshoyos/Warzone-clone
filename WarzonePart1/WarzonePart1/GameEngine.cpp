@@ -591,39 +591,53 @@ bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 	return true;
 }
 
-bool MainGameLoop::priorityOrderList(Player* player) {
-    bool check = false;
-    int orderListSize = player->getOrderList()->getOrdersList().size();
-    int index = orderListSize - 1;
-    int j = 0;
-    //need to reorder list to represent priority list
-    while (check)
-    {
-        for (size_t i = j; i < orderListSize; i++)
-        {
-            string orderName = typeid(player->getOrderList()->getOrdersList().at(i)).name();
+void MainGameLoop::priorityOrderList(Player* player) {
+    
+    int size = player->getOrderList()->getOrdersList().size();
+    //cout << player->getOrderList()->getOrdersList().size();
 
-            if (orderName._Equal("deploy"))
+    // Sort player's order list via selection sort
+    for (int i = 0; i < size-1; i++) {
+        for (int j = i+1; i < size; j++) {
+
+            string orderName = typeid(*player->getOrderList()->getOrdersList().at(i)).name();
+            int current_max = 0;
+            int current_index = i;
+
+            if (orderName._Equal("class Deploy"))
             {
-                //player->getOrderList()->move(,)
+                if (3 > current_max)
+                {
+                    current_index = j;
+                    current_max = 3;
+                }
             }
-            else if (orderName._Equal("airlift")) {
 
+            else if (orderName._Equal("class Airlift"))
+            {
+                if (2 > current_max) {
+                    current_index = j;
+                    current_max = 2;
+                }
             }
-            else if (orderName._Equal("blockade")) {
 
+            else if (orderName._Equal("class Blockade"))
+            {
+                if (1 > current_max) {
+                    current_index = j;
+                    current_max = 1;
+                }
             }
-            else {
 
-            }
+            // Swap at i and current_index
+            player->getOrderList()->move(current_index, i);
         }
     }
-    return true;
 }
 
-Player* MainGameLoop::shuffleOrderList(Player* player) {
+void MainGameLoop::shuffleOrderList(Player* player) {
     random_device rd;
     mt19937 g(rd());
     shuffle(player->getOrderList()->getOrdersList().begin(), player->getOrderList()->getOrdersList().end(), g);
-    return player;
+    
 }
