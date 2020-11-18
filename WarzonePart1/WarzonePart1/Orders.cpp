@@ -625,8 +625,6 @@ void OrdersList::remove(int index)
 //move method for OrdersList class
 void OrdersList::move(int a, int b)
 {
-	a = (a - 1);
-	b = (b - 1);
 	iter_swap(_ordersList.begin() + (a), _ordersList.begin() + (b));
 }
 //method used to put an order into the list of orders

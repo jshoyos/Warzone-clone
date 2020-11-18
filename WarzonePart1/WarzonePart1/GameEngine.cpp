@@ -32,10 +32,10 @@ void GameStart::displayMapOptions()
 }
 int GameStart::numberOfPlayersSelection()
 {
-    int numberOfPlayers;
+    int numberOfPlayers = 0;
     cout << "Please enter the number of players [2-5]: ";
     cin >> numberOfPlayers;
-    while (numberOfPlayers < 2 || numberOfPlayers > 5) {
+    while (numberOfPlayers < 2 || numberOfPlayers > 5) {//|| typeid(numberOfPlayers)
         cout << "INVALID NUMBER OF PLAYERS" << endl;
         cout << "This game can only be played between 2 and 5 players. Make a new selection: ";
         cin >> numberOfPlayers;
@@ -222,7 +222,7 @@ Publisher MainGameLoop::publisher = Publisher();
 PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver("phase");
 GameStatisticsObserver* MainGameLoop::statsObserver = new GameStatisticsObserver("stats");
 
-
+//runs the main loop for the game
 void MainGameLoop::runMainloop()
 {
     MainGameLoop::publisher.subscribe(MainGameLoop::phaseObserver);
@@ -238,7 +238,7 @@ void MainGameLoop::runMainloop()
         cout << "Would you like to observe the statistics of the game (1 for yes, 0 for no): ";
         cin >> observeCheck;
         GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::statsObserver, observeCheck);
-        cout << "Would you like to make changes to the observers? (1 for yes, 0 for no): ";
+        cout << "Are you sure about these choices? (1 for yes, 0 for no): ";
         cin >> continueToggle;
     } while (continueToggle);
 
@@ -305,6 +305,7 @@ void MainGameLoop::runMainloop()
 	}
     if (GameStart::players.at(0)->toAttack()->size() !=0 )
     {
+        cout << "conquering remain territories" <<endl;
         for (Territory* terr : *GameStart::players.at(0)->toAttack()) {
             GameStart::players.at(0)->conquerTerritory(terr);
         }
@@ -314,7 +315,7 @@ void MainGameLoop::runMainloop()
     cout << *GameStart::players.at(0) << " wins!" << endl;
     cout << " Thanks for Playing!" << endl;
 
-    ///Deleting remaining items
+    ///Deleting remaining items in game
     delete GameStart::players.at(0);GameStart::players.at(0) = NULL;
     delete GameStart::map; GameStart::map = NULL;
     delete GameStart::deck; GameStart::deck = NULL;
@@ -541,7 +542,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
         }
         // ------------------------------------------------------------------------------- \\
 
-        
+        priorityOrderList(player);  // takes the orders issued and puts them in the correct order based on there priority
     }
 }
 
@@ -551,8 +552,6 @@ void MainGameLoop::orderExecutionPhase(Player* player)
     int orderListSize = player->getOrderList()->getOrdersList().size();
     int index = 0;
     int initialTerritoryListSize = player->getTerritoryList()->size();
-
-    //priorityOrderList(player);
    
     for (Order* order : player->getOrderList()->getOrdersList()) {
         string orderName = typeid(*order).name();
