@@ -58,7 +58,7 @@ public:
 	
 #pragma region helperMethods
 	static bool checkOwnedContinent(Player*, Continent*);
-	static bool priorityOrderList(Player*);
+	static void priorityOrderList(Player*);
 
 #pragma endregion
 
