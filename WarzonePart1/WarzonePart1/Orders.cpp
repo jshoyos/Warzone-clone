@@ -172,6 +172,9 @@ bool Advance::validate()
 			
 			if (std::find(adjacentList->begin(), adjacentList->end(), getTarget()) != adjacentList->end()) {
 
+				if (getTarget()->getOwner() == NULL) {
+					return true;
+				}
 				for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 					if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 					{
@@ -229,7 +232,13 @@ int i = 0;
 //execute method for the advance order
 void Advance::execute()
 {
-	i++;
+	string targetOwner = "";
+	if (getTarget()->getOwner() == NULL) {
+		targetOwner = "Nobody";
+	}
+	else {
+		targetOwner = getTarget()->getOwner()->getName();
+	}
 
 	if (validate())
 	{
@@ -247,7 +256,7 @@ void Advance::execute()
 		vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 		vector<Territory*> adjacentList = *getSource()->getAdjacent();
 		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
-			cout << getPlayer()->getName()<<" is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << getTarget()->getOwner()->getName()<<", with " << getNumberOfArmies() << " armies." <<endl;
+			cout << getPlayer()->getName()<<" is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << targetOwner <<", with " << getNumberOfArmies() << " armies." <<endl;
 			srand(time(0));
 			int attackers = getNumberOfArmies();
 			int defenders = getTarget()->getArmies();
@@ -279,7 +288,9 @@ void Advance::execute()
 				cout << "All defending armies have been killed,  " << attackers << " armies have conquered " << getTarget()->getTerritoryName() << endl;
 
 				//Pointer to territory
-				getTarget()->getOwner()->removeTerritory(getTarget());
+				if (getTarget()->getOwner() != NULL) {
+					getTarget()->getOwner()->removeTerritory(getTarget());
+				}
 				getPlayer()->conquerTerritory(getTarget());
 				
 				
@@ -315,7 +326,9 @@ Bomb::Bomb(const Bomb& bomb):Order(bomb)
 bool Bomb::validate()
 {
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
-
+	if (getTarget()->getOwner() == NULL) {
+		return true;
+	}
 	for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 		if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 		{
@@ -451,6 +464,13 @@ bool Airlift::setNumberOfArmies(int numberOfArmies)
 //execute method for the airlift order
 void Airlift::execute()
 {
+	string targetOwner = "";
+	if (getTarget()->getOwner() == NULL) {
+		targetOwner = "Nobody";
+	}
+	else {
+		targetOwner = getTarget()->getOwner()->getName();
+	}
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 	if (validate())
 	{
@@ -464,7 +484,7 @@ void Airlift::execute()
 	if (validate())
 	{
 		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
-			cout << "Airlifting into enemy territory. Incoming battle! " << getPlayer()->getName() << " is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << getTarget()->getOwner()->getName() << ", with " << getNumberOfArmies() << " armies." << endl;
+			cout << "Airlifting into enemy territory. Incoming battle! " << getPlayer()->getName() << " is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << targetOwner << ", with " << getNumberOfArmies() << " armies." << endl;
 
 			srand(time(0));
 			int attackers = getNumberOfArmies();
@@ -497,7 +517,9 @@ void Airlift::execute()
 				cout << "All defending armies have been killed,  " << attackers << " armies have conquered " << getTarget()->getTerritoryName() << endl;
 
 				//Pointer to territory
-				getTarget()->getOwner()->removeTerritory(getTarget());
+				if (getTarget()->getOwner() != NULL) {
+					getTarget()->getOwner()->removeTerritory(getTarget());
+				}
 				getPlayer()->conquerTerritory(getTarget());
 
 				//phasePublisher.notifyAll("");

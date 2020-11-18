@@ -309,14 +309,13 @@ void MainGameLoop::runMainloop()
     if (GameStart::players.at(0)->toAttack()->size() !=0 )
     {
         for (Territory* terr : *GameStart::players.at(0)->toAttack()) {
-            terr->setOwner(GameStart::players.at(0));
             GameStart::players.at(0)->conquerTerritory(terr);
         }
         MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
     }
     MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
-    cout << MainGameLoop::turn << endl;
-    cout << GameStart::players.at(0) << " wins!" << endl;
+    cout << "Game ended on turn "<<MainGameLoop::turn << endl;
+    cout << *GameStart::players.at(0) << " wins!" << endl;
     cout << " Thanks for Playing!" << endl;
 }
 
@@ -418,7 +417,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                     target = player->toAttack()->at(randTerrIndex);
                     //finds owned territory that is adjacent to attacking territory
                     for (Territory* terr : *target->getAdjacent()) {
-                        if (terr->getOwner()->getName()._Equal(player->getName())) {
+                        if (terr->getOwner() != NULL && terr->getOwner()->getName()._Equal(player->getName())) {
                             //sets the source territory
                             if (terr->getArmies() != 0) {
                                 source = terr;
@@ -464,7 +463,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 target = player->toDefend()->at(randTerrIndex);
                 //finds owned territory that is adjacent to attacking territory
                 for (Territory* terr : *target->getAdjacent()) {
-                    if (terr->getOwner()->getName()._Equal(player->getName())) {
+                    if (terr->getOwner() != NULL && terr->getOwner()->getName()._Equal(player->getName())) {
                         //sets the source territory
                         source = terr;
                         //max number of troops to send from selected territory. Minimum of 1 troup to send out
@@ -584,7 +583,7 @@ void MainGameLoop::orderExecutionPhase(Player* player)
 bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 {
 	for (Territory* terr : *cont->getTerritories()) {
-		if (terr->getOwner()->getName() != player->getName()) {
+        if (terr->getOwner() == NULL ||terr->getOwner()->getName() != player->getName()) {
 			return false;
 		}
 	}

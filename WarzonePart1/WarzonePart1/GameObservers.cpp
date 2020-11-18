@@ -89,8 +89,14 @@ void GameStatisticsObserver::update(string data)
 
 	for (Player* player : GameStart::players) {
 		int countries = player->getTerritoryList()->size();
+		int count = 0;
+		for (Territory* terr : *GameStart::map->getTerritories()) {
+			if (terr->getOwner() != nullptr) {
+				count++;
+			}
+		}
 		auto str = to_string(countries);
-		double percentage = (countries / (double)mapSize)*100;
+		double percentage = (countries / (double)count)*100;	//changed mapsize
 		auto percentageString = to_string(percentage);
 		if (percentage == 100) {
 			GameOver = true;
