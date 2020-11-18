@@ -251,7 +251,7 @@ void MainGameLoop::runMainloop()
         bool check = false;
         for (Player* player : GameStart::players) {
             if (player->getTerritoryList()->size() == 0) {
-                cout << "remove player from game! You lose!" << endl;
+                cout << "remove " << player->getName()<<" from game! You lose!" << endl;
                 GameStart::players.erase(std::remove(GameStart::players.begin(), GameStart::players.end(), player), GameStart::players.end());
                 delete player; player = NULL;
                 check = true;
@@ -263,6 +263,25 @@ void MainGameLoop::runMainloop()
         if (check == true) {
             continue;
         }
+        if (MainGameLoop::turn == 1) {
+        //The first turn will distribute the player's initial armies evenly to their respective territories
+        for (Player* player : GameStart::players) {
+            int armyNumber = 0;
+            //on the first turn ditribute the armies evenly amongst the owned territories
+                while (player->getReinforcementPool() != 0)
+                {
+                    for (Territory* terr : *player->getTerritoryList()) {
+                        if (player->getReinforcementPool() == 0) {
+                            break;
+                        }
+                        armyNumber = terr->getArmies();
+                        terr->setArmies(++armyNumber);
+                        player->setReinforcementPool(player->getReinforcementPool() - 1);
+                    }
+                }
+            }
+        }
+
         //Phase 1
 		for (Player* player : GameStart::players) {
             MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s Reinforcement Phase!");
@@ -298,7 +317,6 @@ void MainGameLoop::runMainloop()
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
-            //removes player from list if he does not own anymore territories
             orderExecutionPhase(player);
         }
         MainGameLoop::turn++;
@@ -312,10 +330,11 @@ void MainGameLoop::runMainloop()
     }
     MainGameLoop::publisher.notifyAll("stats", "");
     cout << "Game ended on turn "<<MainGameLoop::turn << endl;
-    cout << *GameStart::players.at(0) << " wins!" << endl;
+    cout << GameStart::players.at(0)->getName() << " wins!" << endl;
     cout << " Thanks for Playing!" << endl;
 
     ///Deleting remaining items in game
+    cout << endl << endl <<"<<<Deleting items from the game.S";
     delete GameStart::players.at(0);GameStart::players.at(0) = NULL;
     delete GameStart::map; GameStart::map = NULL;
     delete GameStart::deck; GameStart::deck = NULL;
@@ -324,9 +343,7 @@ void MainGameLoop::runMainloop()
 
 void MainGameLoop::reinforcementPhase(Player* player)
 {
-    if (MainGameLoop::turn == 1) {
-        return;
-    }
+    //On turn 1 there should be no reinforcement Phase for the players
 	double playerTerritoryNum = player->getTerritoryList()->size();
 	int armyNum = floor(playerTerritoryNum / 3);
 
@@ -522,8 +539,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
         else {
             randomArmyNum = rand() % max + min;
         }
-        
-
+       
         //select random player that is not self
         max = player->toAttack()->size();
         randTerrIndex = rand() % max; 
@@ -536,6 +552,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
             Card* card = player->getHand()->handOfCards.at(0);
 
             //implement random actions with random teritories and random armies
+            cout << player->getName() << " plays " << card->getCardType() <<" card" << endl;
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
             GameStart::deck->insertCard(card);
@@ -591,11 +608,10 @@ bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 void MainGameLoop::priorityOrderList(Player* player) {
     
     int size = player->getOrderList()->getOrdersList().size();
-    //cout << player->getOrderList()->getOrdersList().size();
 
     // Sort player's order list via selection sort
     for (int i = 0; i < size-1; i++) {
-        for (int j = i+1; i < size; j++) {
+        for (int j = i+1; j < size; j++) {
 
             string orderName = typeid(*player->getOrderList()->getOrdersList().at(i)).name();
             int current_max = 0;
