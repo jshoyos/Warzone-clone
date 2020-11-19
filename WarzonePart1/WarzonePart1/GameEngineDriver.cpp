@@ -2,6 +2,8 @@
 
 int main() {
 
-	MainGameLoop::runMainloop();
+	MainGameLoop game;
+	game.runMainloop();
+
 	return 0;
 }
