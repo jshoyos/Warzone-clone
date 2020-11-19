@@ -66,7 +66,7 @@ PhaseObserver::PhaseObserver(string name)
 
 void PhaseObserver::update(string data)
 {
-	//IObservable::clearScreen();
+	IObservable::clearScreen();
 	cout << data << endl;
 }
 
@@ -89,21 +89,15 @@ void GameStatisticsObserver::update(string data)
 
 	for (Player* player : GameStart::players) {
 		int countries = player->getTerritoryList()->size();
-		int count = 0;
-		for (Territory* terr : *GameStart::map->getTerritories()) {
-			if (terr->getOwner() != nullptr) {
-				count++;
-			}
-		}
 		auto str = to_string(countries);
-		double percentage = (countries / (double)count)*100;	//changed mapsize
+		double percentage = (countries / (double)mapSize)*100;	
 		auto percentageString = to_string(percentage);
 		if (percentage == 100) {
 			GameOver = true;
 			winner = player;
 			break;
 		}
-		else if (percentage != 0) {
+		else {//if (percentage != 0)
 			t.add(player->getName());
 			t.add(str);
 			t.add(percentageString + "%");
@@ -111,9 +105,13 @@ void GameStatisticsObserver::update(string data)
 		}
 	}
 	if (GameOver) {
-		//clearScreen();
+		clearScreen();
 		TextTable winBanner('-', '|', '#');
 		winBanner.add("Congrats " + winner->getName() + " you have won!!!");
+		winBanner.endOfRow();
+		winBanner.add("Game ended on turn " + data);
+		winBanner.endOfRow();
+		winBanner.add("Thanks for Playing!");
 		winBanner.endOfRow();
 		cout << winBanner;
 	}

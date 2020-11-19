@@ -32,10 +32,10 @@ void GameStart::displayMapOptions()
 }
 int GameStart::numberOfPlayersSelection()
 {
-    int numberOfPlayers;
+    int numberOfPlayers = 0;
     cout << "Please enter the number of players [2-5]: ";
     cin >> numberOfPlayers;
-    while (numberOfPlayers < 2 || numberOfPlayers > 5) {
+    while (numberOfPlayers < 2 || numberOfPlayers > 5) {//|| typeid(numberOfPlayers)
         cout << "INVALID NUMBER OF PLAYERS" << endl;
         cout << "This game can only be played between 2 and 5 players. Make a new selection: ";
         cin >> numberOfPlayers;
@@ -218,32 +218,44 @@ void GameStartup::startupPhase() {
 
 // ------------------------------------------- Main Game Loop ---------------------------------------- \\
 
-Publisher MainGameLoop::phasePublisher = Publisher();
+Publisher MainGameLoop::publisher = Publisher();
 PhaseObserver* MainGameLoop::phaseObserver = new PhaseObserver("phase");
 GameStatisticsObserver* MainGameLoop::statsObserver = new GameStatisticsObserver("stats");
 
-
+//runs the main loop for the game
 void MainGameLoop::runMainloop()
 {
-    MainGameLoop::phasePublisher.subscribe(MainGameLoop::phaseObserver);
+    MainGameLoop::publisher.subscribe(MainGameLoop::phaseObserver);
 	GameStart::start();	//sets up the initial parameters of the game
-    
+    bool observeCheck = false;
+    bool continueToggle = false;
     //cout/cin do you want to toggle the following observers on and off
-    GameStart::toggleObserverOnOff(&MainGameLoop::phasePublisher, MainGameLoop::phaseObserver, true);
-    GameStart::toggleObserverOnOff(&MainGameLoop::phasePublisher, MainGameLoop::statsObserver, true);
+    do
+    {
+        cout << "Would you like to observe the phases of the game (1 for yes, 0 for no): ";
+        cin >> observeCheck;
+        GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::phaseObserver, observeCheck); 
+        cout << "Would you like to observe the statistics of the game (1 for yes, 0 for no): ";
+        cin >> observeCheck;
+        GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::statsObserver, observeCheck);
+        cout << "Are you sure about these choices? (1 for yes, 0 for no): ";
+        cin >> continueToggle;
+    } while (continueToggle);
 
     GameStartup::startupPhase();
    
     MainGameLoop::turn = 1;
    
-	while (GameStart::players.size()!=1 ) { //map != conquered 
+	while (GameStart::players.size()!=1 ) { 
         //checks if player's lose and removes the players respectively
         bool check = false;
         for (Player* player : GameStart::players) {
             if (player->getTerritoryList()->size() == 0) {
-                cout << "remove player from game! You lose!" << endl;
+                cout << "remove " << player->getName()<<" from game! You lose!" << endl;
                 GameStart::players.erase(std::remove(GameStart::players.begin(), GameStart::players.end(), player), GameStart::players.end());
+                delete player; player = NULL;
                 check = true;
+                MainGameLoop::publisher.notifyAll("stats", "");
                 continue;
             }
         }
@@ -251,24 +263,41 @@ void MainGameLoop::runMainloop()
         if (check == true) {
             continue;
         }
+        if (MainGameLoop::turn == 1) {
+        //The first turn will distribute the player's initial armies evenly to their respective territories
+        for (Player* player : GameStart::players) {
+            int armyNumber = 0;
+            //on the first turn ditribute the armies evenly amongst the owned territories
+                while (player->getReinforcementPool() != 0)
+                {
+                    for (Territory* terr : *player->getTerritoryList()) {
+                        if (player->getReinforcementPool() == 0) {
+                            break;
+                        }
+                        armyNumber = terr->getArmies();
+                        terr->setArmies(++armyNumber);
+                        player->setReinforcementPool(player->getReinforcementPool() - 1);
+                    }
+                }
+            }
+        }
+
         //Phase 1
 		for (Player* player : GameStart::players) {
-            cout << player->getName()<<"'s Reinforcement Phase!" << endl;
+            MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s Reinforcement Phase!");
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
             reinforcementPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase", "phase1");
 		}
        
         //Phase 2
 		for (Player* player : GameStart::players) {
-            cout << player->getName() << "'s IssueOrdering Phase!" << endl;
+            MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s IssueOrdering Phase!");
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
             issueOrderPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase","phase2");
 		}
         
         //executes just the deploy orders of the players
@@ -276,54 +305,46 @@ void MainGameLoop::runMainloop()
         //Phase 3
         //Deploy order execution phase
         for (Player* player : GameStart::players) {
-            cout << player->getName() << "'s Deploy Execution Phase!" << endl;
+            MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s Order Execution Phase!");
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
-            if (player->getTerritoryList()->size() == 0) {
-                cout << "remove player from game! You lose!" << endl;
-            }
             orderExecutionPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase", "phase3");
         }
         //Remaining orders execution phase 
         for (Player* player : GameStart::players) {
 
-            cout << player->getName() << "'s Order Execution Phase!" << endl;
             if (player->getTerritoryList()->empty()) {
                 continue;
             }
-            //removes player from list if he does not own anymore territories
-            if (player->getTerritoryList()->size() == 0) {
-                cout << "remove player from game! You lose!" << endl;
-                GameStart::players.erase(std::remove(GameStart::players.begin(), GameStart::players.end(), player), GameStart::players.end());
-                continue;
-            }
             orderExecutionPhase(player);
-            MainGameLoop::phasePublisher.notifyAll("phase", "phase3");
         }
-        MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
-
+        //removes players orders from list and contracts
+        for (Player* player : GameStart::players) {
+            player->clearContractList();
+        }
         MainGameLoop::turn++;
 	}
     if (GameStart::players.at(0)->toAttack()->size() !=0 )
     {
+        cout << "conquering remain territories" <<endl;
         for (Territory* terr : *GameStart::players.at(0)->toAttack()) {
             GameStart::players.at(0)->conquerTerritory(terr);
         }
-        MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
     }
-    MainGameLoop::phasePublisher.notifyAll("stats", "stats1");
-    cout << "Game ended on turn "<<MainGameLoop::turn << endl;
-    cout << *GameStart::players.at(0) << " wins!" << endl;
-    cout << " Thanks for Playing!" << endl;
+    MainGameLoop::publisher.notifyAll("stats", to_string(MainGameLoop::turn));
+
+    ///Deleting remaining items in game
+    cout << endl << endl <<"<<<Deleting items from the game.S";
+    delete GameStart::players.at(0);GameStart::players.at(0) = NULL;
+    delete GameStart::map; GameStart::map = NULL;
+    delete GameStart::deck; GameStart::deck = NULL;
+   
 }
 
 void MainGameLoop::reinforcementPhase(Player* player)
 {
-    if (MainGameLoop::turn == 1) {
-        return;
-    }
+    //On turn 1 there should be no reinforcement Phase for the players
 	double playerTerritoryNum = player->getTerritoryList()->size();
 	int armyNum = floor(playerTerritoryNum / 3);
 
@@ -334,7 +355,6 @@ void MainGameLoop::reinforcementPhase(Player* player)
 		}
 	}
 	player->setReinforcementPool(armyNum);
-    //return to_string(armyNum) + " armies added;";
 }
 
 void MainGameLoop::issueOrderPhase(Player* player)
@@ -383,8 +403,6 @@ void MainGameLoop::issueOrderPhase(Player* player)
 
             //changes the troops number in the reinforcementPool
             player->setReinforcementPool(player->getReinforcementPool() - armyNumber);
-
-            cout << player->getName() << " issues deploy order" << endl;
 
             //issue deploy order (added to player's orderList)
             player->issueOrder("deploy", player, nullptr, nullptr, target, randomArmyNum);
@@ -444,8 +462,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 else {
                     randomArmyNum = rand() % max + min;
                 }
-                cout << player->getName() << " issues advance attack order" << endl;
-
+               
                 //issue advance attack order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
 
@@ -480,8 +497,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
 
                     }
                 }
-                cout << player->getName() << " issues advance defence order" << endl;
-
+               
                 //issue advance defence order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
             }
@@ -520,27 +536,60 @@ void MainGameLoop::issueOrderPhase(Player* player)
         else {
             randomArmyNum = rand() % max + min;
         }
+       
+        //select random player that is not self
+        Player* p2=nullptr;
+        int playerIndex = 0;
+        for (Player* randPlayer : GameStart::players) {
+            if (randPlayer->getName() != player->getName()) {
+                p2 = GameStart::players.at(playerIndex);
+                break;
+            }
+            playerIndex++;
+        }
         
 
-        //select random player that is not self
-        max = player->toAttack()->size();
-        randTerrIndex = rand() % max; 
-        Player* p2 = player->toAttack()->at(randTerrIndex)->getOwner();
-
         if (player->getHand()->getHandSize() == 0) {
-            cout << "no cards in hand" << endl;
         }
         else {
             Card* card = player->getHand()->handOfCards.at(0);
 
             //implement random actions with random teritories and random armies
+            cout << player->getName() << " plays a card and issues it to their OrderList" << endl;
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
             GameStart::deck->insertCard(card);
         }
         // ------------------------------------------------------------------------------- \\
-
         
+        priorityOrderList(player);  // takes the orders issued and puts them in the correct order based on there priority
+
+        //display orders in correct order
+        for (Order* order : player->getOrderList()->getOrdersList()) {
+            string orderName = typeid(*order).name();
+            if (orderName._Equal("class Deploy")) {
+                cout << player->getName() + " issues deploy order." << endl;
+            }
+            else if (orderName._Equal("class Advance")) {
+                cout << player->getName() + " issues advance order." << endl;
+            }
+            else if (orderName._Equal("class Airlift")) {
+                cout << player->getName() + " issues airlift order." << endl;
+            }
+            else if (orderName._Equal("class Bomb")) {
+                cout << player->getName() + " issues bomb order." << endl;
+            }
+            else if (orderName._Equal("class Blockade")) {
+                cout << player->getName() + " issues blockade order." << endl;
+            }
+            else if (orderName._Equal("class Negotiate")) {
+                cout << player->getName() + " issues negotiate order." << endl;
+            }
+            else {
+                cout << "ERROR: unrecognized order!" << endl;
+            }
+        }
+
     }
 }
 
@@ -550,9 +599,6 @@ void MainGameLoop::orderExecutionPhase(Player* player)
     int orderListSize = player->getOrderList()->getOrdersList().size();
     int index = 0;
     int initialTerritoryListSize = player->getTerritoryList()->size();
-    
-    //shuffleOrderList(player);
-    //priorityOrderList(player);
    
     for (Order* order : player->getOrderList()->getOrdersList()) {
         string orderName = typeid(*order).name();
@@ -566,18 +612,16 @@ void MainGameLoop::orderExecutionPhase(Player* player)
             player->getOrderList()->remove(index);  //removes deploy orders from the player's order list
         }
         
-        //index++;
      }
     for (Order* order : player->getOrderList()->getOrdersList()) {
-        player->getOrderList()->remove(index);
+        player->getOrderList()->remove(0);
     }
-
     int newTerritoryListSize = player->getTerritoryList()->size();
     if (newTerritoryListSize > initialTerritoryListSize)
     {
         player->addCard(GameStart::deck->draw());
+        MainGameLoop::publisher.notifyAll("stats", "");
     }
-    //return "";
 }
 
 bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
@@ -593,15 +637,16 @@ bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 void MainGameLoop::priorityOrderList(Player* player) {
     
     int size = player->getOrderList()->getOrdersList().size();
-    //cout << player->getOrderList()->getOrdersList().size();
 
     // Sort player's order list via selection sort
     for (int i = 0; i < size-1; i++) {
-        for (int j = i+1; i < size; j++) {
+
+        int current_max = 0;
+        int current_index = i;
+
+        for (int j = i+1; j < size; j++) {
 
             string orderName = typeid(*player->getOrderList()->getOrdersList().at(i)).name();
-            int current_max = 0;
-            int current_index = i;
 
             if (orderName._Equal("class Deploy"))
             {
@@ -627,16 +672,14 @@ void MainGameLoop::priorityOrderList(Player* player) {
                     current_max = 1;
                 }
             }
-
-            // Swap at i and current_index
-            player->getOrderList()->move(current_index, i);
         }
+        // Swap at i and current_index
+        player->getOrderList()->move(current_index, i);
+    }
+
+    // Dunno why it gets reversed, put it back in front
+    for (int i = 0; i < (int)(size / 2); i++) {
+        player->getOrderList()->move((size-1) - i, i);
     }
 }
 
-void MainGameLoop::shuffleOrderList(Player* player) {
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(player->getOrderList()->getOrdersList().begin(), player->getOrderList()->getOrdersList().end(), g);
-    
-}

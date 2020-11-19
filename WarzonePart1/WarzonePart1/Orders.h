@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include "Player.h"
-#include "GameObservers.h"
 
 class Player;
 class Territory;
@@ -13,14 +12,12 @@ class Order
 {
 	Player* _p;
 	Territory* _target;
-protected:
-	Publisher phasePublisher;
-	GameStatisticsObserver* statsObserver;
 
 public: 
 
 	//constructors
 	Order();
+	~Order();
 	Order(const Order&);
 	Order(Player*);
 	Order(Player*, Territory*);
