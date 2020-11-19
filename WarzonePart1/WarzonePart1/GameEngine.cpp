@@ -238,7 +238,7 @@ void MainGameLoop::runMainloop()
         cout << "Would you like to observe the statistics of the game (1 for yes, 0 for no): ";
         cin >> observeCheck;
         GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::statsObserver, observeCheck);
-        cout << "Are you sure about these choices? (1 for yes, 0 for no): ";
+        cout << "Are you sure about these choices? (0 for yes, 1 for no): ";
         cin >> continueToggle;
     } while (continueToggle);
 
@@ -325,13 +325,15 @@ void MainGameLoop::runMainloop()
         }
         MainGameLoop::turn++;
 	}
-    if (GameStart::players.at(0)->toAttack()->size() !=0 )
+    vector<Territory*>* tempToAttack = GameStart::players.at(0)->toAttack();
+    if (tempToAttack->size() !=0 )
     {
         cout << "conquering remain territories" <<endl;
-        for (Territory* terr : *GameStart::players.at(0)->toAttack()) {
+        for (Territory* terr : *tempToAttack) {
             GameStart::players.at(0)->conquerTerritory(terr);
         }
     }
+    delete tempToAttack; tempToAttack = NULL;
     MainGameLoop::publisher.notifyAll("stats", to_string(MainGameLoop::turn));
 
     ///Deleting remaining items in game
@@ -427,12 +429,15 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 //gives three tries to find a source territory 
                 while (count < 3) {
                     //max index for attack Territory list
-                    max = player->toAttack()->size();
+                    vector<Territory*>* tempList = player->toAttack();
+                    max = tempList->size();
                     //random territory index from attack list
                     randTerrIndex = rand() % max;
-
+                    delete tempList; tempList = NULL;
                     //Choose which owned territory will attack
-                    target = player->toAttack()->at(randTerrIndex);
+                    tempList = player->toAttack();
+                    target = tempList->at(randTerrIndex);
+                    delete tempList; tempList = NULL;
                     //finds owned territory that is adjacent to attacking territory
                     for (Territory* terr : *target->getAdjacent()) {
                         if (terr->getOwner() != NULL && terr->getOwner()->getName()._Equal(player->getName())) {
@@ -513,14 +518,17 @@ void MainGameLoop::issueOrderPhase(Player* player)
         advanceStrategy = rand() % 2;
         //selecting target territory
         if (advanceStrategy == 0) {
+            
             max = player->toDefend()->size();
             randTerrIndex = rand() % max;
             target = player->toDefend()->at(randTerrIndex);
         }
         else if (advanceStrategy==1) {
-            max = player->toAttack()->size();
+            vector<Territory*>* tempList = player->toAttack();
+            max = tempList->size();
             randTerrIndex = rand() % max ;
-            target = player->toAttack()->at(randTerrIndex);
+            target = tempList->at(randTerrIndex);
+            delete tempList; tempList = NULL;
         }
         
         //random selecting source territory
@@ -680,6 +688,13 @@ void MainGameLoop::priorityOrderList(Player* player) {
     // Dunno why it gets reversed, put it back in front
     for (int i = 0; i < (int)(size / 2); i++) {
         player->getOrderList()->move((size-1) - i, i);
+    }
+}
+
+void MainGameLoop::clearVector(vector<Territory*>* territories)
+{
+    for (Territory* terr : *territories) {
+        delete terr; terr = NULL;
     }
 }
 
