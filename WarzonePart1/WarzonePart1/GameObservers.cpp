@@ -105,9 +105,13 @@ void GameStatisticsObserver::update(string data)
 		}
 	}
 	if (GameOver) {
-		//clearScreen();
+		clearScreen();
 		TextTable winBanner('-', '|', '#');
 		winBanner.add("Congrats " + winner->getName() + " you have won!!!");
+		winBanner.endOfRow();
+		winBanner.add("Game ended on turn " + data);
+		winBanner.endOfRow();
+		winBanner.add("Thanks for Playing!");
 		winBanner.endOfRow();
 		cout << winBanner;
 	}
