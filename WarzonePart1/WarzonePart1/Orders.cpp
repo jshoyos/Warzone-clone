@@ -595,8 +595,8 @@ OrdersList::~OrdersList()
 //remove method for OrdersList class
 void OrdersList::remove(int index)
 {
+	delete _ordersList.at(index);
 	_ordersList.erase(_ordersList.begin() + (index));
-	//delete _ordersList.at(index);
 }
 //move method for OrdersList class
 void OrdersList::move(int a, int b)
