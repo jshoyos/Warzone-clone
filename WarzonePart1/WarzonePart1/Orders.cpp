@@ -16,6 +16,10 @@ Order::Order()
 	_target = nullptr;
 }
 
+Order::~Order()
+{
+}
+
 //Copy constructor for Order
 Order::Order(const Order& order)
 {
@@ -175,8 +179,8 @@ bool Advance::validate()
 				for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 					if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 					{
-						if (contract->getPlayer2() == getPlayer()) {
-							cout << "ERROR: You cannot attack a territory you have negotiated with! Try again next turn" << endl;
+						if (!(contract->getPlayer2()->getName()._Equal(contract->getPlayer()->getName()))) {
+							cout << "ERROR: " << contract->getPlayer()->getName() << ", you cannot attack on " << contract->getPlayer2()->getName() << "'s territory since you have negotiated with them! Try again next turn" << endl;
 							return false;
 						}
 					}
@@ -241,18 +245,18 @@ void Advance::execute()
 	{
 		vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 		vector<Territory*> adjacentList = *getSource()->getAdjacent();
-		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
+		if (std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
 			getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
 			getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
+			cout << getPlayer()->getName() << " is advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to " << getTarget()->getTerritoryName() << endl;
 		}
-		cout << getPlayer()->getName()<<" is advancing " << getNumberOfArmies() << " armies from " << getSource()->getTerritoryName() << " to " << getTarget()->getTerritoryName() << endl;
 	}
 
 	if (validate())
 	{
 		vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 		vector<Territory*> adjacentList = *getSource()->getAdjacent();
-		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
+		if (!(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
 			cout << getPlayer()->getName()<<" is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << targetOwner <<", with " << getNumberOfArmies() << " armies." <<endl;
 			srand(time(0));
 			int attackers = getNumberOfArmies();
@@ -289,31 +293,18 @@ void Advance::execute()
 					getTarget()->getOwner()->removeTerritory(getTarget());
 				}
 				getPlayer()->conquerTerritory(getTarget());
-				
-				
-				
-				//phasePublisher.notifyAll("");
-				
-				//TODO: add card after conquering territory
 			}
-
 		}
 	}
-
-
 }
 
 
 Bomb::Bomb()
 {
-
 }
-
-
 
 Bomb::Bomb(Player* p, Territory* target) : Order(p, target)
 {
-
 }
 
 Bomb::Bomb(const Bomb& bomb):Order(bomb)
@@ -349,7 +340,6 @@ void Bomb::execute()
 		int half = (getTarget()->getArmies()) / 2;
 		getTarget()->setArmies(half);
 		cout << getTarget()->getTerritoryName() << " has been bombed! Only " << half << " armies remain!" << endl;
-
 	}
 }
 
@@ -357,8 +347,6 @@ void Bomb::execute()
 Blockade::Blockade()
 {
 }
-
-
 
 Blockade::Blockade(const Blockade& blockade):Order(blockade)
 {
@@ -397,7 +385,6 @@ Airlift::Airlift()
 {
 	_source = nullptr;
 	_numberOfArmies = 0;
-
 }
 Airlift::Airlift(const Airlift& airlift) :Order(airlift)
 {
@@ -416,14 +403,25 @@ bool Airlift::validate()
 
 	if (getNumberOfArmies() >= 0)
 	{
-		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
-				return true;
+		if (getTarget()->getOwner() == NULL) {
+			return true;
+		}
+		for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
+			if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
+			{
+				if (!(contract->getPlayer2()->getName()._Equal(contract->getPlayer()->getName()))) {
+					cout << "ERROR: " << contract->getPlayer()->getName() << ", you cannot airlift into " << contract->getPlayer2()->getName() << "'s territory since you have negotiated with them! Try again next turn" << endl;
+					return false;
+				}
 			}
+		}
+		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end()) {
+			return true;
+		}
 		else {
 			cout << "You can only airlift from territories that you own!" << endl;
-				return false;
-		}
-			
+			return false;
+		}	
 	}
 
 	else
@@ -449,7 +447,6 @@ bool Airlift::setSource(Territory* source)
 		_source = source;
 		return true;
 	}
-
 	return false;
 }
 
@@ -472,7 +469,7 @@ void Airlift::execute()
 	vector<Territory*> territoryList = *getPlayer()->getTerritoryList();
 	if (validate())
 	{
-		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
+		if (std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end()) {
 			getSource()->setArmies(getSource()->getArmies() - getNumberOfArmies());
 			getTarget()->setArmies(getTarget()->getArmies() + getNumberOfArmies());
 		}
@@ -481,7 +478,7 @@ void Airlift::execute()
 
 	if (validate())
 	{
-		if (std::find(territoryList.begin(), territoryList.end(), getSource()) != territoryList.end() && !(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
+		if (!(std::find(territoryList.begin(), territoryList.end(), getTarget()) != territoryList.end())) {
 			cout << getPlayer()->getName() <<" is has ordered an airlifting into enemy territory. Incoming battle! " << getPlayer()->getName() << " is attacking " << getTarget()->getTerritoryName() << ", which belongs to " << targetOwner << ", with " << getNumberOfArmies() << " armies." << endl;
 
 			srand(time(0));
@@ -519,16 +516,10 @@ void Airlift::execute()
 					getTarget()->getOwner()->removeTerritory(getTarget());
 				}
 				getPlayer()->conquerTerritory(getTarget());
-
-				//phasePublisher.notifyAll("");
-
-				//TODO: add card after conquering territory, check for neutral territory
 			}
-
 		}
 	}
 }
-
 
 Negotiate::Negotiate()
 {
@@ -573,7 +564,6 @@ Player* Negotiate::getPlayer2()
 
 OrdersList::OrdersList()
 {
-
 }
 //Setter for OrdersList class
 OrdersList::OrdersList(int size) :_size(size)
@@ -602,7 +592,6 @@ OrdersList::OrdersList(const OrdersList& orderList)
 		else if (Negotiate* negotiate = dynamic_cast<Negotiate*>(order)) {
 			this->_ordersList.push_back(new Negotiate(*negotiate));
 		}
-		
 	}
 }
 //Destructor for OrdersList
@@ -618,6 +607,7 @@ OrdersList::~OrdersList()
 void OrdersList::remove(int index)
 {
 	_ordersList.erase(_ordersList.begin() + (index));
+	//delete _ordersList.at(index);
 }
 //move method for OrdersList class
 void OrdersList::move(int a, int b)
@@ -630,16 +620,12 @@ bool OrdersList::queueOrder(Order* order)
 	if(order != NULL)
 	{
 		_ordersList.push_back(order);	//Adds order to list of orders
-		
 		return true;
 	}
 	return false;
-	
 }
 
 vector<Order*> OrdersList::getOrdersList()
 {
 	return _ordersList;
 }
-
-//TODO: check if territory being attacked/bombed is neutral -> Advance, Airlift, Bomb

@@ -319,6 +319,11 @@ void MainGameLoop::runMainloop()
             }
             orderExecutionPhase(player);
         }
+        for (Player* player : GameStart::players) {
+            for (Order* order : player->getOrderList()->getOrdersList()) {
+                player->getOrderList()->remove(0);
+            }
+        }
         MainGameLoop::turn++;
 	}
     if (GameStart::players.at(0)->toAttack()->size() !=0 )
@@ -541,9 +546,16 @@ void MainGameLoop::issueOrderPhase(Player* player)
         }
        
         //select random player that is not self
-        max = GameStart::players.size();
-        int randPlayer = rand() % max; 
-        Player* p2 = GameStart::players.at(randPlayer);
+        Player* p2=nullptr;
+        int playerIndex = 0;
+        for (Player* randPlayer : GameStart::players) {
+            if (randPlayer->getName() != player->getName()) {
+                p2 = GameStart::players.at(playerIndex);
+                break;
+            }
+            playerIndex++;
+        }
+        
 
         if (player->getHand()->getHandSize() == 0) {
             cout << "no cards in hand" << endl;
@@ -552,7 +564,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
             Card* card = player->getHand()->handOfCards.at(0);
 
             //implement random actions with random teritories and random armies
-            cout << player->getName() << " plays " << card->getCardType() <<" card" << endl;
+            cout << player->getName() << " plays " << card->getCardType() <<" card and issues it to their OrderList" << endl;
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
             GameStart::deck->insertCard(card);
@@ -583,9 +595,6 @@ void MainGameLoop::orderExecutionPhase(Player* player)
         }
         
      }
-    for (Order* order : player->getOrderList()->getOrdersList()) {
-        player->getOrderList()->remove(index);
-    }
 
     int newTerritoryListSize = player->getTerritoryList()->size();
     if (newTerritoryListSize > initialTerritoryListSize)
