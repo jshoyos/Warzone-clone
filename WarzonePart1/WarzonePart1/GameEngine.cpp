@@ -332,10 +332,7 @@ void MainGameLoop::runMainloop()
             GameStart::players.at(0)->conquerTerritory(terr);
         }
     }
-    MainGameLoop::publisher.notifyAll("stats", "");
-    cout << "Game ended on turn "<<MainGameLoop::turn << endl;
-    cout << GameStart::players.at(0)->getName() << " wins!" << endl;
-    cout << " Thanks for Playing!" << endl;
+    MainGameLoop::publisher.notifyAll("stats", to_string(MainGameLoop::turn));
 
     ///Deleting remaining items in game
     cout << endl << endl <<"<<<Deleting items from the game.S";
@@ -407,8 +404,6 @@ void MainGameLoop::issueOrderPhase(Player* player)
             //changes the troops number in the reinforcementPool
             player->setReinforcementPool(player->getReinforcementPool() - armyNumber);
 
-            cout << player->getName() << " issues deploy order" << endl;
-
             //issue deploy order (added to player's orderList)
             player->issueOrder("deploy", player, nullptr, nullptr, target, randomArmyNum);
         }
@@ -467,8 +462,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 else {
                     randomArmyNum = rand() % max + min;
                 }
-                cout << player->getName() << " issues advance attack order" << endl;
-
+               
                 //issue advance attack order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
 
@@ -503,8 +497,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
 
                     }
                 }
-                cout << player->getName() << " issues advance defence order" << endl;
-
+               
                 //issue advance defence order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
             }
@@ -557,20 +550,46 @@ void MainGameLoop::issueOrderPhase(Player* player)
         
 
         if (player->getHand()->getHandSize() == 0) {
-            cout << "no cards in hand" << endl;
         }
         else {
             Card* card = player->getHand()->handOfCards.at(0);
 
             //implement random actions with random teritories and random armies
-            cout << player->getName() << " plays " << card->getCardType() <<" card and issues it to their OrderList" << endl;
+            cout << player->getName() << " plays a card and issues it to their OrderList" << endl;
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
             GameStart::deck->insertCard(card);
         }
         // ------------------------------------------------------------------------------- \\
-
+        
         priorityOrderList(player);  // takes the orders issued and puts them in the correct order based on there priority
+
+        //display orders in correct order
+        for (Order* order : player->getOrderList()->getOrdersList()) {
+            string orderName = typeid(*order).name();
+            if (orderName._Equal("class Deploy")) {
+                cout << player->getName() + " issues deploy order." << endl;
+            }
+            else if (orderName._Equal("class Advance")) {
+                cout << player->getName() + " issues advance order." << endl;
+            }
+            else if (orderName._Equal("class Airlift")) {
+                cout << player->getName() + " issues airlift order." << endl;
+            }
+            else if (orderName._Equal("class Bomb")) {
+                cout << player->getName() + " issues bomb order." << endl;
+            }
+            else if (orderName._Equal("class Blockade")) {
+                cout << player->getName() + " issues blockade order." << endl;
+            }
+            else if (orderName._Equal("class Negotiate")) {
+                cout << player->getName() + " issues negotiate order." << endl;
+            }
+            else {
+                cout << "ERROR: unrecognized order!" << endl;
+            }
+        }
+
     }
 }
 
