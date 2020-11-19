@@ -16,7 +16,6 @@ Player::Player()
 //Destructor for a player
 Player::~Player()
 {
-	
 	delete _orderList; _orderList = NULL;
 	_hand = NULL;
 	cout << ">>>>>Deleting Player" << endl;
@@ -31,6 +30,7 @@ Player::Player(const Player& player)
 	this->_orderList = player._orderList;
 	this->_hand = player._hand;
 	this->_territoryList = player._territoryList;
+	this->_contractList = player._contractList;
 }
 //Parameterized constructor accpeting a string, and increments the id
 Player::Player(string name) :_name(name)
@@ -83,6 +83,11 @@ vector<Territory*>* Player::getTerritoryList()
 int Player::getReinforcementPool()
 {
 	return _reinforcementPool;
+}
+
+vector<string> Player::getContractList()
+{
+	return _contractList;
 }
 
 int Player::getID() {        //d_rivi
@@ -139,6 +144,16 @@ bool Player::conquerTerritory(Territory* territory)
 void Player::setReinforcementPool(int reinforcementPool)
 {
 		_reinforcementPool = reinforcementPool;
+}
+
+void Player::addContract(string playerName)
+{
+	_contractList.push_back(playerName);
+}
+
+void Player::clearContractList()
+{
+	_contractList.erase(_contractList.begin(), _contractList.end());
 }
 
 //--------------------------------------------- Methods ---------------------------\\

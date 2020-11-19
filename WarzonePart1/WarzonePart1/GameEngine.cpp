@@ -319,10 +319,9 @@ void MainGameLoop::runMainloop()
             }
             orderExecutionPhase(player);
         }
+        //removes players orders from list and contracts
         for (Player* player : GameStart::players) {
-            for (Order* order : player->getOrderList()->getOrdersList()) {
-                player->getOrderList()->remove(0);
-            }
+            player->clearContractList();
         }
         MainGameLoop::turn++;
 	}
@@ -595,7 +594,9 @@ void MainGameLoop::orderExecutionPhase(Player* player)
         }
         
      }
-
+    for (Order* order : player->getOrderList()->getOrdersList()) {
+        player->getOrderList()->remove(0);
+    }
     int newTerritoryListSize = player->getTerritoryList()->size();
     if (newTerritoryListSize > initialTerritoryListSize)
     {

@@ -179,10 +179,12 @@ bool Advance::validate()
 				for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 					if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 					{
-						if (!(contract->getPlayer2()->getName()._Equal(contract->getPlayer()->getName()))) {
-							cout << "ERROR: " << contract->getPlayer()->getName() << ", you cannot attack on " << contract->getPlayer2()->getName() << "'s territory since you have negotiated with them! Try again next turn" << endl;
-							return false;
-						}
+						for (string name : contract->getPlayer2()->getContractList()) {
+							if (name._Equal(contract->getPlayer()->getName())) {
+								cout << "ERROR: " << contract->getPlayer()->getName() << ", you cannot attack on " << contract->getPlayer2()->getName() << "'s territory since you have negotiated with them! Try again next turn" << endl;
+								return false;
+							}
+						}	
 					}
 				}
 				return true;
@@ -409,9 +411,11 @@ bool Airlift::validate()
 		for (Order* order : getTarget()->getOwner()->getOrderList()->getOrdersList()) {
 			if (Negotiate* contract = dynamic_cast<Negotiate*>(order))
 			{
-				if (!(contract->getPlayer2()->getName()._Equal(contract->getPlayer()->getName()))) {
-					cout << "ERROR: " << contract->getPlayer()->getName() << ", you cannot airlift into " << contract->getPlayer2()->getName() << "'s territory since you have negotiated with them! Try again next turn" << endl;
-					return false;
+				for (string name : contract->getPlayer2()->getContractList()) {
+					if (name._Equal(contract->getPlayer()->getName())) {
+						cout << "ERROR: " << contract->getPlayer()->getName() << ", you cannot airlift into " << contract->getPlayer2()->getName() << "'s territory since you have negotiated with them! Try again next turn" << endl;
+						return false;
+					}
 				}
 			}
 		}
@@ -535,6 +539,7 @@ Negotiate::Negotiate(const Negotiate& negotiate) :Order(negotiate)
 Negotiate::Negotiate(Player* p, Player* p2) : Order(p)
 {
 	_p2 = p2;
+
 }
 
 //validate method for the negotiate order
@@ -553,6 +558,8 @@ void Negotiate::execute()
 {
 	if (validate())
 	{
+		getPlayer()->addContract(getPlayer2()->getName());
+		getPlayer2()->addContract(getPlayer()->getName());
 		cout << "Successful negotiating. No attack can be declared between " << getPlayer()->getName() << " and " << getPlayer2()->getName() << " until next turn" << endl;
 	}
 }
