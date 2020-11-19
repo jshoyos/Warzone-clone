@@ -240,7 +240,7 @@ void MainGameLoop::runMainloop()
         GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::statsObserver, observeCheck);
         cout << "Are you sure about these choices? (1 for yes, 0 for no): ";
         cin >> continueToggle;
-    } while (continueToggle);
+    } while (continueToggle==0);
 
     GameStartup::startupPhase();
    
