@@ -5,6 +5,7 @@
 #include "Orders.h"
 #include "Cards.h"
 #include "Map.h"
+#include "PlayerStrategies.h"
 
 using namespace std;
 
@@ -30,6 +31,8 @@ class Player
 	vector<string> _contractList;
 	//Number of Armies in the Player's Reinforcement Pool
 	int _reinforcementPool;
+	//Player strategy
+	/*IPlayerStrategy* playerStrategy;*/
 
 public:
 	//constructors
