@@ -54,6 +54,12 @@
     <ClCompile Include="GameObservers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AdapterPatternDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyPatternDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
