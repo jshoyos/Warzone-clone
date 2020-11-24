@@ -14,6 +14,7 @@ class Territory;
 class Order;
 class Hand;
 class Card;
+class IPlayerStrategy;
 
 class Player
 {
@@ -32,7 +33,7 @@ class Player
 	//Number of Armies in the Player's Reinforcement Pool
 	int _reinforcementPool;
 	//Player strategy
-	/*IPlayerStrategy* playerStrategy;*/
+	IPlayerStrategy *playerStrategy;
 
 public:
 	//constructors
@@ -72,6 +73,7 @@ public:
 	void setReinforcementPool(int);
 	void addContract(string);
 	void clearContractList();
-	void setID(int new_id);       
+	void setID(int new_id); 
+	void setStrategy(IPlayerStrategy* strategy);
 };
 
