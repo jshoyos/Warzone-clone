@@ -111,6 +111,11 @@ void Player::setID(int id) {        //d_rivi
 	_id = id;
 }
 
+void Player::setStrategy(IPlayerStrategy* strategy)
+{
+	playerStrategy = strategy;
+}
+
 bool Player::setOrderList(OrdersList* list)
 {
 	_orderList = list;
@@ -167,37 +172,40 @@ Player& Player::operator=(const Player& player)
 //method that returns a list of territories to defend
 vector<Territory*>* Player::toDefend()
 {
-	//write some stuff for console
-	return getTerritoryList();
+	return playerStrategy->toDefend();
+	////write some stuff for console
+	//return getTerritoryList();
 }
 
 //method that returns a list of territories to attack (not owned by player)
 vector<Territory*>* Player::toAttack()
 {	
-	vector<Territory*>* attackList = new vector<Territory*>();
-	
-	for (Territory* terr : *getTerritoryList()) {
+	return playerStrategy->toAttack();
+	//vector<Territory*>* attackList = new vector<Territory*>();
+	//
+	//for (Territory* terr : *getTerritoryList()) {
 
-		for (Territory* adjTerr : *terr->getAdjacent()) {
+	//	for (Territory* adjTerr : *terr->getAdjacent()) {
 
-			//checks if adjacent territories are part of the players territories.
-			if (!(std::find(getTerritoryList()->begin(), getTerritoryList()->end(), adjTerr) != getTerritoryList()->end())){
-				
-				if (!(std::find(attackList->begin(), attackList->end(), adjTerr) != attackList->end())) {
-					attackList->push_back(adjTerr);
-				}	
-			}
-		}
+	//		//checks if adjacent territories are part of the players territories.
+	//		if (!(std::find(getTerritoryList()->begin(), getTerritoryList()->end(), adjTerr) != getTerritoryList()->end())){
+	//			
+	//			if (!(std::find(attackList->begin(), attackList->end(), adjTerr) != attackList->end())) {
+	//				attackList->push_back(adjTerr);
+	//			}	
+	//		}
+	//	}
 
-	}
+	//}
 
-	return attackList;
+	//return attackList;
 }
 
 //method that creates order and adds it to player's order list
 void Player::issueOrder(string orderName, Player* p1, Player* p2, Territory* source, Territory* target, int numberOfArmies)
 {
-	if (orderName._Equal("deploy")) {
+	playerStrategy->issueOrder(orderName, p1, p2, source, target, numberOfArmies);
+	/*if (orderName._Equal("deploy")) {
 		Deploy* newOrder = new Deploy(p1, target, numberOfArmies);
 		addOrder(newOrder);
 	}
@@ -223,7 +231,7 @@ void Player::issueOrder(string orderName, Player* p1, Player* p2, Territory* sou
 	}
 	else {
 		cout << "ERROR: unrecognized order!" << endl;
-	}
+	}*/
 
 }
 

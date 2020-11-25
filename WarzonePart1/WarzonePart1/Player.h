@@ -5,6 +5,7 @@
 #include "Orders.h"
 #include "Cards.h"
 #include "Map.h"
+#include "PlayerStrategies.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ class Territory;
 class Order;
 class Hand;
 class Card;
+class IPlayerStrategy;
 
 class Player
 {
@@ -30,6 +32,8 @@ class Player
 	vector<string> _contractList;
 	//Number of Armies in the Player's Reinforcement Pool
 	int _reinforcementPool;
+	//Player strategy
+	IPlayerStrategy *playerStrategy;
 
 public:
 	//constructors
@@ -69,6 +73,7 @@ public:
 	void setReinforcementPool(int);
 	void addContract(string);
 	void clearContractList();
-	void setID(int new_id);       
+	void setID(int new_id); 
+	void setStrategy(IPlayerStrategy* strategy);
 };
 
