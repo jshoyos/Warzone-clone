@@ -1,0 +1,71 @@
+[Map]
+author=Sean O'Connor
+warn=yes
+image=Atlantis (small).bmp
+wrap=yes
+scroll=horizontal
+
+[Continents]
+Kala=6
+Enevim=3
+Nova=5
+Barak Los=2
+Neimaach=7
+Barba Moya=6
+
+[Territories]
+Forgoth,30,69,Kala,Rove,Spora
+Rove,50,41,Kala,Jer,Spora,Forgoth,Polaris
+Jer,81,46,Kala,Ssag,Fali,Unbecom,Spora,Rove
+Ssag,112,28,Kala,Lurd,Fali,Jer
+Fali,105,55,Kala,Ssag,Jer,Unbecom
+Unbecom,97,75,Kala,Lankia,Fali,Farla,Kinsha,Spora,Jer
+Spora,62,68,Kala,Forgoth,Rove,Jer,Unbecom,Kinsha
+
+Lurd,154,24,Enevim,Evor,Ssag
+Evor,181,27,Enevim,Valinor,Evim,Lurd
+Evim,208,23,Enevim,Valinor,Eritus,Evor
+Valinor,189,7,Enevim,Evor,Evim
+
+Eritus,227,49,Nova,Evim,Lankia,Obar
+Obar,249,65,Nova,Arvi,Inve,Eritus
+Arvi,267,45,Nova,Polaris,Inve,Obar
+Inve,274,69,Nova,Arvi,Obar,Aqualia
+Polaris,302,28,Nova,Arvi,Rove
+Aqualia,279,99,Nova,Inve,Larkan,Pierco
+
+Pierco,303,143,Barak Los,Aqualia,San Funander,Marakas,Tocko
+San Funander,285,148,Barak Los,Pierco,Marakas
+Marakas,300,178,Barak Los,Pierco,San Funander,Tocko
+Tocko,319,168,Barak Los,Pierco,Marakas,Blanki Vista
+
+Lo,29,124,Barba Moya,Kinsha,Blanki Vista
+Kinsha,55,127,Barba Moya,Spora,Unbecom,Lo,Blanki Vista,Mittenmoth,Farla
+Farla,83,130,Barba Moya,Kinsha,Unbecom,Asturmina,Teor,Nurta,Esgarpok,Mittenmoth
+Blanki Vista,34,170,Barba Moya,Lo,Kinsha,Mittenmoth,Bilon,Batan,Tocko
+Mittenmoth,65,171,Barba Moya,Kinsha,Farla,Esgarpok,Har,Bilon,Blanki Vista
+Esgarpok,91,172,Barba Moya,Farla,Mittenmoth,Har
+Batan,37,206,Barba Moya,Blanki Vista,Bilon
+Bilon,64,205,Barba Moya,Batan,Blanki Vista,Mittenmoth,Har
+Har,92,202,Barba Moya,Bilon,Mittenmoth,Esgarpok,Friedartika
+
+Lankia,172,72,Neimaach,Eritus,Asturmina,Unbecom
+Asturmina,154,97,Neimaach,Lankia,Clokan,Teor,Farla
+Teor,142,123,Neimaach,Asturmina,Farla,Nurta,Engel
+Nurta,132,149,Neimaach,Farla,Teor,Engel,Kasten
+Engel,168,157,Neimaach,Teor,Nurta,Kasten,Kalthausen
+Kasten,147,181,Neimaach,Friedartika,Nurta,Engel,Kalthausen,Unterkan
+Friedartika,127,213,Neimaach,Har,Kasten
+Kalthausen,197,162,Neimaach,Engel,Clokan,Kasten,Unterkan,Horkan
+Unterkan,198,189,Neimaach,Kasten,Kalthausen,Horkan
+Horkan,227,168,Neimaach,Kalthausen,Unterkan
+Clokan,201,114,Neimaach,Asturmina,Kalthausen,Larkan
+Larkan,235,118,Neimaach,Clokan,Aqualia
+
+
+
+
+
+
+
+
