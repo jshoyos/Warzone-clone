@@ -62,7 +62,8 @@ public:
 	vector<Territory*>* getTerritoryList();
 	int getReinforcementPool();
 	vector<string> getContractList();
-	int getID();         
+	int getID();
+	IPlayerStrategy* getStrategy();
 
 	//setters
 	bool setName(string);

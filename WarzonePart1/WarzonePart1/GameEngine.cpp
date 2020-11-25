@@ -425,18 +425,19 @@ void MainGameLoop::issueOrderPhase(Player* player)
             advanceStrategy = rand() % 2;
 
             //Attack Strategy
-            if (advanceStrategy == 1) {
+            if (advanceStrategy == 1 && (typeid(player->getStrategy()).name()) != ((typeid(BenevolentPlayerStrategy).name()))
+            && (typeid(player->getStrategy()).name()) != ((typeid(NeutralPlayerStrategy).name()))) {
                 //gives three tries to find a source territory 
                 while (count < 3) {
                     //max index for attack Territory list
                     vector<Territory*>* tempList = player->toAttack();
-                    max = tempList->size();
-                    //random territory index from attack list
-                    randTerrIndex = rand() % max;
-                    delete tempList; tempList = NULL;
-                    //Choose which owned territory will attack
-                    tempList = player->toAttack();
-                    target = tempList->at(randTerrIndex);
+                        max = tempList->size();
+                        //random territory index from attack list
+                        randTerrIndex = rand() % max;
+                        delete tempList; tempList = NULL;
+                        //Choose which owned territory will attack
+                        tempList = player->toAttack();
+                        target = tempList->at(randTerrIndex);
                     delete tempList; tempList = NULL;
                     //finds owned territory that is adjacent to attacking territory
                     for (Territory* terr : *target->getAdjacent()) {
@@ -451,6 +452,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                     }
                     count++;
                 }
+            
                 if (source == nullptr) {
                     source = target->getAdjacent()->at(0);
                 }
