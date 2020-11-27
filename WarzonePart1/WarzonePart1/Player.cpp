@@ -16,6 +16,7 @@ Player::Player()
 //Destructor for a player
 Player::~Player()
 {
+	delete playerStrategy; playerStrategy = NULL;
 	delete _orderList; _orderList = NULL;
 	_hand = NULL;
 	cout << ">>>>>Deleting Player" << endl;
@@ -43,6 +44,13 @@ Player::Player(string name) :_name(name)
 
 //Parameterized constructor accpeting a string, an int and increments the id
 Player::Player(string name, int num) :_name(name),_reinforcementPool(num)
+{
+	_hand = new Hand();
+	_orderList = new OrdersList();
+	_id++; //increments static int (id)
+}
+
+Player::Player(string name, IPlayerStrategy* strategy) :_name(name), playerStrategy(strategy)
 {
 	_hand = new Hand();
 	_orderList = new OrdersList();

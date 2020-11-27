@@ -88,13 +88,34 @@ Map* GameStart::selectMap()
 
 void GameStart::createPlayers()
 {
+
     int numberOfPlayers = numberOfPlayersSelection();
     cout << endl;
     for (int i = 0; i < numberOfPlayers; ++i) {
-        string name;
+        string name;int choice = 0;
         cout << "Enter player " << i + 1 << " name: ";
         cin >> name;
-        players.push_back(new Player(name));
+        cout << "Now choose a strategy from the list below." << endl;
+        cout << "[0] HumanPlayerStrategy" << endl;
+        cout << "[1] AggressivePlayerStrategy" << endl;
+        cout << "[2] BenevolentPlayerStrategy" << endl;
+        cout << "[3] NeutralPlayerStrategy" << endl;
+        cin >> choice;
+        switch (choice)
+        {
+        case 0:
+            players.push_back(new Player(name, new HumanPlayerStrategy()));
+            break;
+        case 1:
+            players.push_back(new Player(name, new AggressivePlayerStrategy()));
+            break;
+        case 2:
+            players.push_back(new Player(name, new BenevolentPlayerStrategy()));
+            break;
+        case 3: 
+            players.push_back(new Player(name, new NeutralPlayerStrategy()));
+            break;
+        }
     }
 }
 
@@ -425,8 +446,9 @@ void MainGameLoop::issueOrderPhase(Player* player)
             advanceStrategy = rand() % 2;
 
             //Attack Strategy
-            if (advanceStrategy == 1 && (typeid(player->getStrategy()).name()) != ((typeid(BenevolentPlayerStrategy).name()))
-            && (typeid(player->getStrategy()).name()) != ((typeid(NeutralPlayerStrategy).name()))) {
+            if (advanceStrategy == 1 
+                && (typeid(player->getStrategy()).name()) != ((typeid(BenevolentPlayerStrategy).name()))
+                && (typeid(player->getStrategy()).name()) != ((typeid(NeutralPlayerStrategy).name()))) {
                 //gives three tries to find a source territory 
                 while (count < 3) {
                     //max index for attack Territory list

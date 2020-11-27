@@ -56,7 +56,7 @@ vector<Territory*>* HumanPlayerStrategy::toAttack(Player* player)
 	cout << "Here are the following territories to attack! Please enter the number of the territory you wish to attack." << endl;
 	int index = 0;
 	for (Territory* terr: *attackList) {
-		cout <<"("<< index <<") "<<terr << endl;
+		cout <<"["<< index <<"] "<< *terr;
 		index++;
 	}
 	cin >> index;
@@ -70,17 +70,22 @@ vector<Territory*>* HumanPlayerStrategy::toAttack(Player* player)
 vector<Territory*>* HumanPlayerStrategy::toDefend(Player* player)
 {
 	vector<Territory*>* defendList = player->getTerritoryList();
-
-	cout << "Here are the following territories to defend! Please enter the number of the territory you wish to reinforce." << endl;
-	int index = 0;
-	for (Territory* terr: *defendList) {
-		cout <<"("<< index <<") "<<terr << endl;
-		index++;
-	}
-	cin >> index;
+	int choice = 0;
 	vector<Territory*>* newList = new vector<Territory*>();
-	newList->push_back(defendList->at(index));
-	delete defendList; defendList = NULL;
+	while (choice) {
+		cout << "Here are the following territories to defend! Please enter the number of the territory you wish to reinforce." << endl;
+		int index = 0;
+		for (Territory* terr : *defendList) {
+			cout << "[" << index << "] " << *terr;
+			index++;
+		}
+		
+	
+		cin >> index;
+		newList->push_back(defendList->at(index));
+		cout << "Would you like to defend more territories. (1 for yes, 0 for no)" << endl;
+
+	}
 	return newList;
 }
 
