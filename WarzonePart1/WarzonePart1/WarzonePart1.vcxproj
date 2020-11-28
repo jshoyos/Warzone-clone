@@ -158,6 +158,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerDriver.cpp" />
     <ClCompile Include="StrategyPatternDriver.cpp" />
+    <ClCompile Include="PlayerStrategies.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cards.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="MapLoader.h" />
     <ClInclude Include="Orders.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerStrategies.h" />
     <ClInclude Include="TextTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
