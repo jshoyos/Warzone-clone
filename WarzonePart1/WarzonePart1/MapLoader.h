@@ -15,9 +15,22 @@ public:
     MapLoader(string);
     MapLoader(const MapLoader&);
     ~MapLoader();
-    Map* createMap();
+    virtual Map* createMap();
     void setFileName(string fileName);
     MapLoader& operator=(const MapLoader&);
     friend ostream& operator<<(ostream&, const MapLoader&);
 };
 ostream& operator<<(ostream&, const MapLoader&);
+
+class ConquestFileReader {
+public:
+    Map* createMap();
+};
+
+class ConquestFileReaderAdapter : public MapLoader {
+private:
+    ConquestFileReader* conquestFileReader;
+public:
+    ConquestFileReaderAdapter(ConquestFileReader*);
+    Map* createMap() override;
+};

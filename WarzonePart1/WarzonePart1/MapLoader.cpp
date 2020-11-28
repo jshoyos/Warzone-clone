@@ -317,3 +317,19 @@ ostream &operator<<(ostream &os, const MapLoader &mapLoader)
 {
     return os << "Loading map file: " << mapLoader._fileName << endl;
 }
+
+ConquestFileReaderAdapter::ConquestFileReaderAdapter(ConquestFileReader* conquestFileReader)
+{
+    this->conquestFileReader = conquestFileReader;
+}
+
+Map* ConquestFileReaderAdapter::createMap()
+{
+    return conquestFileReader->createMap();
+}
+
+Map* ConquestFileReader::createMap()
+{
+    //TODO: implementation of the file reader
+    return nullptr;
+}
