@@ -1,6 +1,5 @@
 #include "GameEngine.h"
 
-
 using namespace std;
 namespace fs = std::filesystem;
 
@@ -69,17 +68,42 @@ Map* GameStart::selectMap()
     if (selectedOption == (int)GameStart::maps.size()) {                                               
         mapLoader->setFileName("file_not_found.maps");
         cout << "\nCreating map from Maps/file_not_found.map..." << endl << endl;
+        
         GameStart::map = mapLoader->createMap();
     }
     while (selectedOption < 0 || selectedOption >= (int)GameStart::maps.size()) { 
         cout << "Invalid selection..." << endl << "Please select again: ";
         cin >> selectedOption;
     }
-    mapLoader-> setFileName(GameStart::maps[selectedOption]);
 
-    cout << "\nCreating map from " << GameStart::maps[selectedOption] << "..." << endl << endl;
-    GameStart::map = mapLoader->createMap();
+    // open the file and check if first line is "[Map]"... 
+    // if so:     use a ConquestFileReaderAdapter to execute createMap() [ie: it's a conquest map ]
+    // otherwise: use a MapLoader                 to execute createMap() [ie: it's a domination map]
+
+    fstream stream3(GameStart::maps[selectedOption]);
+    string line3;
+
+    getline(stream3, line3);
+        
+    if (line3 == "[Map]") {
+        ConquestFileReader* cfr = new ConquestFileReader();
+        MapLoader* adaptedMapLoader = new ConquestFileReaderAdapter(cfr);
+
+        adaptedMapLoader->setFileName(GameStart::maps[selectedOption]);
+
+        cout << "\nCreating map from " << GameStart::maps[selectedOption] << "..." << endl << endl;
+
+        GameStart::map = adaptedMapLoader->createMap();
+    }
     
+    else {
+        mapLoader-> setFileName(GameStart::maps[selectedOption]);
+
+        cout << "\nCreating map from " << GameStart::maps[selectedOption] << "..." << endl << endl;
+
+        GameStart::map = mapLoader->createMap();
+    }
+   
     cout << "\nMap has been created. \n\nLet's now validate the map:\n" << endl;
     map->validate();
     cout << endl;
@@ -238,9 +262,9 @@ void MainGameLoop::runMainloop()
         cout << "Would you like to observe the statistics of the game (1 for yes, 0 for no): ";
         cin >> observeCheck;
         GameStart::toggleObserverOnOff(&MainGameLoop::publisher, MainGameLoop::statsObserver, observeCheck);
-        cout << "Are you sure about these choices? (0 for yes, 1 for no): ";
+        cout << "Are you sure about these choices? (1 for yes, 0 for no): ";
         cin >> continueToggle;
-    } while (continueToggle);
+    } while (!continueToggle);
 
     GameStartup::startupPhase();
    
