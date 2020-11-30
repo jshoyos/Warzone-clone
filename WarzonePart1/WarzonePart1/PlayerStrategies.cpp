@@ -72,22 +72,15 @@ vector<Territory*>* HumanPlayerStrategy::toDefend(Player* player)
 	vector<Territory*>* defendList = player->getTerritoryList();
 	int choice = 1;
 	vector<Territory*>* newList = new vector<Territory*>();
-	while (choice) {
-		cout << "Here are the following territories to defend! Please enter the number of the territory you wish to reinforce." << endl;
-		int index = 0;
-		for (Territory* terr : *defendList) {
-			cout << "[" << index << "] " << *terr;
-			index++;
-		}
-		cin >> index;
-		if (std::find(newList->begin(), newList->end(), defendList->at(index)) != newList->end()) {
-			cout << "ERROR: This territory was already selected. Please choose a different one."<<endl;
-			continue;
-		}
-		newList->push_back(defendList->at(index));
-		cout << "Would you like to defend more territories. (1 for yes, 0 for no)" << endl;
-		cin >> choice;
+	cout << "Here are the following territories to defend! Please enter the number of the territory you wish to reinforce." << endl;
+	int index = 0;
+	for (Territory* terr : *defendList) {
+		cout << "[" << index << "] " << *terr;
+		index++;
 	}
+	cin >> index;
+	newList->push_back(defendList->at(index));
+
 	return newList;
 }
 

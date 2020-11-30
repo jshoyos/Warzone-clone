@@ -532,7 +532,6 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 else {
                     randomArmyNum = rand() % max + min;
                 }
-               
                 //issue advance attack order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
 
@@ -560,9 +559,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                         else {
                             randomArmyNum = rand() % max + min;
                         }
-
                         break;
-
                     }
                 }
                
@@ -586,7 +583,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 GameStart::deck->insertCard(card);
             }
         }
-        else {
+        else if(player->getHand()->getHandSize() != 0){
             //randomly chooses between 1 (attack) and 0 (defend)
             advanceStrategy = rand() % 2;
             //selecting target territory
@@ -629,15 +626,15 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 playerIndex++;
             }
 
-            if (player->getHand()->getHandSize() != 0) {
-                Card* card = player->getHand()->handOfCards.at(0);
+            
+            Card* card = player->getHand()->handOfCards.at(0);
 
-                //implement random actions with random teritories and random armies
-                cout << player->getName() << " plays a card and issues it to their OrderList" << endl;
-                card->play2(player, p2, source, target, randomArmyNum);
-                player->removeCardFromHand(card);
-                GameStart::deck->insertCard(card);
-            }
+            //implement random actions with random teritories and random armies
+            cout << player->getName() << " plays a card and issues it to their OrderList" << endl;
+            card->play2(player, p2, source, target, randomArmyNum);
+            player->removeCardFromHand(card);
+            GameStart::deck->insertCard(card);
+            
             delete tempDefendList; tempDefendList = NULL;
         }
         
