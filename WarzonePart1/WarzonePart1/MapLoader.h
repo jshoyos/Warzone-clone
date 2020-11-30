@@ -17,6 +17,7 @@ public:
     ~MapLoader();
     virtual Map* createMap();
     void setFileName(string fileName);
+    string getFileName();
     MapLoader& operator=(const MapLoader&);
     friend ostream& operator<<(ostream&, const MapLoader&);
 };
@@ -24,7 +25,7 @@ ostream& operator<<(ostream&, const MapLoader&);
 
 class ConquestFileReader {
 public:
-    Map* createMap();
+    Map* createMap(string _filename);
 };
 
 class ConquestFileReaderAdapter : public MapLoader {
