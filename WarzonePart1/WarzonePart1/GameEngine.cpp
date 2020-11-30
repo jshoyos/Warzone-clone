@@ -477,6 +477,10 @@ void MainGameLoop::issueOrderPhase(Player* player)
             max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0; source = nullptr;count = 0;
             //randomly chooses between 1 (attack) and 0 (defend)
             advanceStrategy = rand() % 2;
+            if (typeid(AggressivePlayerStrategy).name() == typeid(*player->getStrategy()).name())
+            {
+                advanceStrategy = 1;    //agressive player attacks if able to
+            }
 
             //checks if the strategy is a BenevolentPlayerStrategy or a NeutralPlayerStrategy
             if ((typeid(*player->getStrategy()).name()) == (typeid(BenevolentPlayerStrategy).name()))  
