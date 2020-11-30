@@ -103,7 +103,9 @@ Map* GameStart::selectMap()
 
         GameStart::map = mapLoader->createMap();
     }
-   
+
+    stream3.close();
+
     cout << "\nMap has been created. \n\nLet's now validate the map:\n" << endl;
     map->validate();
     cout << endl;
