@@ -2,7 +2,7 @@
 
 void HumanPlayerStrategy::issueOrder(string orderName, Player* p1, Player* p2, Territory* source, Territory* target, int numberOfArmies)
 {
-	int response = false;
+	int response = 0;
 	cout << "Would you like to issue the " << orderName <<" order! Enter 1 for yes 0 for no."<<endl;
 	cin >> response;
 	if (response) {
@@ -70,7 +70,7 @@ vector<Territory*>* HumanPlayerStrategy::toAttack(Player* player)
 vector<Territory*>* HumanPlayerStrategy::toDefend(Player* player)
 {
 	vector<Territory*>* defendList = player->getTerritoryList();
-	int choice = 0;
+	int choice = 1;
 	vector<Territory*>* newList = new vector<Territory*>();
 	while (choice) {
 		cout << "Here are the following territories to defend! Please enter the number of the territory you wish to reinforce." << endl;
@@ -79,12 +79,14 @@ vector<Territory*>* HumanPlayerStrategy::toDefend(Player* player)
 			cout << "[" << index << "] " << *terr;
 			index++;
 		}
-		
-	
 		cin >> index;
+		if (std::find(newList->begin(), newList->end(), defendList->at(index)) != newList->end()) {
+			cout << "ERROR: This territory was already selected. Please choose a different one."<<endl;
+			continue;
+		}
 		newList->push_back(defendList->at(index));
 		cout << "Would you like to defend more territories. (1 for yes, 0 for no)" << endl;
-
+		cin >> choice;
 	}
 	return newList;
 }
@@ -112,8 +114,7 @@ void AggressivePlayerStrategy::issueOrder(string orderName, Player* p1, Player* 
 		p1->addOrder(newOrder);
 	}
 	else if (orderName._Equal("negotiate")) {
-		Negotiate* newOrder = new Negotiate(p1, p2);
-		p1->addOrder(newOrder);
+		cout << "I am an aggressive player! I do not wish to negotiate with anyone" << endl;
 	}
 	else {
 		cout << "ERROR: unrecognized order!" << endl;
@@ -164,9 +165,12 @@ void BenevolentPlayerStrategy::issueOrder(string orderName, Player* p1, Player* 
 		Deploy* newOrder = new Deploy(p1, target, numberOfArmies);
 		p1->addOrder(newOrder);
 	}
-	else if (orderName._Equal("advance")) {	//will never issue an attack advance order
+	else if (orderName._Equal("advance")) {
 		Advance* newOrder = new Advance(p1, source, target, numberOfArmies);
 		p1->addOrder(newOrder);
+	}
+	else if (orderName._Equal("attack")) {
+		cout << "I am a good person I shall not attack anyone" << endl;
 	}
 	else if (orderName._Equal("airlift")) {
 		Airlift* newOrder = new Airlift(p1, source, target, numberOfArmies);
