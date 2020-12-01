@@ -41,7 +41,9 @@ vector<Territory*>* HumanPlayerStrategy::toAttack(Player* player)
 	vector<Territory*>* attackList = new vector<Territory*>();
 	
 	for (Territory* terr : *player->getTerritoryList()) {
-
+		if (terr->getArmies() == 0) {
+			continue;
+		}
 		for (Territory* adjTerr : *terr->getAdjacent()) {
 
 			//checks if adjacent territories are part of the players territories.
@@ -119,7 +121,9 @@ vector<Territory*>* AggressivePlayerStrategy::toAttack(Player* player)
 	vector<Territory*>* attackList = new vector<Territory*>();
 
 	for (Territory* terr : *player->getTerritoryList()) {
-
+		if (terr->getArmies() == 0) {
+			continue;
+		}
 		for (Territory* adjTerr : *terr->getAdjacent()) {
 
 			//checks if adjacent territories are part of the players territories.
@@ -131,7 +135,7 @@ vector<Territory*>* AggressivePlayerStrategy::toAttack(Player* player)
 			}
 		}
 	}
-
+	//cout << player->getName()<<" :     SIZE ==============(" << attackList->size()<<")================" << endl;
 	return attackList;
 }
 
@@ -210,7 +214,7 @@ vector<Territory*>* BenevolentPlayerStrategy::toDefend(Player* player)
 
 void NeutralPlayerStrategy::issueOrder(string orderName, Player* p1, Player* p2, Territory* source, Territory* target, int numberOfArmies)
 {
-	cout << "I am a Neutral player, I do not issue any orders" << endl;
+	cout << p1->getName() << " is a Neutral player, I do not issue any orders" << endl;
 }
 
 vector<Territory*>* NeutralPlayerStrategy::toAttack(Player* player)
