@@ -16,6 +16,7 @@ Player::Player()
 //Destructor for a player
 Player::~Player()
 {
+	delete playerStrategy; playerStrategy = NULL;
 	delete _orderList; _orderList = NULL;
 	_hand = NULL;
 	cout << ">>>>>Deleting Player" << endl;
@@ -43,6 +44,13 @@ Player::Player(string name) :_name(name)
 
 //Parameterized constructor accpeting a string, an int and increments the id
 Player::Player(string name, int num) :_name(name),_reinforcementPool(num)
+{
+	_hand = new Hand();
+	_orderList = new OrdersList();
+	_id++; //increments static int (id)
+}
+
+Player::Player(string name, IPlayerStrategy* strategy) :_name(name), playerStrategy(strategy)
 {
 	_hand = new Hand();
 	_orderList = new OrdersList();
@@ -92,6 +100,11 @@ vector<string> Player::getContractList()
 
 int Player::getID() {        //d_rivi
 	return _id;
+}
+
+IPlayerStrategy* Player::getStrategy()
+{
+	return playerStrategy;
 }
 
 //---------------------------------- Setters --------------------------------\\
@@ -172,67 +185,19 @@ Player& Player::operator=(const Player& player)
 //method that returns a list of territories to defend
 vector<Territory*>* Player::toDefend()
 {
-	return playerStrategy->toDefend();
-	////write some stuff for console
-	//return getTerritoryList();
+	return playerStrategy->toDefend(this);
 }
 
 //method that returns a list of territories to attack (not owned by player)
 vector<Territory*>* Player::toAttack()
 {	
-	return playerStrategy->toAttack();
-	//vector<Territory*>* attackList = new vector<Territory*>();
-	//
-	//for (Territory* terr : *getTerritoryList()) {
-
-	//	for (Territory* adjTerr : *terr->getAdjacent()) {
-
-	//		//checks if adjacent territories are part of the players territories.
-	//		if (!(std::find(getTerritoryList()->begin(), getTerritoryList()->end(), adjTerr) != getTerritoryList()->end())){
-	//			
-	//			if (!(std::find(attackList->begin(), attackList->end(), adjTerr) != attackList->end())) {
-	//				attackList->push_back(adjTerr);
-	//			}	
-	//		}
-	//	}
-
-	//}
-
-	//return attackList;
+	return playerStrategy->toAttack(this);
 }
 
 //method that creates order and adds it to player's order list
 void Player::issueOrder(string orderName, Player* p1, Player* p2, Territory* source, Territory* target, int numberOfArmies)
 {
 	playerStrategy->issueOrder(orderName, p1, p2, source, target, numberOfArmies);
-	/*if (orderName._Equal("deploy")) {
-		Deploy* newOrder = new Deploy(p1, target, numberOfArmies);
-		addOrder(newOrder);
-	}
-	else if(orderName._Equal("advance")){
-		Advance* newOrder = new Advance(p1, source, target, numberOfArmies);
-		addOrder(newOrder);
-	}
-	else if(orderName._Equal("airlift")){
-		Airlift* newOrder = new Airlift(p1,source, target, numberOfArmies);
-		addOrder(newOrder);
-	}
-	else if (orderName._Equal("bomb")) {
-		Bomb* newOrder = new Bomb(p1, target);
-		addOrder(newOrder);
-	}
-	else if (orderName._Equal("blockade")) {
-		Blockade* newOrder = new Blockade(p1, target);
-		addOrder(newOrder);
-	}
-	else if (orderName._Equal("negotiate")) {
-		Negotiate* newOrder = new Negotiate(p1,p2);
-		addOrder(newOrder);
-	}
-	else {
-		cout << "ERROR: unrecognized order!" << endl;
-	}*/
-
 }
 
 //removes territory from players territoryList

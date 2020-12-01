@@ -49,7 +49,6 @@ void GameStart::generateDeck()
     cout << "\nGenarating Deck..." << endl << endl;
     GameStart::deck = new Deck(deckSize);
 }
-
 void GameStart::toggleObserverOnOff(Publisher* publisher,IObservable* observer,bool on)
 {
     if (on) {
@@ -111,19 +110,38 @@ Map* GameStart::selectMap()
     cout << endl;
     return map;
 }
-
 void GameStart::createPlayers()
 {
+
     int numberOfPlayers = numberOfPlayersSelection();
     cout << endl;
     for (int i = 0; i < numberOfPlayers; ++i) {
-        string name;
+        string name;int choice = 0;
         cout << "Enter player " << i + 1 << " name: ";
         cin >> name;
-        players.push_back(new Player(name));
+        cout << "Now choose a strategy from the list below." << endl;
+        cout << "[0] HumanPlayerStrategy" << endl;
+        cout << "[1] AggressivePlayerStrategy" << endl;
+        cout << "[2] BenevolentPlayerStrategy" << endl;
+        cout << "[3] NeutralPlayerStrategy" << endl;
+        cin >> choice;
+        switch (choice)
+        {
+        case 0:
+            players.push_back(new Player(name, new HumanPlayerStrategy()));
+            break;
+        case 1:
+            players.push_back(new Player(name, new AggressivePlayerStrategy()));
+            break;
+        case 2:
+            players.push_back(new Player(name, new BenevolentPlayerStrategy()));
+            break;
+        case 3: 
+            players.push_back(new Player(name, new NeutralPlayerStrategy()));
+            break;
+        }
     }
 }
-
 void GameStart::start()
 {
 	GameStart::map = GameStart::selectMap();
@@ -234,13 +252,11 @@ void GameStartup::initializeArmies() {
 
 }
 
-
 void GameStartup::startupPhase() {
     randomPlayerOrder();
     assignTerritories();
     initializeArmies();
 }
-
 
 // ------------------------------------------- Main Game Loop ---------------------------------------- \\
 
@@ -307,7 +323,39 @@ void MainGameLoop::runMainloop()
                 }
             }
         }
+        //Option to change players strategy
+        if (turn % 10 == 0) {
+            int choice=0;
+            cout << "You have the option to change a player's strategy" << endl;
+            for (Player* player : GameStart::players) {
+                cout << "For player: " << player->getName() << endl;
+                cout << "Choose a strategy from the list below or choose 0 to keep same strategy" << endl;
+                cout << "[1] HumanPlayerStrategy" << endl;
+                cout << "[2] AggressivePlayerStrategy" << endl;
+                cout << "[3] BenevolentPlayerStrategy" << endl;
+                cout << "[4] NeutralPlayerStrategy" << endl;
+                cin >> choice;
+                switch (choice)
+                {
+                case 0: 
+                    break;
+                case 1:
+                    player->setStrategy(new HumanPlayerStrategy());
+                    break;
+                case 2:
+                    player->setStrategy(new AggressivePlayerStrategy());
+                    break;
+                case 3:
+                    player->setStrategy(new BenevolentPlayerStrategy());
+                    break;
+                
+                case 4:
+                    player->setStrategy(new NeutralPlayerStrategy());
+                    break;
+                }
 
+            }
+        }
         //Phase 1
 		for (Player* player : GameStart::players) {
             MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s Reinforcement Phase!");
@@ -316,7 +364,7 @@ void MainGameLoop::runMainloop()
             }
             reinforcementPhase(player);
 		}
-       
+
         //Phase 2
 		for (Player* player : GameStart::players) {
             MainGameLoop::publisher.notifyAll("phase", player->getName() + "'s IssueOrdering Phase!");
@@ -338,12 +386,15 @@ void MainGameLoop::runMainloop()
             orderExecutionPhase(player);
         }
         //Remaining orders execution phase 
+     
         for (Player* player : GameStart::players) {
 
             if (player->getTerritoryList()->empty()) {
                 continue;
+            }   
+            if (typeid(*player->getStrategy()).name() != (typeid(NeutralPlayerStrategy).name())) {
+                orderExecutionPhase(player);
             }
-            orderExecutionPhase(player);
         }
         //removes players orders from list and contracts
         for (Player* player : GameStart::players) {
@@ -369,13 +420,14 @@ void MainGameLoop::runMainloop()
     delete GameStart::deck; GameStart::deck = NULL;
    
 }
-
 void MainGameLoop::reinforcementPhase(Player* player)
 {
     //On turn 1 there should be no reinforcement Phase for the players
 	double playerTerritoryNum = player->getTerritoryList()->size();
 	int armyNum = floor(playerTerritoryNum / 3);
-
+    if (armyNum<3) {
+        armyNum = 3;
+    }
 	for (Continent* cont : *GameStart::map->getContinents())
 	{
 		if (checkOwnedContinent(player, cont)) {
@@ -384,7 +436,6 @@ void MainGameLoop::reinforcementPhase(Player* player)
 	}
 	player->setReinforcementPool(armyNum);
 }
-
 void MainGameLoop::issueOrderPhase(Player* player)
 {
     srand(time(0));
@@ -407,108 +458,120 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 player->setReinforcementPool(player->getReinforcementPool() - 1);
             }
         } 
-      
     }
-    else {
+    //Neutral player issuing order phase
+    else if ((typeid(*player->getStrategy()).name()) == (typeid(NeutralPlayerStrategy).name())) {
+        player->issueOrder("attack", player, nullptr, nullptr, nullptr, 0);
+        return;
+    }
+    //Human player issuing order phase
+    else if ((typeid(*player->getStrategy()).name()) == (typeid(HumanPlayerStrategy).name())) 
+    {
+        humanIssueOrder(player);
+    }
+    else
+    {
         //----- First step is to Issue the deploy order -----\\
         
         //loops until there is no more army members in reinforcement pool
-        while (player->getReinforcementPool() != 0) { 
-            
+
+        while (player->getReinforcementPool() != 0) {
+
             //gets number of armies from players pool
             armyNumber = player->getReinforcementPool();
             //initialize variables to 0
             max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0;
             //Max index for defending territory list
-            max = player->toDefend()->size();
+            vector<Territory*>* tempDefendList = player->toDefend();
+            max = tempDefendList->size();
             //chooses a random number for the index of the territory list (between 0 and list.size()-1)
             randTerrIndex = rand() % max;
-            max = player->getReinforcementPool() + 1;
+            max = player->getReinforcementPool();
             //chooses a random number of armies to deploy (between 0 and total armies in reinforcement pool)
-            randomArmyNum = rand() % max;
+            randomArmyNum = rand() % max + 1;
             //choose target territory to deploy troops
-            target = player->toDefend()->at(randTerrIndex);
+            target = tempDefendList->at(randTerrIndex);
 
             //changes the troops number in the reinforcementPool
-            player->setReinforcementPool(player->getReinforcementPool() - armyNumber);
+            player->setReinforcementPool(armyNumber - randomArmyNum);
 
             //issue deploy order (added to player's orderList)
             player->issueOrder("deploy", player, nullptr, nullptr, target, randomArmyNum);
+            delete tempDefendList; tempDefendList = NULL;
+                 
         }
-
+        
         // ------------------------------------------------------------------------------- \\
 
         //----- Second step is to for a player to issue an advance  -----\\
         
-       
+
         int num = 0;
         int advanceStrategy = 0;
         num = rand() % 5 + 1;
-        //initialize variables to 0
-        for (int i = 0;i < num;i++) {
+
+        for (int i = 0; i < num;i++) {
             max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0; source = nullptr;count = 0;
             //randomly chooses between 1 (attack) and 0 (defend)
             advanceStrategy = rand() % 2;
+            if (typeid(AggressivePlayerStrategy).name() == typeid(*player->getStrategy()).name())
+            {
+                advanceStrategy = 1;    //agressive player attacks if able to
+            }
+            //checks if the strategy is a BenevolentPlayerStrategy
+            if ((typeid(*player->getStrategy()).name()) == (typeid(BenevolentPlayerStrategy).name()) )
+            {
+                advanceStrategy = 0;
+            }
 
             //Attack Strategy
-            if (advanceStrategy == 1) {
-                //gives three tries to find a source territory 
-                while (count < 3) {
-                    //max index for attack Territory list
-                    vector<Territory*>* tempList = player->toAttack();
-                    max = tempList->size();
-                    //random territory index from attack list
-                    randTerrIndex = rand() % max;
-                    delete tempList; tempList = NULL;
-                    //Choose which owned territory will attack
-                    tempList = player->toAttack();
-                    target = tempList->at(randTerrIndex);
-                    delete tempList; tempList = NULL;
-                    //finds owned territory that is adjacent to attacking territory
-                    for (Territory* terr : *target->getAdjacent()) {
-                        if (terr->getOwner() != NULL && terr->getOwner()->getName()._Equal(player->getName())) {
-                            //sets the source territory
-                            if (terr->getArmies() != 0) {
-                                source = terr;
-                                count = 4;
-                                break;
-                            }
-                        }
-                    }
-                    count++;
+            if (advanceStrategy == 1) {          
+                //max index for attack Territory list
+                vector<Territory*>* tempAttackList = player->toAttack();
+                max = tempAttackList->size();
+                //random territory index from attack list
+                if (max == 0) {
+                    cout << player->getName()<<"'s attack list is empty" << endl;
+                    delete tempAttackList; tempAttackList = NULL;
+                    break;
                 }
-                if (source == nullptr) {
-                    source = target->getAdjacent()->at(0);
+                randTerrIndex = rand() % max;
+                //Choose which owned territory will attack
+                target = tempAttackList->at(randTerrIndex);
+                delete tempAttackList; tempAttackList = NULL;
+                //finds owned territory that is adjacent to attacking territory
+                for (Territory* terr : *target->getAdjacent()) {
+                    if (terr->getOwner() != NULL && terr->getOwner()->getName()._Equal(player->getName()) && terr->getArmies() != 0) {
+                        //sets the source territory
+                        source = terr;
+                        break;
+                    }
                 }
                 //max number of troops to send from selected territory. Minimum of 1 troop to send out
-                max = source->getArmies(); min = 1;
+                max = source->getArmies(); 
                 //random number of troops to attack with
 
                 if (max == 0) {
                     randomArmyNum = 0;
                 }
-                else if (MainGameLoop::turn > 20) {
+                else if (MainGameLoop::turn > 20 || typeid(AggressivePlayerStrategy).name() == typeid(*player->getStrategy()).name()) {
                     randomArmyNum = max;
                 }
                 else {
-                    randomArmyNum = rand() % max + min;
+                    randomArmyNum = rand() % max + 1;
                 }
-               
                 //issue advance attack order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
-
-
-
             }
             //Defense Strategy
             else if (advanceStrategy == 0) {
                 //max index for defend Territory list
-                max = player->toDefend()->size();
+                vector<Territory*>* tempDefendList = player->toDefend();
+                max = tempDefendList->size();
                 //random territory index from defend list
                 randTerrIndex = rand() % max;
-
                 //Choose which owned territory will be defended
-                target = player->toDefend()->at(randTerrIndex);
+                target = tempDefendList->at(randTerrIndex);
                 //finds owned territory that is adjacent to attacking territory
                 for (Territory* terr : *target->getAdjacent()) {
                     if (terr->getOwner() != NULL && terr->getOwner()->getName()._Equal(player->getName())) {
@@ -523,110 +586,87 @@ void MainGameLoop::issueOrderPhase(Player* player)
                         else {
                             randomArmyNum = rand() % max + min;
                         }
-
                         break;
-
                     }
                 }
-               
                 //issue advance defence order (added to player's orderList)
                 player->issueOrder("advance", player, nullptr, source, target, randomArmyNum);
+                delete tempDefendList; tempDefendList = NULL;
             }
         }
-            
-
-
+           
         // ------------------------------------------------------------------------------- \\
 
         //----- Third step is to play a card from players hand and issue its order -----\\
         
-        //randomly chooses between 1 (attack) and 0 (defend)
-        advanceStrategy = rand() % 2;
-        //selecting target territory
-        if (advanceStrategy == 0) {
-            
-            max = player->toDefend()->size();
-            randTerrIndex = rand() % max;
-            target = player->toDefend()->at(randTerrIndex);
-        }
-        else if (advanceStrategy==1) {
-            vector<Territory*>* tempList = player->toAttack();
-            max = tempList->size();
-            randTerrIndex = rand() % max ;
-            target = tempList->at(randTerrIndex);
-            delete tempList; tempList = NULL;
-        }
-        
-        //random selecting source territory
-        max = player->toDefend()->size();
-        randTerrIndex = rand() % max;
-        source = player->toDefend()->at(randTerrIndex);
+       if(player->getHand()->getHandSize() != 0){
 
-        //random number of armies
-        max = source->getArmies();min = 1;
-        if (max == 0) {
-            randomArmyNum = 0;
-        }
-        else {
-            randomArmyNum = rand() % max + min;
-        }
-       
-        //select random player that is not self
-        Player* p2=nullptr;
-        int playerIndex = 0;
-        for (Player* randPlayer : GameStart::players) {
-            if (randPlayer->getName() != player->getName()) {
-                p2 = GameStart::players.at(playerIndex);
-                break;
-            }
-            playerIndex++;
-        }
-        
-
-        if (player->getHand()->getHandSize() == 0) {
-        }
-        else {
             Card* card = player->getHand()->handOfCards.at(0);
+            //randomly chooses between 1 (attack) and 0 (defend)
+            advanceStrategy = rand() % 2;
+            vector<Territory*>* tempDefendList = player->toDefend();
+            vector<Territory*>* tempAttackList = player->toAttack();
+            //Checks if attacklist is empty
+
+            if (advanceStrategy == 1 
+                && typeid(*player->getStrategy()).name() != typeid(BenevolentPlayerStrategy).name() 
+                && tempAttackList->size() !=0) 
+            {
+                max = tempAttackList->size();
+                randTerrIndex = rand() % max;
+                target = tempAttackList->at(randTerrIndex);
+                
+            }
+            else if (advanceStrategy == 0) {
+                max = tempDefendList->size();
+                randTerrIndex = rand() % max;
+                target = tempDefendList->at(randTerrIndex);
+            }
+            
+
+            //random selecting source territory
+            max = tempDefendList->size();
+            randTerrIndex = rand() % max;
+            source = tempDefendList->at(randTerrIndex);
+
+            //random number of armies
+            max = source->getArmies();min = 1;
+            if (max == 0) {
+                randomArmyNum = 0;
+            }
+            else {
+                randomArmyNum = rand() % max + min;
+            }
+            delete tempAttackList; tempAttackList = NULL;
+            delete tempDefendList; tempDefendList = NULL;
+            //select random player that is not self
+            Player* p2 = nullptr;
+            int playerIndex = 0;
+            for (Player* randPlayer : GameStart::players) {
+                if (randPlayer->getName() != player->getName()) {
+                    p2 = GameStart::players.at(playerIndex);
+                    break;
+                }
+                playerIndex++;
+            }
 
             //implement random actions with random teritories and random armies
             cout << player->getName() << " plays a card and issues it to their OrderList" << endl;
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
             GameStart::deck->insertCard(card);
+
         }
-        // ------------------------------------------------------------------------------- \\
         
-        priorityOrderList(player);  // takes the orders issued and puts them in the correct order based on there priority
+        // ------------------------------------------------------------------------------- \\
+       
+        // takes the orders issued and puts them in the correct order based on there priority
+        priorityOrderList(player);  
 
         //display orders in correct order
-        for (Order* order : player->getOrderList()->getOrdersList()) {
-            string orderName = typeid(*order).name();
-            if (orderName._Equal("class Deploy")) {
-                cout << player->getName() + " issues deploy order." << endl;
-            }
-            else if (orderName._Equal("class Advance")) {
-                cout << player->getName() + " issues advance order." << endl;
-            }
-            else if (orderName._Equal("class Airlift")) {
-                cout << player->getName() + " issues airlift order." << endl;
-            }
-            else if (orderName._Equal("class Bomb")) {
-                cout << player->getName() + " issues bomb order." << endl;
-            }
-            else if (orderName._Equal("class Blockade")) {
-                cout << player->getName() + " issues blockade order." << endl;
-            }
-            else if (orderName._Equal("class Negotiate")) {
-                cout << player->getName() + " issues negotiate order." << endl;
-            }
-            else {
-                cout << "ERROR: unrecognized order!" << endl;
-            }
-        }
-
+        displayOrders(player);
     }
 }
-
 void MainGameLoop::orderExecutionPhase(Player* player)
 {
     //orderList size
@@ -645,8 +685,19 @@ void MainGameLoop::orderExecutionPhase(Player* player)
         if (orderName._Equal("class Deploy")) {
             player->getOrderList()->remove(index);  //removes deploy orders from the player's order list
         }
+        if (player->getOrderList()->getOrdersList().size()==0) {
+            MainGameLoop::deployOrderLeft++;
+            return;
+        }
         
-     }
+    }
+    if (typeid(*player->getStrategy()).name() == (typeid(NeutralPlayerStrategy).name())) {
+        MainGameLoop::deployOrderLeft++;
+        return;
+    }
+    if (player->getOrderList()->getOrdersList().size() == 0) {
+        return;
+    }
     for (Order* order : player->getOrderList()->getOrdersList()) {
         player->getOrderList()->remove(0);
     }
@@ -657,7 +708,6 @@ void MainGameLoop::orderExecutionPhase(Player* player)
         MainGameLoop::publisher.notifyAll("stats", "");
     }
 }
-
 bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 {
 	for (Territory* terr : *cont->getTerritories()) {
@@ -667,7 +717,6 @@ bool MainGameLoop::checkOwnedContinent(Player* player, Continent* cont)
 	}
 	return true;
 }
-
 void MainGameLoop::priorityOrderList(Player* player) {
     
     int size = player->getOrderList()->getOrdersList().size();
@@ -684,10 +733,11 @@ void MainGameLoop::priorityOrderList(Player* player) {
 
             if (orderName._Equal("class Deploy"))
             {
-                if (3 > current_max)
+                if (3 >= current_max)
                 {
                     current_index = j;
                     current_max = 3;
+                    player->getOrderList()->move(current_index, i);
                 }
             }
 
@@ -696,6 +746,7 @@ void MainGameLoop::priorityOrderList(Player* player) {
                 if (2 > current_max) {
                     current_index = j;
                     current_max = 2;
+                    player->getOrderList()->move(current_index, i);
                 }
             }
 
@@ -704,23 +755,252 @@ void MainGameLoop::priorityOrderList(Player* player) {
                 if (1 > current_max) {
                     current_index = j;
                     current_max = 1;
+                    player->getOrderList()->move(current_index, i);
                 }
             }
         }
         // Swap at i and current_index
-        player->getOrderList()->move(current_index, i);
+
     }
 
-    // Dunno why it gets reversed, put it back in front
     for (int i = 0; i < (int)(size / 2); i++) {
         player->getOrderList()->move((size-1) - i, i);
     }
-}
 
+}
 void MainGameLoop::clearVector(vector<Territory*>* territories)
 {
     for (Territory* terr : *territories) {
         delete terr; terr = NULL;
+    }
+}
+void MainGameLoop::humanIssueOrder(Player* player)
+{
+    Territory* source = nullptr;
+    Territory* target = nullptr;
+    int max = 0, min = 0, randTerrIndex = 0, randomArmyNum = 0, count = 0;
+
+    int armyNumber = 0;
+    //----- First step is to Issue the deploy order -----\\
+        
+    int index = 0;
+    int choice = 0;
+    int checkCount = 0;
+    while (player->getReinforcementPool() != 0) {
+        choice = 0;
+        armyNumber = player->getReinforcementPool();
+        cout << "Choose a territory from your defend list that you wish to deploy your armies to." << endl;
+        vector<Territory*>* tempDefendList = player->toDefend();
+        target = tempDefendList->at(0);
+        cout << "Select the number of armies you wish to Deploy. Please select a number between 0 and " << armyNumber << endl;
+        cin >> choice;
+        //choose target territory to deploy troops
+        target = tempDefendList->at(randTerrIndex);
+
+        //changes the troops number in the reinforcementPool
+        player->setReinforcementPool(armyNumber - choice);
+
+        player->issueOrder("deploy", player, nullptr, nullptr, target, randomArmyNum);
+        delete tempDefendList; tempDefendList = NULL;
+    }
+    //----- Second step is to for a player to issue an advance  -----\\
+        
+    index = 0;
+    choice = 0;
+    //DEFENSIVE advance from the human player
+    cout << "Would you like to make a defensive advance? (1 for yes, 0 for no)" << endl;
+    cin >> choice;
+
+    while (choice) {
+        cout << "Choose a territory from your defend list that you wish to advance your armies to." << endl;
+        //gets a player's defence list
+        vector<Territory*>* tempDefendList = player->toDefend();
+        //sets target to player's chosen territory
+        target = tempDefendList->at(0);
+        cout << "Next choose the adjacent territory you wish to move your armies from." << endl;
+        index = 0;
+        checkCount = 0;
+        //displays owned adjacent territories
+        for (Territory* adjTerr : *target->getAdjacent()) {
+            if (std::find(player->getTerritoryList()->begin(), player->getTerritoryList()->end(), adjTerr) != player->getTerritoryList()->end()) {
+                cout << "[" << index << "] " << *adjTerr;
+                checkCount++;
+            }
+            index++;
+        }
+        if (checkCount == 0) {
+            cout << "Sorry you cannot issue this order! You do not own any territories adjacent to " << target->getTerritoryName() << endl;
+        }
+        else {
+            cin >> index;
+            //sets source to player's chosen territory
+            source = target->getAdjacent()->at(index);
+            cout << "Lastly select the number of armies you wish to advance. Please select a number between 0 and " << source->getArmies() << endl;
+            index = 0;
+            cin >> index;
+            //issue advance defence order (added to player's orderList)
+            player->issueOrder("advance", player, nullptr, source, target, index);
+        }
+        delete tempDefendList; tempDefendList = NULL;
+        cout << "Would you like to make an additional defensive advance? (1 for yes, 0 for no)" << endl;
+        cin >> choice;
+    }
+    index = 0;
+    checkCount = 0;
+    choice = 0;
+    //ATTACKING advance from the human player
+    cout << "Would you like to make an Attacking advance? (1 for yes, 0 for no)" << endl;
+    cin >> choice;
+    while (choice) {
+        cout << "Choose a territory from your attack list that you wish to advance your armies to." << endl;
+        //gets a player's defence list
+        vector<Territory*>* tempAttackList = player->toAttack();
+        //sets target to player's chosen territory
+        target = tempAttackList->at(0);
+        cout << "Next choose the adjacent territory you wish to move your armies from." << endl;
+        index = 0;
+        //displays owned adjacent territories
+        for (Territory* adjTerr : *target->getAdjacent()) {
+            if (std::find(player->getTerritoryList()->begin(), player->getTerritoryList()->end(), adjTerr) != player->getTerritoryList()->end()) {
+                cout << "[" << index << "] " << *adjTerr;
+                checkCount++;
+            }
+            index++;
+        }
+        if (checkCount == 0) {
+            cout << "Sorry you cannot issue this order! You do not own any territories adjacent to " << target->getTerritoryName() << endl;
+        }
+        else {
+            cin >> index;
+            //sets source to player's chosen territory
+            source = target->getAdjacent()->at(index);
+            cout << "Lastly select the number of armies you wish to advance. Please select a number between 0 and " << source->getArmies() << endl;
+            index = 0;
+            cin >> index;
+            //issue advance defence order (added to player's orderList)
+            player->issueOrder("advance", player, nullptr, source, target, index);
+        }
+        delete tempAttackList; tempAttackList = NULL;
+        cout << "Would you like to make an additional attacking advance? (1 for yes, 0 for no)" << endl;
+        cin >> choice;
+    }
+
+    //----- Third step is to play a card from players hand and issue its order -----\\
+
+    if (player->getHand()->handOfCards.size() == 0) {
+        cout << "You dont have any cards in your hand." << endl;
+    }
+    else {
+        int cardSlot = 0;
+
+        cout << "choose card from hand." << endl;
+        player->getHand()->showHand();
+        cin >> cardSlot;
+
+        Card* card = player->getHand()->handOfCards.at(cardSlot);
+        vector<Territory*>* tempAttackList;
+        vector<Territory*>* tempDefendList;
+        index = 0;
+        switch (card->type)
+        {
+            //bomb
+        case 0:
+            cout << "You played the BOMB card! Choose a territory to bomb from your attacking list." << endl;
+            tempAttackList = player->toAttack();
+            card->play2(player, nullptr, nullptr, target, 0);
+            delete tempAttackList; tempAttackList = NULL;
+            break;
+            //Reinforce
+        case 1:
+            cout << "You played the REINFORCE card! First choose a territory to reinforce, from your defend list." << endl;
+            tempDefendList = player->toDefend();
+            target = tempDefendList->at(0);
+            cout << "Next choose the adjacent territory you wish to move your armies from." << endl;
+            index = 0;
+            for (Territory* adjTerr : *target->getAdjacent()) {
+                if (std::find(player->getTerritoryList()->begin(), player->getTerritoryList()->end(), adjTerr) != player->getTerritoryList()->end()) {
+                    cout << "[" << index << "] " << *adjTerr;
+
+                }
+                index++;
+            }
+            cin >> index;
+            source = target->getAdjacent()->at(index);
+            cout << "Lastly select the number of armies you wish to advance. Please select a number between 0 and " << source->getArmies() << endl;
+            index = 0;
+            cin >> index;
+            card->play2(player, nullptr, source, target, index);
+            delete tempDefendList; tempDefendList = NULL;
+            break;
+            //Blockade
+        case 2:
+            cout << "You played the BLOCKADE card! Choose a territory to blockade from your defend list." << endl;
+            tempDefendList = player->toDefend();
+            card->play2(player, nullptr, nullptr, target, 0);
+            delete tempDefendList; tempDefendList = NULL;
+            break;
+            //Airlift
+        case 3:
+            cout << "You played the AIRLIFT card! First choose a territory to airlift to, from your defend list." << endl;
+            tempDefendList = player->toDefend();
+            target = tempDefendList->at(0);
+            cout << "Next choose the territory you wish to move your armies from." << endl;
+            delete tempDefendList; tempDefendList = NULL;
+            tempDefendList = player->toDefend();
+            source = tempDefendList->at(0);
+            cout << "Lastly select the number of armies you wish to AIRLIFT. Please select a number between 0 and " << source->getArmies() << endl;
+            index = 0;
+            cin >> index;
+            card->play2(player, nullptr, source, target, index);
+            delete tempDefendList; tempDefendList = NULL;
+            break;
+            //Diplomacy
+        case 4:
+            cout << "You played the DIPLOMACY card! Choose a player you wish to negotiate with." << endl;
+            int playerIndex = 0; Player* p2 = nullptr;
+            for (Player* players : GameStart::players) {
+                if (players->getName() != player->getName()) {
+                    cout << "[" << playerIndex << "] " << players->getName();
+                }
+                playerIndex++;
+            }
+            playerIndex = 0;
+            cin >> playerIndex;
+            p2 = GameStart::players.at(playerIndex);
+            card->play2(player, p2, nullptr, nullptr, 0);
+            break;
+        }
+
+        player->removeCardFromHand(card);
+        GameStart::deck->insertCard(card);
+    }
+
+}
+void MainGameLoop::displayOrders(Player* player)
+{
+    for (Order* order : player->getOrderList()->getOrdersList()) {
+        string orderName = typeid(*order).name();
+        if (orderName._Equal("class Deploy")) {
+            cout << player->getName() + " issues deploy order." << endl;
+        }
+        else if (orderName._Equal("class Advance")) {
+            cout << player->getName() + " issues advance order." << endl;
+        }
+        else if (orderName._Equal("class Airlift")) {
+            cout << player->getName() + " issues airlift order." << endl;
+        }
+        else if (orderName._Equal("class Bomb")) {
+            cout << player->getName() + " issues bomb order." << endl;
+        }
+        else if (orderName._Equal("class Blockade")) {
+            cout << player->getName() + " issues blockade order." << endl;
+        }
+        else if (orderName._Equal("class Negotiate")) {
+            cout << player->getName() + " issues negotiate order." << endl;
+        }
+        else {
+            cout << "ERROR: unrecognized order!" << endl;
+        }
     }
 }
 

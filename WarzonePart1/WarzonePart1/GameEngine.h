@@ -68,8 +68,9 @@ public:
 #pragma region helperMethods
 	static bool checkOwnedContinent(Player*, Continent*);
 	static void priorityOrderList(Player*);
-	static void shuffleOrderList(Player*);
 	static void clearVector(vector<Territory*>*);
+	static void humanIssueOrder(Player*);
+	static void displayOrders(Player*);
 #pragma endregion
 
 };

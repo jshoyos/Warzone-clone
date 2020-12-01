@@ -37,11 +37,12 @@ class Player
 
 public:
 	//constructors
-	Player();						//default constructor 
-	~Player();						//destructor
-	Player(const Player&);			//copy constructor
-	Player(string);					//parameterized constructor accepting a string (name)
-	Player(string,int);				//parameterized constructor accepting a string (name), and int (num)
+	Player();							//default constructor 
+	~Player();							//destructor
+	Player(const Player&);				//copy constructor
+	Player(string);						//parameterized constructor accepting a string (name)
+	Player(string,int);					//parameterized constructor accepting a string (name), and int (num)
+	Player(string, IPlayerStrategy*);	//parameterized constructor accepting a string (name), and int (num)
 	Player(string, OrdersList*, Hand*, vector<Territory*>*,int); //parameterized constructor 
 
 	//methods
@@ -62,7 +63,8 @@ public:
 	vector<Territory*>* getTerritoryList();
 	int getReinforcementPool();
 	vector<string> getContractList();
-	int getID();         
+	int getID();
+	IPlayerStrategy* getStrategy();
 
 	//setters
 	bool setName(string);

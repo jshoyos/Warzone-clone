@@ -351,7 +351,7 @@ void Hand::showHand() {
 			cout << "Card Slot " << i << ": " << type << endl;
 		}
 	}
-	cout << "# of free slots left: " << (this->maxCards - this->numCards) << endl;
+	//cout << "# of free slots left: " << (this->maxCards - this->numCards) << endl;
 }
 
 void Hand::insertCard(Card* c) {      // whatever card is passed (ie: card_drawn from the Deck) is added to the Hand. 
