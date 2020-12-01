@@ -135,7 +135,6 @@ vector<Territory*>* AggressivePlayerStrategy::toAttack(Player* player)
 			}
 		}
 	}
-	//cout << player->getName()<<" :     SIZE ==============(" << attackList->size()<<")================" << endl;
 	return attackList;
 }
 

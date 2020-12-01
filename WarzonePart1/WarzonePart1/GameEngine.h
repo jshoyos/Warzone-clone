@@ -69,6 +69,8 @@ public:
 	static bool checkOwnedContinent(Player*, Continent*);
 	static void priorityOrderList(Player*);
 	static void clearVector(vector<Territory*>*);
+	static void humanIssueOrder(Player*);
+	static void displayOrders(Player*);
 #pragma endregion
 
 };
