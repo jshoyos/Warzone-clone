@@ -300,7 +300,7 @@ void MainGameLoop::runMainloop()
         }
         //Option to change players strategy
         //TODO: check memory leak
-    /*    if (turn % 10 == 0) {
+      /*  if (turn % 10 == 0) {
             int choice=0;
             cout << "You have the option to change a player's strategy" << endl;
             for (Player* player : GameStart::players) {
@@ -316,15 +316,20 @@ void MainGameLoop::runMainloop()
                 case 0: 
                     break;
                 case 1:
-                    player->setStrategy(new AggressivePlayerStrategy());
+                    player->setStrategy(new HumanPlayerStrategy());
                     break;
                 case 2:
-                    player->setStrategy(new BenevolentPlayerStrategy());
+                    player->setStrategy(new AggressivePlayerStrategy());
                     break;
                 case 3:
+                    player->setStrategy(new BenevolentPlayerStrategy());
+                    break;
+                
+                case 4:
                     player->setStrategy(new NeutralPlayerStrategy());
                     break;
                 }
+
             }
         }*/
         //Phase 1
@@ -357,12 +362,15 @@ void MainGameLoop::runMainloop()
             orderExecutionPhase(player);
         }
         //Remaining orders execution phase 
+     
         for (Player* player : GameStart::players) {
 
             if (player->getTerritoryList()->empty()) {
                 continue;
+            }   
+            if (typeid(*player->getStrategy()).name() != (typeid(NeutralPlayerStrategy).name())) {
+                orderExecutionPhase(player);
             }
-            orderExecutionPhase(player);
         }
         //removes players orders from list and contracts
         for (Player* player : GameStart::players) {
@@ -509,11 +517,6 @@ void MainGameLoop::issueOrderPhase(Player* player)
                         break;
                     }
                 }
-                //if (source == nullptr) {
-                //    cout << "territory chosen to attack has no ";
-                //    //source = target->getAdjacent()->at(0);
-                //    break;
-                //}
                 //max number of troops to send from selected territory. Minimum of 1 troop to send out
                 max = source->getArmies(); 
                 //random number of troops to attack with
@@ -568,82 +571,92 @@ void MainGameLoop::issueOrderPhase(Player* player)
         
 
         //Playing a card for a human player
-        if (typeid(*player->getStrategy()).name() == (typeid(HumanPlayerStrategy).name())) {
-            int cardSlot = 0;
-            cout << "choose card from hand." << endl;
-            player->getHand()->showHand();
-            cin >> cardSlot;
 
-            Card* card = player->getHand()->handOfCards.at(cardSlot);
-            vector<Territory*>* tempAttackList;
-            vector<Territory*>* tempDefendList;
-            int index = 0;
-            switch (card->type)
-            {
-            //bomb
-            case 0:
-                cout << "You played the BOMB card! Choose a territory to bomb from your attacking list." << endl;
-                tempAttackList = player->toAttack();
-                card->play2(player, nullptr,nullptr,target, 0);
-                delete tempAttackList; tempAttackList = NULL;
-                break;
-            //Reinforce
-            case 1:
-                cout << "You played the REINFORCE card! First choose a territory to reinforce, from your defend list." << endl;
-                tempDefendList = player->toDefend();
-                target = tempDefendList->at(0);
-                cout << "Next choose the adjacent territory you wish to move your armies from." << endl;
-                index = 0;
-                for (Territory* terr : *target->getAdjacent()) {
-                    cout << "[" << index << "] " << *terr;
-                    index++;
-                }
-                cin >> index;
-                source = target->getAdjacent()->at(index);
-                cout << "Lastly select the number of armies you wish to advance. Please select a number between 0 and " << source->getArmies()<< endl;
-                index = 0;
-                cin >> index;
-                card->play2(player, nullptr, source, target, index);
-                delete tempDefendList; tempDefendList = NULL;
-                break;
-            //Blockade
-            case 2:
-                cout << "You played the BLOCKADE card! Choose a territory to blockade from your defend list." << endl;
-                tempDefendList = player->toDefend();
-                card->play2(player, nullptr, nullptr, target, 0);
-                delete tempDefendList; tempDefendList = NULL;
-                break;
-            //Airlift
-            case 3:
-                cout << "You played the AIRLIFT card! First choose a territory to airlift to, from your defend list." << endl;
-                tempDefendList = player->toDefend();
-                target = tempDefendList->at(0);
-                cout << "Next choose the territory you wish to move your armies from." << endl;
-                delete tempDefendList; tempDefendList = NULL;
-                tempDefendList = player->toDefend();
-                source = tempDefendList->at(0);
-                cout << "Lastly select the number of armies you wish to AIRLIFT. Please select a number between 0 and " << source->getArmies() << endl;
-                index = 0;
-                cin >> index;
-                card->play2(player, nullptr, source, target, index);
-                delete tempDefendList; tempDefendList = NULL;
-                break;
-            //Diplomacy
-            case 4:break;
-                cout << "You played the DIPLOMACY card! Choose a player you wish to negotiate with." << endl;
-                int playerIndex = 0; Player* p2 = nullptr;
-                for (Player* players : GameStart::players) {
-                    if (players->getName() != player->getName()) {
-                        cout << "[" << playerIndex << "] " << players->getName();
-                        playerIndex++;
-                    }    
-                }
-                playerIndex = 0;
-                cin >> playerIndex;
-                p2=GameStart::players.at(playerIndex);
-                card->play2(player, p2, nullptr, nullptr, 0);
-                break;
+        if (typeid(*player->getStrategy()).name() == (typeid(HumanPlayerStrategy).name())) {
+            
+            if (player->getHand()->handOfCards.size() == 0) {
+                cout << "You dont have any cards in your hand." << endl;
             }
+            else {
+                int cardSlot = 0;
+
+                cout << "choose card from hand." << endl;
+                player->getHand()->showHand();
+                cin >> cardSlot;
+
+                Card* card = player->getHand()->handOfCards.at(cardSlot);
+                vector<Territory*>* tempAttackList;
+                vector<Territory*>* tempDefendList;
+                int index = 0;
+                switch (card->type)
+                {
+                    //bomb
+                case 0:
+                    cout << "You played the BOMB card! Choose a territory to bomb from your attacking list." << endl;
+                    tempAttackList = player->toAttack();
+                    card->play2(player, nullptr, nullptr, target, 0);
+                    delete tempAttackList; tempAttackList = NULL;
+                    break;
+                    //Reinforce
+                case 1:
+                    cout << "You played the REINFORCE card! First choose a territory to reinforce, from your defend list." << endl;
+                    tempDefendList = player->toDefend();
+                    target = tempDefendList->at(0);
+                    cout << "Next choose the adjacent territory you wish to move your armies from." << endl;
+                    index = 0;
+                    for (Territory* terr : *target->getAdjacent()) {
+                        cout << "[" << index << "] " << *terr;
+                        index++;
+                    }
+                    cin >> index;
+                    source = target->getAdjacent()->at(index);
+                    cout << "Lastly select the number of armies you wish to advance. Please select a number between 0 and " << source->getArmies() << endl;
+                    index = 0;
+                    cin >> index;
+                    card->play2(player, nullptr, source, target, index);
+                    delete tempDefendList; tempDefendList = NULL;
+                    break;
+                    //Blockade
+                case 2:
+                    cout << "You played the BLOCKADE card! Choose a territory to blockade from your defend list." << endl;
+                    tempDefendList = player->toDefend();
+                    card->play2(player, nullptr, nullptr, target, 0);
+                    delete tempDefendList; tempDefendList = NULL;
+                    break;
+                    //Airlift
+                case 3:
+                    cout << "You played the AIRLIFT card! First choose a territory to airlift to, from your defend list." << endl;
+                    tempDefendList = player->toDefend();
+                    target = tempDefendList->at(0);
+                    cout << "Next choose the territory you wish to move your armies from." << endl;
+                    delete tempDefendList; tempDefendList = NULL;
+                    tempDefendList = player->toDefend();
+                    source = tempDefendList->at(0);
+                    cout << "Lastly select the number of armies you wish to AIRLIFT. Please select a number between 0 and " << source->getArmies() << endl;
+                    index = 0;
+                    cin >> index;
+                    card->play2(player, nullptr, source, target, index);
+                    delete tempDefendList; tempDefendList = NULL;
+                    break;
+                    //Diplomacy
+                case 4:break;
+                    cout << "You played the DIPLOMACY card! Choose a player you wish to negotiate with." << endl;
+                    int playerIndex = 0; Player* p2 = nullptr;
+                    for (Player* players : GameStart::players) {
+                        if (players->getName() != player->getName()) {
+                            cout << "[" << playerIndex << "] " << players->getName();
+                            playerIndex++;
+                        }
+                    }
+                    playerIndex = 0;
+                    cin >> playerIndex;
+                    p2 = GameStart::players.at(playerIndex);
+                    card->play2(player, p2, nullptr, nullptr, 0);
+                    break;
+                }
+            }
+            
+           
         }
         else if(player->getHand()->getHandSize() != 0){
 
@@ -759,6 +772,10 @@ void MainGameLoop::orderExecutionPhase(Player* player)
             return;
         }
         
+    }
+    if (typeid(*player->getStrategy()).name() == (typeid(NeutralPlayerStrategy).name())) {
+        MainGameLoop::deployOrderLeft++;
+        return;
     }
     if (player->getOrderList()->getOrdersList().size() == 0) {
         return;
