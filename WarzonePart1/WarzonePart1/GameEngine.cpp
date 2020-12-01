@@ -393,7 +393,9 @@ void MainGameLoop::reinforcementPhase(Player* player)
     //On turn 1 there should be no reinforcement Phase for the players
 	double playerTerritoryNum = player->getTerritoryList()->size();
 	int armyNum = floor(playerTerritoryNum / 3);
-
+    if (armyNum<3) {
+        armyNum = 3;
+    }
 	for (Continent* cont : *GameStart::map->getContinents())
 	{
 		if (checkOwnedContinent(player, cont)) {
@@ -492,6 +494,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 //random territory index from attack list
                 if (max == 0) {
                     cout << player->getName()<<"'s attack list is empty" << endl;
+                    delete tempAttackList; tempAttackList = NULL;
                     break;
                 }
                 randTerrIndex = rand() % max;
@@ -659,7 +662,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
                 max = tempAttackList->size();
                 randTerrIndex = rand() % max;
                 target = tempAttackList->at(randTerrIndex);
-                delete tempAttackList; tempAttackList = NULL;
+                
             }
             else if (advanceStrategy == 0) {
                 max = tempDefendList->size();
@@ -681,7 +684,8 @@ void MainGameLoop::issueOrderPhase(Player* player)
             else {
                 randomArmyNum = rand() % max + min;
             }
-
+            delete tempAttackList; tempAttackList = NULL;
+            delete tempDefendList; tempDefendList = NULL;
             //select random player that is not self
             Player* p2 = nullptr;
             int playerIndex = 0;
@@ -698,8 +702,7 @@ void MainGameLoop::issueOrderPhase(Player* player)
             card->play2(player, p2, source, target, randomArmyNum);
             player->removeCardFromHand(card);
             GameStart::deck->insertCard(card);
-            
-            delete tempDefendList; tempDefendList = NULL;
+
         }
         
         // ------------------------------------------------------------------------------- \\
@@ -756,7 +759,10 @@ void MainGameLoop::orderExecutionPhase(Player* player)
             return;
         }
         
-     }
+    }
+    if (player->getOrderList()->getOrdersList().size() == 0) {
+        return;
+    }
     for (Order* order : player->getOrderList()->getOrdersList()) {
         player->getOrderList()->remove(0);
     }
