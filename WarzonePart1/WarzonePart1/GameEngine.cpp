@@ -523,7 +523,6 @@ void MainGameLoop::issueOrderPhase(Player* player)
             {
                 advanceStrategy = 0;
             }
-
             //Attack Strategy
             if (advanceStrategy == 1) {          
                 //max index for attack Territory list
@@ -548,9 +547,13 @@ void MainGameLoop::issueOrderPhase(Player* player)
                     }
                 }
                 //max number of troops to send from selected territory. Minimum of 1 troop to send out
-                max = source->getArmies(); 
+                
+                
+                if (source == nullptr) {
+                    break;
+                }
                 //random number of troops to attack with
-
+                max = source->getArmies();
                 if (max == 0) {
                     randomArmyNum = 0;
                 }
