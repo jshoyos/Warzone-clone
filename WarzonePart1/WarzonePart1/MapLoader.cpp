@@ -6,8 +6,6 @@
 // If any issues occur, returns a null pointer
 Map *MapLoader::createMap()
 {
-
-    
     Map *map = new Map();
 
     fstream stream(_fileName);
@@ -335,7 +333,6 @@ Map* ConquestFileReaderAdapter::createMap()
 
 Map* ConquestFileReader::createMap(string _fileName)
 {
-
     // when given the adjacent territories, we are given names (not id's) and also we are given the adjacent territories names before we even
     // get a chance to add those territories into our array of territories.. 
     // making it hard to convert those adjacent territories names into adjacent territories ids when comes the time to add adjacent territories to a territory...
